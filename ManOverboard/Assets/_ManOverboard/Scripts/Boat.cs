@@ -43,7 +43,7 @@ public class Boat : MonoBehaviour {
         float randomX = Random.Range(selectedCollider.bounds.min.x, selectedCollider.bounds.max.x);
         float randomY = Random.Range(selectedCollider.bounds.min.y, selectedCollider.bounds.max.y);
 
-        Vector2 position = new Vector2(randomX, randomY);
+        Vector3 position = new Vector3(randomX, randomY, this.transform.position.z);
         
         Leak newLeak = Instantiate(LeakPrefab, position, Quaternion.identity);
         newLeak.AttachLeak(myRigidbody);
