@@ -6,7 +6,7 @@ public class Dinghy : MonoBehaviour {
 
     public int buoyancy = 350;
     public GameObject [] passengers;
-    public int loadWeight;
+    private int loadWeight;
 
     public UnityEngine.UI.Text buoyancyDisp;
     public UnityEngine.UI.Text loadWeightDisp;

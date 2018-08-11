@@ -11,6 +11,7 @@ namespace Game2DWaterKit
 
 		void Update ()
 		{
+            /*
 			Camera cam = Camera.main;
 			Vector2 mousePos = cam.ScreenToWorldPoint ( Input.mousePosition );
 	
@@ -37,7 +38,7 @@ namespace Game2DWaterKit
 				camPos.x += Input.GetAxis ( "Horizontal" ) * moveSpeed;
 				camPos.y += Input.GetAxis ( "Vertical" ) * moveSpeed;
 				cam.transform.position = camPos;
-			}
+			}*/
 		}
 	}
 }
