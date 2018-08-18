@@ -26,6 +26,15 @@ namespace ZeroProgress.Common
 
                 return StraightValue;
             }
+
+            set {
+                if (!UseStraightValue) {
+                    if (ScriptableValue != null)
+                        ScriptableValue.CurrentValue = value;
+                }
+                else
+                    StraightValue = value;
+            }
         }
 
         public static implicit operator T(ScriptableReference<T, T1> Reference)

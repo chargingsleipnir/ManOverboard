@@ -23,6 +23,7 @@ GameObject:
   - component: {fileID: 114075095641872364}
   - component: {fileID: 50906616148174526}
   - component: {fileID: 61343613853540304}
+  - component: {fileID: 114495756441315618}
   m_Layer: 0
   m_Name: Passenger
   m_TagString: Untagged
@@ -37,7 +38,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1913222519309660}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.5, y: -1.257, z: -4}
+  m_LocalPosition: {x: -0.5, y: -1.257, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -99,10 +100,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bdac69eb403f76c4e8ff2c1c88138d26, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  weight: 100
-  weightDisp: {fileID: 0}
+  weight:
+    UseStraightValue: 0
+    StraightValue: 0
+    ScriptableValue: {fileID: 11400000, guid: 91540696289c981458b3a4269b888920, type: 2}
   charContAreaPrefab: {fileID: 1527078015339914, guid: 8b67eb1eb990113448bbb4bf57d3d234,
     type: 2}
+--- !u!114 &114495756441315618
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1913222519309660}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1dc114313a5e4c74c8e859493161500d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SetToAddTo: {fileID: 11400000, guid: 7fb0cbce62ee1f94cae6883bb861dc3b, type: 2}
+  managedGameObject: {fileID: 0}
+  RegisterOnEnable: 1
+  UnregisterOnDisable: 1
 --- !u!212 &212680825657446284
 SpriteRenderer:
   m_ObjectHideFlags: 1

@@ -49,14 +49,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 1765118266380454}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cd948f833cf586944ab76b7a235cf92e, type: 3}
+  m_Script: {fileID: 11500000, guid: 7620692a97ef64148a02bfb01f465154, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  buoyancy: 350
-  passengers: []
-  loadWeight: 0
-  buoyancyDisp: {fileID: 0}
-  loadWeightDisp: {fileID: 0}
+  myRigidbody: {fileID: 0}
+  myColliders: []
+  LeakPrefab: {fileID: 0}
+  buoyancy:
+    UseStraightValue: 0
+    StraightValue: 350
+    ScriptableValue: {fileID: 11400000, guid: 290b2c240d596074d8927ebff88f0ee7, type: 2}
 --- !u!212 &212751243012516420
 SpriteRenderer:
   m_ObjectHideFlags: 1
