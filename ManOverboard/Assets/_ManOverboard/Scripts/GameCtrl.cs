@@ -5,12 +5,6 @@ using UnityEngine.SceneManagement;
 
 public class GameCtrl : MonoBehaviour {
 
-	void Start () {
-    }
-
-	void Update () {		
-	}
-
     public void RestartCurrent() {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }

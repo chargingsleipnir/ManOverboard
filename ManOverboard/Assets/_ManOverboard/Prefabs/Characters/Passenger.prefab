@@ -20,9 +20,9 @@ GameObject:
   m_Component:
   - component: {fileID: 4425553280708276}
   - component: {fileID: 212680825657446284}
-  - component: {fileID: 114075095641872364}
   - component: {fileID: 50906616148174526}
   - component: {fileID: 61343613853540304}
+  - component: {fileID: 114075095641872364}
   - component: {fileID: 114495756441315618}
   m_Layer: 0
   m_Name: Passenger
@@ -100,12 +100,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bdac69eb403f76c4e8ff2c1c88138d26, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  weight:
-    UseStraightValue: 0
-    StraightValue: 0
-    ScriptableValue: {fileID: 11400000, guid: 91540696289c981458b3a4269b888920, type: 2}
-  charContAreaPrefab: {fileID: 1527078015339914, guid: 8b67eb1eb990113448bbb4bf57d3d234,
-    type: 2}
+  weight: 0
 --- !u!114 &114495756441315618
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -51,12 +51,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be7a30c37ac246e49ac9ed558c8ba2a8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  boatObj: {fileID: 0}
+  boat: {fileID: 0}
   passengerSet: {fileID: 11400000, guid: 7fb0cbce62ee1f94cae6883bb861dc3b, type: 2}
   loadWeight:
     UseStraightValue: 0
     StraightValue: 0
     ScriptableValue: {fileID: 11400000, guid: ca982ff5ab6d620448b6f7910bcb4c2b, type: 2}
+  grabWeight:
+    UseStraightValue: 0
+    StraightValue: 0
+    ScriptableValue: {fileID: 11400000, guid: 91540696289c981458b3a4269b888920, type: 2}
+  charContAreaPrefab: {fileID: 1527078015339914, guid: 8b67eb1eb990113448bbb4bf57d3d234,
+    type: 2}
   levelCompMsg:
     UseStraightValue: 0
     StraightValue: 

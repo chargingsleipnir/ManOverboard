@@ -7,29 +7,34 @@ using ZeroProgress.Common.Collections;
 [RequireComponent(typeof(SpriteRenderer), typeof(Rigidbody2D), typeof(BoxCollider2D))]
 public class Character : MonoBehaviour {
 
-    protected bool grabbed = false;
-    protected bool tossed = false;
+    const float TOSSED_CHAR_DEPTH_STEP = 0.5f;
 
-    // TODO: Char weights held in "StraightValue", while "Value" is kept at zero while no character being clicked? This is extremely counter-intuitive - change immediately.
-    // Need to move input system into LevelManager anyway.
-    public IntReference weight;
-    public int Weight {
-        get { return weight.StraightValue; }
+    protected bool grabbed = false;
+    protected bool prepToss = false;
+    protected bool tossed = false;
+    protected bool saved = false;
+    public bool Saved {
+        get {
+            return saved;
+        }
+        set {
+            saved = value;
+            // TODO: Set animation to have character doing arm-waving-happy-dance-deal.
+        }
     }
 
-    public delegate void CharGrabDelegate();
+    public int weight;
+
+    public delegate void CharGrabDelegate(Vector3 pos, Quaternion rot, Vector2 size, int weight, Character scpt);
     CharGrabDelegate OnCharGrab;
 
-    public delegate void CharReleaseDelegate(bool charTossed, int charWeight);
+    public delegate void CharReleaseDelegate(bool charTossed);
     CharReleaseDelegate OnCharRelease;
 
     private Vector3 grabPos;
     private Rigidbody2D rb;
     private GameObjectSetElement setElem;
 
-    public GameObject charContAreaPrefab;
-    private GameObject charContArea;
-    private SpriteRenderer charContAreaSR;
     private BoxCollider2D charContAreaBC;
 
     public void Awake() {
@@ -41,15 +46,15 @@ public class Character : MonoBehaviour {
         // Rigidbody is essentially inactive until being flung/thrown by user.
         // (Could use posiiton constraints instead) 
         rb.isKinematic = true;
-        weight.Value = 0;
     }
 
     public void Update () {
-        if (grabbed) {
-            Vector3 mousePos = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0.0f));
-
-            rb.MovePosition(new Vector2(mousePos.x, mousePos.y));
-            //transform.position.Set(mousePos.x, mousePos.y, transform.position.z);
+        if (!saved) {
+            if (grabbed) {
+                Vector3 mousePos = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0.0f));
+                rb.MovePosition(new Vector2(mousePos.x, mousePos.y));
+                //transform.position.Set(mousePos.x, mousePos.y, transform.position.z);
+            }
         }
     }
 
@@ -61,58 +66,61 @@ public class Character : MonoBehaviour {
     }
 
     private void OnMouseDown() {
-        grabbed = true;
-        weight.Value = weight.StraightValue;
-
-        grabPos = transform.position;
-
-        charContArea = Instantiate(charContAreaPrefab, new Vector3(transform.position.x, transform.position.y, transform.position.z + 0.1f), transform.rotation) as GameObject;
-        charContAreaSR = charContArea.GetComponent<SpriteRenderer>();
-        charContAreaBC = charContArea.GetComponent<BoxCollider2D>();
-
-        // charContArea prefab inherently set to size 1/1 and scale 1/1, so no calc needed.
-        Vector2 thisSize = this.GetComponent<SpriteRenderer>().size;
-        charContArea.transform.localScale = new Vector3(thisSize.x, thisSize.y, 1);
-
-        // Pause the boat's sinking
-        OnCharGrab();
+        if (!saved) {
+            if (!tossed) {
+                grabbed = true;
+                grabPos = transform.position;
+                OnCharGrab(transform.position, transform.rotation, this.GetComponent<SpriteRenderer>().size, weight, this);
+            }
+        }
     }
 
     private void OnMouseUp() {
-        grabbed = false;
-        weight.Value = 0;
+        if (!saved) {
+            if (!tossed) {
+                grabbed = false;
 
-        // Reduce load weight of boat, if appropriate to do so.
-        OnCharRelease(tossed, weight.StraightValue);
+                if (prepToss) {
+                    tossed = true;
+                    // Move in front of all other non-water objects
+                    transform.position.Set(transform.position.x, transform.position.y, transform.position.z - TOSSED_CHAR_DEPTH_STEP);
+                    setElem.UnregisterGameObject();
+                }
+                else {
+                    transform.position = grabPos;
+                    rb.isKinematic = true;
+                    // Use for physics movement. transform.position will not work once isKinematic = true;
+                    //rb.MovePosition(new Vector2(0, 0));
+                }
 
-        if (tossed) {
-            // Move in front of all other objects
-            transform.position.Set(transform.position.x, transform.position.y, transform.position.z - 0.5f);
-            setElem.UnregisterGameObject();
+                // Reduce load weight of boat, if appropriate to do so.
+                OnCharRelease(tossed);
+            }
         }
-        else {
-            transform.position = grabPos;
-            rb.isKinematic = true;
-            //rb.MovePosition(new Vector2(0, 0));
-        }
+    }
 
-        Destroy(charContArea);
+    public void GetCharContAreaBoxCollider(BoxCollider2D bc) {
+        charContAreaBC = bc;
     }
 
     private void OnTriggerEnter2D(Collider2D collision) {
-        if (grabbed) {
-            if (collision == charContAreaBC) {
-                tossed = false;
-                charContAreaSR.color = new Color(charContAreaSR.color.r, charContAreaSR.color.g, charContAreaSR.color.b, 0.66f);
+        if (!saved) {
+            if (grabbed) {
+                if (collision == charContAreaBC) {
+                    prepToss = false;
+                    collision.gameObject.GetComponent<CharContArea>().CharCollTrue();
+                }
             }
         }
     }
 
     private void OnTriggerExit2D(Collider2D collision) {
-        if (grabbed) {
-            if (collision == charContAreaBC) {
-                tossed = true;
-                charContAreaSR.color = new Color(charContAreaSR.color.r, charContAreaSR.color.g, charContAreaSR.color.b, 0.33f);
+        if (!saved) {
+            if (grabbed) {
+                if (collision == charContAreaBC) {
+                    prepToss = true;
+                    collision.gameObject.GetComponent<CharContArea>().CharCollFalse();
+                }
             }
         }
     }
