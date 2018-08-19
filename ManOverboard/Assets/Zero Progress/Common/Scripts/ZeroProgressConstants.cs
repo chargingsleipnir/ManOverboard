@@ -1,5 +1,8 @@
 ﻿namespace ZeroProgress.Common
 {
+    /// <summary>
+    /// Container for ZeroProgress 'global' constants that don't fit in any specific place
+    /// </summary>
     public static class ZeroProgressConstants
     {
         /// <summary>

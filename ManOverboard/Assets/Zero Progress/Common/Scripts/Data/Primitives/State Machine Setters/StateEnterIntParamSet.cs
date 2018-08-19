@@ -2,9 +2,13 @@
 
 namespace ZeroProgress.Common.Behaviours.StateMachines
 {
+    /// <summary>
+    /// Sets an int animation parameter when the state machine behaviour is entered
+    /// </summary>
     public class StateEnterIntParamSet : AnimParamSetterBase
     {
-        public int ValueToSet = 0;
+        [Tooltip("The value to be assigned to the int animation parameter when the state is entered")]
+        public IntReference ValueToSet = new IntReference(0);
 
         public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
         {

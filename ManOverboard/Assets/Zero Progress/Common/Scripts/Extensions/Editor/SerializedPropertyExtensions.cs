@@ -3,9 +3,13 @@ using System.Linq;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using System.Reflection;
 
 namespace ZeroProgress.Common.Editors
 {
+    /// <summary>
+    /// Extensions for the SerializedProperty class
+    /// </summary>
     public static class SerializedPropertyExtensions 
     {
         /// <summary>
@@ -208,6 +212,13 @@ namespace ZeroProgress.Common.Editors
             return values.Cast<T>();
         }
 
+        /// <summary>
+        /// Retrieves the array values of this property in a manner that doesn't return null
+        /// (will create an empty collection)
+        /// </summary>
+        /// <typeparam name="T">The element type</typeparam>
+        /// <param name="ThisProperty">The serialized property to get the array values from</param>
+        /// <returns>The collection of items (or an empty collection if null)</returns>
         public static IEnumerable<T> GetSafeArrayValues<T>(this SerializedProperty ThisProperty)
         {
             IEnumerable<T> values = ThisProperty.GetArrayValues<T>();
@@ -463,6 +474,41 @@ namespace ZeroProgress.Common.Editors
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// Retrieves the instance that this property belongs to
+        /// </summary>
+        /// <param name="thisProperty">The property to get the object instance that 
+        /// owns the data this property represents</param>
+        /// <returns>The instance of the object the property is representing</returns>
+        public static System.Object GetPropertyInstanceObject(this SerializedProperty thisProperty)
+        {
+            string[] path = thisProperty.propertyPath.Split('.');
+            object propertyObject = thisProperty.serializedObject.targetObject;
+
+            foreach (string pathNode in path)
+            {
+                FieldInfo fieldInfo = propertyObject.GetType().GetField(pathNode, 
+                    BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+
+                propertyObject = fieldInfo.GetValue(propertyObject);
+            }
+
+            return propertyObject;
+        }
+
+        /// <summary>
+        /// Retrieves the instance that this property belongs to
+        /// </summary>
+        /// <param name="thisProperty">The property to get the object instance that 
+        /// owns the data this property represents</param>
+        /// <returns>The instance of the object the property is representing</returns>
+        public static T GetPropertyInstanceObject<T>(this SerializedProperty thisProperty)
+        {
+            object instanceItem = thisProperty.GetPropertyInstanceObject();
+
+            return (T)instanceItem;
         }
     }
 }

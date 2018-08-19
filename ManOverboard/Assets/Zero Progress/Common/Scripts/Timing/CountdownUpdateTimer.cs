@@ -9,10 +9,19 @@ namespace ZeroProgress.Common.Timing
     /// </summary>
     public class CountdownUpdateTimer : CountdownTimer
     {
+        /// <summary>
+        /// Current state of the timer
+        /// </summary>
         private bool isRunning = false;
 
+        /// <summary>
+        /// Current value of the timer
+        /// </summary>
         private float intervalCounter = 0f;
 
+        /// <summary>
+        /// Gets the current state of the timer
+        /// </summary>
         public override bool IsTimerRunning
         {
             get
@@ -21,6 +30,9 @@ namespace ZeroProgress.Common.Timing
             }
         }
 
+        /// <summary>
+        /// Gets the current timer value
+        /// </summary>
         public float CurrentValue
         {
             get
@@ -29,6 +41,10 @@ namespace ZeroProgress.Common.Timing
             }
         }
 
+        /// <summary>
+        /// Starts the timer
+        /// </summary>
+        /// <param name="ResetIfRunning">True to reset the countdown if it's already running</param>
         public override void StartTimer(bool ResetIfRunning = false)
         {
             if(isRunning)
@@ -46,6 +62,9 @@ namespace ZeroProgress.Common.Timing
             OnIntervalElapsed.SafeInvoke(currentInterval);
         }
 
+        /// <summary>
+        /// Stops the timer
+        /// </summary>
         public override void StopTimer()
         {
             if (!isRunning)

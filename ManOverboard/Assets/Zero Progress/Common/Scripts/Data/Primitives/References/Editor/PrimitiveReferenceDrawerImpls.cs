@@ -3,22 +3,34 @@ using UnityEngine;
 
 namespace ZeroProgress.Common.Editors
 {
-    [CustomPropertyDrawer(typeof(FloatReference))]
+    /// <summary>
+    /// Implementation of the property drawer for the float reference
+    /// </summary>
+    [CustomPropertyDrawer(typeof(ReferenceDropdownAttribute))]
     public class FloatReferenceDrawer : PrimitiveReferenceDrawer<float, ScriptableFloat>
     {
     }
 
-    [CustomPropertyDrawer(typeof(IntReference))]
+    /// <summary>
+    /// Implementation of the property drawer for the int reference
+    /// </summary>
+    [CustomPropertyDrawer(typeof(ReferenceDropdownAttribute))]
     public class IntReferenceDrawer : PrimitiveReferenceDrawer<int, ScriptableInt>
     {
     }
 
-    [CustomPropertyDrawer(typeof(StringReference))]
+    /// <summary>
+    /// Implementation of the property drawer for the string reference
+    /// </summary>
+    [CustomPropertyDrawer(typeof(ReferenceDropdownAttribute))]
     public class StringReferenceDrawer : PrimitiveReferenceDrawer<string, ScriptableString>
     {
     }
 
-    [CustomPropertyDrawer(typeof(Vector3Reference))]
+    /// <summary>
+    /// Implementation of the property drawer for the Vector3 reference
+    /// </summary>
+    [CustomPropertyDrawer(typeof(ReferenceDropdownAttribute))]
     public class Vector3ReferenceDrawer : PrimitiveReferenceDrawer<Vector3, ScriptableVector3>
     {
     }

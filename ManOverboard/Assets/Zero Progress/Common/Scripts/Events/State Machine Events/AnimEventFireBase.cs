@@ -3,9 +3,13 @@ using UnityEngine;
 
 namespace ZeroProgress.Common
 {
+    /// <summary>
+    /// Base class for firing events associated with the animation state machine
+    /// </summary>
     public class AnimEventFireBase : StateMachineBehaviour
     {
         [SerializeField]
+        [Tooltip("The event identifiers to be fired")]
         protected StringReference[] EventsToFire;
 
         [Tooltip("True to notify children of the game object as well")]
@@ -14,6 +18,10 @@ namespace ZeroProgress.Common
         [Tooltip("True to include children that have been deactivated, false to use only active ones")]
         public bool IncludeInactiveChildren = false;
 
+        /// <summary>
+        /// Intended for children to call to notify the scene of animation-specific events
+        /// </summary>
+        /// <param name="Anim">The animator to fire the events in relation to</param>
         protected virtual void FireEvents(Animator Anim)
         {
             IEnumerable<IAnimationEventListener> animEvents = GetEventReceivers(Anim);
@@ -24,7 +32,7 @@ namespace ZeroProgress.Common
             {
                 foreach (IAnimationEventListener animEvent in animEvents)
                 {
-                    animEvent.ExecuteEvent(eventToFire);
+                    animEvent.ReceiveEvent(eventToFire);
                     numNotified++;
                 }
             }
@@ -36,6 +44,11 @@ namespace ZeroProgress.Common
             }
         }
 
+        /// <summary>
+        /// Retrieves all event receivers on the provided animator item
+        /// </summary>
+        /// <param name="Anim">The animator to find all listeners on</param>
+        /// <returns>Collection of event receivers to notify</returns>
         protected virtual IEnumerable<IAnimationEventListener> GetEventReceivers(Animator Anim)
         {
             if (PropagateToChildren)

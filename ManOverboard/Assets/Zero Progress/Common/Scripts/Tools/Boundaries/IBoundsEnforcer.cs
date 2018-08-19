@@ -2,6 +2,9 @@
 
 namespace ZeroProgress.Common
 {
+    /// <summary>
+    /// Interface for classes that keep items within a certain area
+    /// </summary>
     public interface IBoundsEnforcer
     {
         /// <summary>

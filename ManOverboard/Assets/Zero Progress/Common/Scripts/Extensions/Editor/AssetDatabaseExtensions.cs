@@ -2,6 +2,10 @@
 
 namespace ZeroProgress.Common.Editors
 {
+    /// <summary>
+    /// Extensions meant for the AssetDatabase class... however, because AssetDatabase is a static
+    /// class, these don't work exactly as normal extension methods and must be used explicitly
+    /// </summary>
     public static class AssetDatabaseExtensions
     {
         /// <summary>

@@ -3,6 +3,9 @@ using UnityEngine;
 
 namespace ZeroProgress.Common
 {
+    /// <summary>
+    /// Extensions for the AnimationCurve type
+    /// </summary>
     public static class AnimationCurveExtensions
     {
         /// <summary>
