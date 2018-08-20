@@ -6,6 +6,8 @@ using ZeroProgress.Common.Collections;
 
 public class LevelManager : MonoBehaviour {
 
+    public GameCtrl gameCtrl;
+
     const float SINK_STEP_SECS = 0.5f;
 
     private bool levelActive = true;    
@@ -15,21 +17,26 @@ public class LevelManager : MonoBehaviour {
 
     // TODO: Will need to handle all character types in the future.
     public GameObjectSet passengerSet;
+    private int passSetStartLen;
+
     public IntReference loadWeight;
     public IntReference grabWeight;
 
     public GameObject charContAreaPrefab;
-    private GameObject charContArea;
-    private BoxCollider2D charContAreaBC;    
+    private GameObject charContArea; 
 
     public StringReference levelCompMsg;
 
     private void Awake() {
+        // TODO: This is a quick test fix, should NOT be here every level load
+        gameCtrl.LoadLevelData();
+
         currCoroutine = null;
         loadWeight.Value = 0;
         grabWeight.Value = 0;
 
         // TODO: Will need to handle all character types in the future.
+        passSetStartLen = passengerSet.Count;
         foreach (GameObject passenger in passengerSet) {
             Passenger passScpt = passenger.GetComponent<Passenger>();
             loadWeight.Value += passScpt.weight;
@@ -70,6 +77,10 @@ public class LevelManager : MonoBehaviour {
         }
     }
 
+    private void CheckLevelEndResult() {
+        gameCtrl.GetCurrLevel();
+    }
+
     private void CharRelease(bool charTossed) {
         if (levelActive) {
 
@@ -84,7 +95,21 @@ public class LevelManager : MonoBehaviour {
                     return;
                 }
                 else if (loadWeight.Value <= boat.Buoyancy) {
-                    EndLevel("You a winner!");
+                    int charLoss = passSetStartLen - passengerSet.Count;
+ 
+                    if(charLoss <= gameCtrl.GetLevelMaxCharLoss(3)) {
+                        EndLevel("You a winner! 3 star play!");
+                    }
+                    else if(charLoss <= gameCtrl.GetLevelMaxCharLoss(2)) {
+                        EndLevel("You a winner! 2 star play!");
+                    }
+                    else if(charLoss <= gameCtrl.GetLevelMaxCharLoss(1)) {
+                        EndLevel("You a winner! 1 star play!");
+                    }
+                    else {
+                        EndLevel("Too many people died!");
+                    }
+                    
                     return;
                 }
             }
