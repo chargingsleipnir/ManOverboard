@@ -2,8 +2,12 @@
 
 namespace ZeroProgress.Common.Collections
 {
+    /// <summary>
+    /// Helper component that registers another component to the specified set
+    /// </summary>
     public class GameObjectSetElement : MonoBehaviour
     {
+        [Tooltip("The collection to register the game object to")]
         public GameObjectSet SetToAddTo;
 
         [Tooltip("The game object to Add and Remove when this script is enabled or disabled")]
@@ -37,22 +41,36 @@ namespace ZeroProgress.Common.Collections
             UnregisterGameObject(managedGameObject);
         }
 
+        /// <summary>
+        /// Registers the game object specified through the inspector
+        /// </summary>
         public void RegisterGameObject()
         {
             RegisterGameObject(managedGameObject);
         }
 
+        /// <summary>
+        /// Registers the specified game object
+        /// </summary>
+        /// <param name="GameObject">The object to register to the set being pointed at</param>
         public void RegisterGameObject(GameObject GameObject)
         {
             if (GameObject != null)
                 SetToAddTo.Add(GameObject);
         }
 
+        /// <summary>
+        /// Unregisters the game object specified through the inspector
+        /// </summary>
         public void UnregisterGameObject()
         {
             UnregisterGameObject(managedGameObject);
         }
 
+        /// <summary>
+        /// Unregisters the specified game object
+        /// </summary>
+        /// <param name="GameObject">The game object to unregister</param>
         public void UnregisterGameObject(GameObject GameObject)
         {
             if (GameObject != null)

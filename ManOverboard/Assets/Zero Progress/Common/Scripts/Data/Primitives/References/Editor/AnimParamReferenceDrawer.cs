@@ -3,6 +3,10 @@ using UnityEngine;
 
 namespace ZeroProgress.Common.Editors
 {
+    /// <summary>
+    /// PropertyDrawer for an Animation Parameter reference in order to display the animation 
+    /// parameter name, but store the hash behind the scenes
+    /// </summary>
     [CustomPropertyDrawer(typeof(AnimParamReference))]
     public class AnimParamReferenceDrawer : PrimitiveReferenceDrawer<int, ScriptableAnimParam>
     {
@@ -13,6 +17,8 @@ namespace ZeroProgress.Common.Editors
                 popupStyle = new GUIStyle(GUI.skin.GetStyle("PaneOptions"));
                 popupStyle.imagePosition = ImagePosition.ImageOnly;
             }
+
+            Rect beforeLabelPos = new Rect(position);
 
             label = EditorGUI.BeginProperty(position, label, property);
             position = EditorGUI.PrefixLabel(position, label);
@@ -25,17 +31,11 @@ namespace ZeroProgress.Common.Editors
             SerializedProperty paramNameValue = property.FindPropertyRelative("AnimParamName");
 
             bool isUsingStraightValue = useStraightValue.boolValue;
-
-            if (isUsingStraightValue)
-            {
-                position.height *= 0.5f;
-                position.height -= 1f;
-            }
-
+            
             Rect buttonRect = new Rect(position);
-            buttonRect.yMin += popupStyle.margin.top;
             buttonRect.width = popupStyle.fixedWidth + popupStyle.margin.right;
             position.xMin = buttonRect.xMax;
+            position.height = EditorGUIUtility.singleLineHeight;
 
             int indent = EditorGUI.indentLevel;
             EditorGUI.indentLevel = 0;
@@ -58,10 +58,12 @@ namespace ZeroProgress.Common.Editors
             {
                 EditorGUI.BeginDisabledGroup(true);
 
-                position.y += EditorGUI.GetPropertyHeight(isUsingStraightValue ? paramNameValue : variableValue);
-                position.y += popupStyle.margin.top;
-                position.yMax -= 1f;
-                position.xMin = 34f;
+                position = beforeLabelPos;
+                position.y += EditorGUIUtility.singleLineHeight;
+                position.height = EditorGUIUtility.singleLineHeight;
+
+                EditorGUI.indentLevel++;
+                position = EditorGUI.IndentedRect(position);
 
                 EditorGUI.PropertyField(position, straightValue, new GUIContent("Param Hash"));
 
@@ -71,23 +73,18 @@ namespace ZeroProgress.Common.Editors
             EditorGUI.indentLevel = indent;
             EditorGUI.EndProperty();
         }
-
+        
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
-            float bottomMargin = 3f;
-            float propertyRows = 2f;
-
             SerializedProperty useStraightValue = property.FindPropertyRelative("UseStraightValue");
 
-            float propertyHeight = base.GetPropertyHeight(property, label);
+            float propertyHeight = EditorGUIUtility.singleLineHeight;
 
             if (useStraightValue == null)
-            {
-                Debug.LogError("It's Null");
                 return propertyHeight;
-            }
+
             if (useStraightValue.boolValue)
-                propertyHeight = propertyHeight * propertyRows + bottomMargin;
+                propertyHeight = propertyHeight * 2;
 
             return propertyHeight;
         }

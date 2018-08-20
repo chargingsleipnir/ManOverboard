@@ -2,13 +2,20 @@
 
 namespace ZeroProgress.Common.Collections
 {
-    public class GenericComponentSetElement<T> : MonoBehaviour where T : Component 
+    /// <summary>
+    /// Base class for helping with registering specific component types with
+    /// a specific type of set
+    /// </summary>
+    /// <typeparam name="T">The type of the set</typeparam>
+    /// <typeparam name="T1">The component type that the set should recieve</typeparam>
+    public class GenericComponentSetElement<T, T1> : MonoBehaviour where T : ScriptableSet<T1> where T1 : Component 
     {
-        public ScriptableSet<T> SetToAddTo;
+        [Tooltip("The set that will receive the component")]
+        public T SetToAddTo;
 
         [Tooltip("The component to Add and Remove when this script is enabled or disabled")]
         [SerializeField]
-        private T component;
+        private T1 component;
 
         [Tooltip("True to register the specified component OnEnable (if component is null," +
             " will find one OnEnable if true). False to Register/Unregister manually")]
@@ -23,9 +30,8 @@ namespace ZeroProgress.Common.Collections
             if (!RegisterOnEnable)
                 return;
 
-            if(component == null)
-                component = GetComponent<T>();
-
+            component = this.GetComponentIfNull<T1>(component);
+            
             RegisterComponent(component);
         }
 
@@ -37,23 +43,37 @@ namespace ZeroProgress.Common.Collections
             UnregisterComponent(component);
         }
 
+        /// <summary>
+        /// Registers the stored component
+        /// </summary>
         public void RegisterComponent()
         {
             RegisterComponent(component);
         }
 
-        public void RegisterComponent(T Component)
+        /// <summary>
+        /// Registers the specified component
+        /// </summary>
+        /// <param name="Component">The component to register</param>
+        public void RegisterComponent(T1 Component)
         {
             if (Component != null)
                 SetToAddTo.Add(Component);
         }
 
+        /// <summary>
+        /// Unregisters the stored component
+        /// </summary>
         public void UnregisterComponent()
         {
             UnregisterComponent(component);
         }
 
-        public void UnregisterComponent(T Component)
+        /// <summary>
+        /// Unregisters the stored component
+        /// </summary>
+        /// <param name="Component">The component to register</param>
+        public void UnregisterComponent(T1 Component)
         {
             if (Component != null)
                 SetToAddTo.Remove(Component);

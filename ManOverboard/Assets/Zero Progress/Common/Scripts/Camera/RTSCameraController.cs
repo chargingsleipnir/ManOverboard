@@ -7,28 +7,47 @@ namespace ZeroProgress.Common.Cameras
     /// </summary>
     public class RTSCameraController : MonoBehaviour
     {
+        [Tooltip("RTS Camera Logic to control")]
         public RTSCamera CameraToControl;
 
+        [Tooltip("True to allow panning with input buttons")]
         public bool AllowButtonPanning = true;
+        [Tooltip("Speed to be applied to horizontal input button")]
         public float HorizontalButtonSpeed = 1f;
+        [Tooltip("Speed to be applied to vertical input button")]
         public float VerticalButtonSpeed = 1f;
 
+        [Tooltip("True to allow panning when the cursor is at the screen edge")]
         public bool AllowScreenEdgePanning = true;
+        [Tooltip("Speed to be applied to horizontal screen edge recognition")]
         public float HorizontalScreenEdgePanSpeed = 0.5f;
+        [Tooltip("Speed to be applied to vertical screen edge recognition")]
         public float VerticalScreenEdgePanSpeed = 0.5f;
 
+        [Tooltip("Speed applied to zoom inputs")]
         public float ZoomSpeed = 3.0f;
 
+        [Tooltip("Speed applied to rotation along the right axis in relation to the camera to the pivot point")]
         public float RightRotateSpeed = 1f;
+        [Tooltip("Speed applied to rotation along the vertical axis in relation to the camera to the pivot point")]
         public float UpRotateSpeed = 1f;
 
         [Range(0f, 1f)]
+        [Tooltip("The point that normalized input must exceed to be considered vertical screen-edge input")]
         public float ScreenVerticalMargin = 0.95f;
 
         [Range(0f, 1f)]
+        [Tooltip("The point that normalized input must exceed to be considered horizontal screen-edge input")]
         public float ScreenHorizontalMargin = 0.95f;
 
+        /// <summary>
+        /// The mouse position cached for determining delta movement
+        /// </summary>
         private Vector3 startMousePosition;
+
+        /// <summary>
+        /// Cache for whether or not the button was part of previously
+        /// </summary>
         private bool wasButtonDown = false;
         
         void Start()
@@ -48,6 +67,10 @@ namespace ZeroProgress.Common.Cameras
             CameraToControl.Rotate(rotationInput);
         }
 
+        /// <summary>
+        /// Retrieves all input related to the button keys (joystick/keyboard)
+        /// </summary>
+        /// <returns>The vector3 that represents all the mouse input</returns>
         private Vector3 GetButtonInput()
         {
             if (!AllowButtonPanning)
@@ -62,6 +85,10 @@ namespace ZeroProgress.Common.Cameras
             return new Vector3(x, y, z);
         }
 
+        /// <summary>
+        /// Retrieves input related to the mouse position in relation to the edge of the screen
+        /// </summary>
+        /// <returns>The vector3 that represents the input from the edge of the screen</returns>
         private Vector3 GetEdgeOfScreenInput()
         {
             if (!AllowScreenEdgePanning)
@@ -85,6 +112,10 @@ namespace ZeroProgress.Common.Cameras
             return new Vector3(x * HorizontalScreenEdgePanSpeed, y * VerticalScreenEdgePanSpeed, 0f);
         }
 
+        /// <summary>
+        /// Retrieve the input related to the rotation
+        /// </summary>
+        /// <returns>Vector2 representing the rotation input</returns>
         private Vector2 GetRotationInput()
         {
             if (Input.GetButton("Fire3"))
