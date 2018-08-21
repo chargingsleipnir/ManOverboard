@@ -6,11 +6,13 @@ using System.IO;
 
 public class GameCtrl : MonoBehaviour {
 
+    const int LEVEL_SCENE_IDX_DIFF = 2;
+    const int LEVEL_DATA_IDX_DIFF = 1;
 
     // ============================== SCENE MANAGEMENT ==============================
 
     public int GetCurrLevel() {
-        return SceneManager.GetActiveScene().buildIndex - 1;
+        return SceneManager.GetActiveScene().buildIndex - LEVEL_SCENE_IDX_DIFF;
     }
 
     public void RestartCurrent() {
@@ -18,18 +20,15 @@ public class GameCtrl : MonoBehaviour {
     }
 
     public void GoToTitle() {
-        //Debug.Log("GoToTitle called");
-        SceneManager.LoadScene(0);
-    }
-
-    public void GoToLevelOverview() {
-        //Debug.Log("GoToLevelOverview called");
         SceneManager.LoadScene(1);
     }
 
+    public void GoToLevelOverview() {
+        SceneManager.LoadScene(2);
+    }
+
     public void GoToLevel(int levelNum) {
-        //Debug.Log("GoToLevel called");
-        SceneManager.LoadScene(levelNum + 1);
+        SceneManager.LoadScene(levelNum + LEVEL_SCENE_IDX_DIFF);
     }
 
 
@@ -48,13 +47,9 @@ public class GameCtrl : MonoBehaviour {
     }
 
     public int GetLevelMaxCharLoss(int starVal) {
-        return root.level[GetCurrLevel() - 1].maxCharLoss[starVal];
+        return root.level[GetCurrLevel() - LEVEL_DATA_IDX_DIFF].maxCharLoss[starVal];
     }
     public int GetLevelMaxCharLoss(int level, int starVal) {
-        if(root == null) {
-            LoadLevelData();
-        }
-
-        return root.level[level - 1].maxCharLoss[starVal];
+        return root.level[level - LEVEL_DATA_IDX_DIFF].maxCharLoss[starVal];
     }
 }

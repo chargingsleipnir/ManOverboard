@@ -28,9 +28,6 @@ public class LevelManager : MonoBehaviour {
     public StringReference levelCompMsg;
 
     private void Awake() {
-        // TODO: This is a quick test fix, should NOT be here every level load
-        gameCtrl.LoadLevelData();
-
         currCoroutine = null;
         loadWeight.Value = 0;
         grabWeight.Value = 0;

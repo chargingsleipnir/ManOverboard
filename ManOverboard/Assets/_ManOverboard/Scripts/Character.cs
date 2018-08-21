@@ -32,6 +32,9 @@ public class Character : MonoBehaviour {
     CharReleaseDelegate OnCharRelease;
 
     private Vector3 grabPos;
+    private Vector2 mouseLastPos = Vector2.zero;
+    private Vector2 mouseCurrPos = Vector2.zero;
+    private Vector2 mouseDelta = Vector2.zero;
     private Rigidbody2D rb;
     private GameObjectSetElement setElem;
 
@@ -51,8 +54,14 @@ public class Character : MonoBehaviour {
     public void Update () {
         if (!saved) {
             if (grabbed) {
-                Vector3 mousePos = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0.0f));
-                rb.MovePosition(new Vector2(mousePos.x, mousePos.y));
+                mouseLastPos = mouseCurrPos;
+
+                Vector3 mouseCalcPos = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0.0f));
+                mouseCurrPos.Set(mouseCalcPos.x, mouseCalcPos.y);
+
+                mouseDelta = mouseCurrPos - mouseLastPos;
+
+                rb.MovePosition(mouseCurrPos);
                 //transform.position.Set(mousePos.x, mousePos.y, transform.position.z);
             }
         }
@@ -85,6 +94,12 @@ public class Character : MonoBehaviour {
                     // Move in front of all other non-water objects
                     transform.position.Set(transform.position.x, transform.position.y, transform.position.z - TOSSED_CHAR_DEPTH_STEP);
                     setElem.UnregisterGameObject();
+
+                    rb.isKinematic = false;
+
+                    // TODO: Top out the toss speed to something not TOO unreasonable
+                    float tossSpeed = mouseDelta.magnitude / Time.deltaTime;
+                    rb.velocity = mouseDelta * tossSpeed;
                 }
                 else {
                     transform.position = grabPos;

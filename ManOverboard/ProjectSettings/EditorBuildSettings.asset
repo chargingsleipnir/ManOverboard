@@ -9,6 +9,9 @@ EditorBuildSettings:
     path: 
     guid: 00000000000000000000000000000000
   - enabled: 1
+    path: Assets/_ManOverboard/Scenes/Dev/OdinSceneFlowTest/PreGame.unity
+    guid: 4d33d8861430fae449e245cb71c91f25
+  - enabled: 1
     path: Assets/_ManOverboard/Scenes/Dev/OdinSceneFlowTest/Title Screen.unity
     guid: ff64f4529879a28479360ce46fecf05e
   - enabled: 1
@@ -20,7 +23,4 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/_ManOverboard/Scenes/Dev/OdinSceneFlowTest/Level 2.unity
     guid: ccdb9bc8d90c7424890d96ba911c7211
-  - enabled: 0
-    path: Assets/__DELETED_GUID_Trash/102c7723d2b5db3408f72ce163a50dc0
-    guid: 102c7723d2b5db3408f72ce163a50dc0
   m_configObjects: {}
