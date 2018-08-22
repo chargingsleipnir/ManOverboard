@@ -3,6 +3,9 @@ using UnityEngine;
 
 namespace ZeroProgress.Common
 {
+    /// <summary>
+    /// Implementation of the ScriptableReference for the string type
+    /// </summary>
     [Serializable]
     public class StringReference : ScriptableReference<string, ScriptableString>
     {
@@ -16,6 +19,9 @@ namespace ZeroProgress.Common
         }
     }
 
+    /// <summary>
+    /// Implementation of the ScriptableReference for the float type
+    /// </summary>
     [Serializable]
     public class FloatReference : ScriptableReference<float, ScriptableFloat>
     {
@@ -33,13 +39,16 @@ namespace ZeroProgress.Common
         }
     }
 
+    /// <summary>
+    /// Implementation of the ScriptableReference for the int type
+    /// </summary>
     [Serializable]
     public class IntReference : ScriptableReference<int, ScriptableInt>
     {
         public IntReference()
         {
         }
-
+        
         public IntReference(int StartValue)
             : base(StartValue)
         {
@@ -50,6 +59,9 @@ namespace ZeroProgress.Common
         }
     }
 
+    /// <summary>
+    /// Implementation of the ScriptableReference for the Vector3 type
+    /// </summary>
     [Serializable]
     public class Vector3Reference : ScriptableReference<Vector3, ScriptableVector3>
     {
@@ -57,16 +69,26 @@ namespace ZeroProgress.Common
         {
         }
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="StartValue">The value</param>
         public Vector3Reference(Vector3 StartValue)
             : base(StartValue)
         {
         }
     }
 
+    /// <summary>
+    /// Implementation of the ScriptableReference for the AnimationParameter type
+    /// </summary>
     [Serializable]
     public class AnimParamReference : ScriptableReference<int, ScriptableAnimParam>
     {
 #if UNITY_EDITOR
+        /// <summary>
+        /// Used to store the name of the animation parameter
+        /// </summary>
         public string AnimParamName;
 #endif
 
@@ -74,11 +96,19 @@ namespace ZeroProgress.Common
         {
         }
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="StartValue">The hash value of the animation parameter to store</param>
         public AnimParamReference(int StartValue)
             : base(StartValue)
         {
         }
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="StartValue">The name of the animation parameter to hash</param>
         public AnimParamReference(String StartValue)
         {
             StraightValue = Animator.StringToHash(StartValue);

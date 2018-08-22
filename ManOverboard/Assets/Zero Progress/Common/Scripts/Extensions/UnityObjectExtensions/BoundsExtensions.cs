@@ -2,6 +2,9 @@
 
 namespace ZeroProgress.Common
 {
+    /// <summary>
+    /// Extensions for the Bounds type
+    /// </summary>
     public static class BoundsExtensions
     {
         /// <summary>

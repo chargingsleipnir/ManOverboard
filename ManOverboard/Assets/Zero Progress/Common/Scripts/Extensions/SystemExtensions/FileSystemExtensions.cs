@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace ZeroProgress.Common
 {
+    /// <summary>
+    /// Extensions to help with IO stuff
+    /// </summary>
     public static class FileSystemExtensions
     {
 

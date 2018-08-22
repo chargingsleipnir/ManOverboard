@@ -2,9 +2,13 @@
 
 namespace ZeroProgress.Common.Behaviours.StateMachines
 {
+    /// <summary>
+    /// Sets a int animation parameter when the state machine behaviour is exited
+    /// </summary>
     public class StateExitIntParamSet : AnimParamSetterBase
     {
-        public int ValueToSet = 0;
+        [Tooltip("The value to be assigned to the int animation parameter when the state is exited")]
+        public IntReference ValueToSet = new IntReference(0);
 
         public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
         {

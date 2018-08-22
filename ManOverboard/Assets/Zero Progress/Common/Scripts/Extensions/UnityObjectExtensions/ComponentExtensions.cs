@@ -2,6 +2,9 @@
 
 namespace ZeroProgress.Common
 {
+    /// <summary>
+    /// Extensions for the component type
+    /// </summary>
     public static class ComponentExtensions
     {
         /// <summary>
