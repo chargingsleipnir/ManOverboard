@@ -8,6 +8,7 @@ public class PreGameLoader : MonoBehaviour {
 
     private void Awake() {
         gameCtrl.LoadLevelData();
+        gameCtrl.LayerCollisionSettings();
     }
 
     void Start () {

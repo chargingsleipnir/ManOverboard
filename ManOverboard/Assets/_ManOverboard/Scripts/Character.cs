@@ -92,7 +92,9 @@ public class Character : MonoBehaviour {
                 if (prepToss) {
                     tossed = true;
                     // Move in front of all other non-water objects
-                    transform.position.Set(transform.position.x, transform.position.y, transform.position.z - TOSSED_CHAR_DEPTH_STEP);
+                    transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z - TOSSED_CHAR_DEPTH_STEP);
+                    gameObject.layer = 9; // tossed objects
+
                     setElem.UnregisterGameObject();
 
                     rb.isKinematic = false;
@@ -104,8 +106,6 @@ public class Character : MonoBehaviour {
                 else {
                     transform.position = grabPos;
                     rb.isKinematic = true;
-                    // Use for physics movement. transform.position will not work once isKinematic = true;
-                    //rb.MovePosition(new Vector2(0, 0));
                 }
 
                 // Reduce load weight of boat, if appropriate to do so.
