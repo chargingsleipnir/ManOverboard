@@ -33,6 +33,10 @@ namespace ZeroProgress.Common
             : base(StartValue)
         {
         }
+
+        public static implicit operator float(FloatReference reference) {
+            return reference.Value;
+        }
     }
 
     /// <summary>
@@ -48,6 +52,10 @@ namespace ZeroProgress.Common
         public IntReference(int StartValue)
             : base(StartValue)
         {
+        }
+
+        public static implicit operator int(IntReference reference) {
+            return reference.Value;
         }
     }
 

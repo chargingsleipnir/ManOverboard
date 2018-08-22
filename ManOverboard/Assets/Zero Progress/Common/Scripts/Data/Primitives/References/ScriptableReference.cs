@@ -38,15 +38,13 @@ namespace ZeroProgress.Common
 
                 return StraightValue;
             }
-            set
-            {
-                if (!UseStraightValue)
-                {
+            set {
+                if (!UseStraightValue) {
                     if (ScriptableValue != null)
                         ScriptableValue.CurrentValue = value;
                 }
                 else
-                    StraightValue = value;                
+                    StraightValue = value;
             }
         }
 

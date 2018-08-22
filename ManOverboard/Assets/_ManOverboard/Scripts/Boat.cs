@@ -17,6 +17,10 @@ public class Boat : MonoBehaviour {
     [SerializeField]
     private Leak LeakPrefab;
 
+    private bool sinking = false;
+
+    public IntReference buoyancy;
+
     /// <summary>
     /// The game objects that represent leaks in the boat
     /// </summary>
@@ -28,6 +32,29 @@ public class Boat : MonoBehaviour {
         
         if(myColliders == null || myColliders.Length == 0)
             myColliders = GetComponentsInChildren<Collider2D>();
+    }
+
+    private void Start() {
+        buoyancy.Value = buoyancy.StraightValue;
+        sinking = true;
+    }
+
+    public virtual void SinkInterval() {
+        if (sinking) {
+            buoyancy.Value--;
+        }
+    }
+
+    public void PauseSinking() {
+        sinking = false;
+    }
+
+    public void ResumeSinking() {
+        sinking = true;
+    }
+
+    public int Buoyancy {
+        get { return buoyancy.Value; }
     }
 
     /// <summary>
