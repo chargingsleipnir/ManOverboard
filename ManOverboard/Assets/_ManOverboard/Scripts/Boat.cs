@@ -40,9 +40,10 @@ public class Boat : MonoBehaviour {
     }
 
     public virtual void SinkInterval() {
-        if (sinking) {
-            buoyancy.Value--;
-        }
+        if (!sinking)
+            return;
+
+        buoyancy.Value--;
     }
 
     public void PauseSinking() {
@@ -77,5 +78,4 @@ public class Boat : MonoBehaviour {
 
         activeLeaks.Add(newLeak);
     }
-
 }

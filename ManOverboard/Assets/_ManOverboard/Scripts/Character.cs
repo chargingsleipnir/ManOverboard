@@ -52,19 +52,19 @@ public class Character : MonoBehaviour {
     }
 
     public void Update () {
-        if (!saved) {
-            if (grabbed) {
-                mouseLastPos = mouseCurrPos;
+        if (saved)
+            return;
+        if (!grabbed)
+            return;
 
-                Vector3 mouseCalcPos = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0.0f));
-                mouseCurrPos.Set(mouseCalcPos.x, mouseCalcPos.y);
+        mouseLastPos = mouseCurrPos;
 
-                mouseDelta = mouseCurrPos - mouseLastPos;
+        Vector3 mouseCalcPos = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0.0f));
+        mouseCurrPos.Set(mouseCalcPos.x, mouseCalcPos.y);
 
-                rb.MovePosition(mouseCurrPos);
-                //transform.position.Set(mousePos.x, mousePos.y, transform.position.z);
-            }
-        }
+        mouseDelta = mouseCurrPos - mouseLastPos;
+
+        rb.MovePosition(mouseCurrPos);
     }
 
     public void AddCharGrabCallback(CharGrabDelegate CB) {
@@ -75,43 +75,45 @@ public class Character : MonoBehaviour {
     }
 
     private void OnMouseDown() {
-        if (!saved) {
-            if (!tossed) {
-                grabbed = true;
-                grabPos = transform.position;
-                OnCharGrab(transform.position, transform.rotation, this.GetComponent<SpriteRenderer>().size, weight, this);
-            }
-        }
+        if (saved)
+            return;
+        if (tossed)
+            return;
+
+        grabbed = true;
+        grabPos = transform.position;
+        OnCharGrab(transform.position, transform.rotation, this.GetComponent<SpriteRenderer>().size, weight, this);
     }
 
     private void OnMouseUp() {
-        if (!saved) {
-            if (!tossed) {
-                grabbed = false;
+        if (saved)
+            return;
+        if (tossed)
+            return;
 
-                if (prepToss) {
-                    tossed = true;
-                    // Move in front of all other non-water objects
-                    transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z - TOSSED_CHAR_DEPTH_STEP);
-                    gameObject.layer = 9; // tossed objects
+        grabbed = false;
 
-                    setElem.UnregisterGameObject();
+        if (prepToss) {
+            tossed = true;
+            // Move in front of all other non-water objects
+            transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z - TOSSED_CHAR_DEPTH_STEP);
+            gameObject.layer = 9; // tossed objects
 
-                    rb.isKinematic = false;
+            setElem.UnregisterGameObject();
 
-                    // TODO: Top out the toss speed to something not TOO unreasonable
-                    float tossSpeed = mouseDelta.magnitude / Time.deltaTime;
-                    rb.velocity = mouseDelta * tossSpeed;
-                }
-                else {
-                    transform.position = grabPos;
-                    rb.isKinematic = true;
-                }
+            rb.isKinematic = false;
 
-                // Reduce load weight of boat, if appropriate to do so.
-                OnCharRelease(tossed);
-            }
+            // TODO: Top out the toss speed to something not TOO unreasonable
+            float tossSpeed = mouseDelta.magnitude / Time.deltaTime;
+            rb.velocity = mouseDelta * tossSpeed;
         }
+        else {
+            transform.position = grabPos;
+            rb.isKinematic = true;
+        }
+
+        // Reduce load weight of boat, if appropriate to do so.
+        OnCharRelease(tossed);
     }
 
     public void GetCharContAreaBoxCollider(BoxCollider2D bc) {
@@ -119,24 +121,28 @@ public class Character : MonoBehaviour {
     }
 
     private void OnTriggerEnter2D(Collider2D collision) {
-        if (!saved) {
-            if (grabbed) {
-                if (collision == charContAreaBC) {
-                    prepToss = false;
-                    collision.gameObject.GetComponent<CharContArea>().CharCollTrue();
-                }
-            }
-        }
+        if (saved)
+            return;
+        if (!grabbed)
+            return;
+
+        if (collision != charContAreaBC)
+            return;
+
+        prepToss = false;
+        collision.gameObject.GetComponent<CharContArea>().CharCollTrue();
     }
 
     private void OnTriggerExit2D(Collider2D collision) {
-        if (!saved) {
-            if (grabbed) {
-                if (collision == charContAreaBC) {
-                    prepToss = true;
-                    collision.gameObject.GetComponent<CharContArea>().CharCollFalse();
-                }
-            }
-        }
+        if (saved)
+            return;
+        if (!grabbed)
+            return;
+
+        if (collision != charContAreaBC)
+            return;
+
+        prepToss = true;
+        collision.gameObject.GetComponent<CharContArea>().CharCollFalse();
     }
 }

@@ -52,14 +52,4 @@ public class GameCtrl : MonoBehaviour {
     public int GetLevelMaxCharLoss(int level, int starVal) {
         return root.level[level - LEVEL_DATA_IDX_DIFF].maxCharLoss[starVal];
     }
-
-
-
-    // ============================== SETTINGS ==============================
-
-    public void LayerCollisionSettings() {
-        // 0 = default, 4 = tossed objects
-        Physics2D.IgnoreLayerCollision(0, 9);
-        Physics2D.IgnoreLayerCollision(9, 9);
-    }
 }

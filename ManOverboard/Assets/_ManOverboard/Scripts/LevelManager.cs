@@ -54,15 +54,16 @@ public class LevelManager : MonoBehaviour {
     }
 
     private void CharGrab(Vector3 pos, Quaternion rot, Vector2 size, int weight, Character scpt) {
-        if (levelActive) {
-            charContArea = Instantiate(charContAreaPrefab, new Vector3(pos.x, pos.y, pos.z + 0.1f), rot) as GameObject;
-            charContArea.transform.localScale = new Vector3(size.x, size.y, 1);
+        if (!levelActive)
+            return;
 
-            scpt.GetCharContAreaBoxCollider(charContArea.GetComponent<BoxCollider2D>());
+        charContArea = Instantiate(charContAreaPrefab, new Vector3(pos.x, pos.y, pos.z + 0.1f), rot) as GameObject;
+        charContArea.transform.localScale = new Vector3(size.x, size.y, 1);
 
-            grabWeight.Value = weight;
-            boat.PauseSinking();
-        }
+        scpt.GetCharContAreaBoxCollider(charContArea.GetComponent<BoxCollider2D>());
+
+        grabWeight.Value = weight;
+        boat.PauseSinking();
     }
 
     private void EndLevel(string msg) {
@@ -79,43 +80,43 @@ public class LevelManager : MonoBehaviour {
     }
 
     private void CharRelease(bool charTossed) {
-        if (levelActive) {
+        if (!levelActive)
+            return;
 
-            Destroy(charContArea);
+        Destroy(charContArea);
 
-            if (charTossed) {
-                loadWeight.Value -= grabWeight.Value;
-                grabWeight.Value = 0;
-                // level over - these conditions will become much more flushed out of course
-                if (loadWeight.Value <= 0) {
-                    EndLevel("Everyone died!");
-                    return;
-                }
-                else if (loadWeight.Value <= boat.Buoyancy) {
-                    int charLoss = passSetStartLen - passengerSet.Count;
+        if (charTossed) {
+            loadWeight.Value -= grabWeight.Value;
+            grabWeight.Value = 0;
+            // level over - these conditions will become much more flushed out of course
+            if (loadWeight.Value <= 0) {
+                EndLevel("Everyone died!");
+                return;
+            }
+            else if (loadWeight.Value <= boat.Buoyancy) {
+                int charLoss = passSetStartLen - passengerSet.Count;
  
-                    if(charLoss <= gameCtrl.GetLevelMaxCharLoss(3)) {
-                        EndLevel("You a winner! 3 star play!");
-                    }
-                    else if(charLoss <= gameCtrl.GetLevelMaxCharLoss(2)) {
-                        EndLevel("You a winner! 2 star play!");
-                    }
-                    else if(charLoss <= gameCtrl.GetLevelMaxCharLoss(1)) {
-                        EndLevel("You a winner! 1 star play!");
-                    }
-                    else {
-                        EndLevel("Too many people died!");
-                    }
-                    
-                    return;
+                if(charLoss <= gameCtrl.GetLevelMaxCharLoss(3)) {
+                    EndLevel("You a winner! 3 star play!");
                 }
+                else if(charLoss <= gameCtrl.GetLevelMaxCharLoss(2)) {
+                    EndLevel("You a winner! 2 star play!");
+                }
+                else if(charLoss <= gameCtrl.GetLevelMaxCharLoss(1)) {
+                    EndLevel("You a winner! 1 star play!");
+                }
+                else {
+                    EndLevel("Too many people died!");
+                }
+                    
+                return;
             }
-            else {
-                grabWeight.Value = 0;
-            }
-
-            boat.ResumeSinking();
         }
+        else {
+            grabWeight.Value = 0;
+        }
+
+        boat.ResumeSinking();
     }
 
     void CharReleased(object sender, SetModifiedEventArgs<GameObject> e) {
