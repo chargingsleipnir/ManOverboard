@@ -36,22 +36,23 @@ public class Character : MonoBehaviour {
     private Vector2 mouseCurrPos = Vector2.zero;
     private Vector2 mouseDelta = Vector2.zero;
     private Rigidbody2D rb;
-    private GameObjectSetElement setElem;
+    private ComponentSetElement setElem;
 
     private BoxCollider2D charContAreaBC;
 
     public void Awake() {
         rb = this.GetComponent<Rigidbody2D>();
-        setElem = this.GetComponent<GameObjectSetElement>();
+        setElem = this.GetComponent<ComponentSetElement>();
     }
 
-    public void Start () {
+    public virtual void Start () {
         // Rigidbody is essentially inactive until being flung/thrown by user.
         // (Could use posiiton constraints instead) 
         rb.isKinematic = true;
     }
 
-    public void Update () {
+
+    public virtual void Update () {
         if (saved)
             return;
         if (!grabbed)
@@ -74,7 +75,7 @@ public class Character : MonoBehaviour {
         OnCharRelease += CB;
     }
 
-    private void OnMouseDown() {
+    protected virtual void OnMouseDown() {
         if (saved)
             return;
         if (tossed)
@@ -85,7 +86,7 @@ public class Character : MonoBehaviour {
         OnCharGrab(transform.position, transform.rotation, this.GetComponent<SpriteRenderer>().size, weight, this);
     }
 
-    private void OnMouseUp() {
+    protected virtual void OnMouseUp() {
         if (saved)
             return;
         if (tossed)
@@ -95,11 +96,12 @@ public class Character : MonoBehaviour {
 
         if (prepToss) {
             tossed = true;
+            transform.parent = null;
             // Move in front of all other non-water objects
             transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z - TOSSED_CHAR_DEPTH_STEP);
             gameObject.layer = 9; // tossed objects
 
-            setElem.UnregisterGameObject();
+            setElem.UnregisterComponent();
 
             rb.isKinematic = false;
 

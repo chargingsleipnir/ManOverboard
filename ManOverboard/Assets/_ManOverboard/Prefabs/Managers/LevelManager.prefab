@@ -53,7 +53,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gameCtrl: {fileID: 114395880112188486, guid: 3761e925aed2ac143a1acb06de13283a, type: 2}
   boat: {fileID: 0}
-  passengerSet: {fileID: 11400000, guid: 7fb0cbce62ee1f94cae6883bb861dc3b, type: 2}
+  characterSet: {fileID: 11400000, guid: 7fb0cbce62ee1f94cae6883bb861dc3b, type: 2}
+  boatHoleSet: {fileID: 11400000, guid: 81379533111585746a472b5dd358e648, type: 2}
   loadWeight:
     UseStraightValue: 0
     StraightValue: 0

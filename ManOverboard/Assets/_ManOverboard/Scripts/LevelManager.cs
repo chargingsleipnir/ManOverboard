@@ -8,16 +8,17 @@ public class LevelManager : MonoBehaviour {
 
     public GameCtrl gameCtrl;
 
-    const float SINK_STEP_SECS = 0.5f;
+    // TODO: Adjust sink rate based on number of holes
+    const float SINK_STEP_SECS = 0.25f;
 
-    private bool levelActive = true;    
+    private bool levelActive = true;
     private Coroutine currCoroutine;
 
     public Boat boat;
 
     // TODO: Will need to handle all character types in the future.
-    public GameObjectSet passengerSet;
-    private int passSetStartLen;
+    public ComponentSet characterSet;
+    private int charSetStartCount;
 
     public IntReference loadWeight;
     public IntReference grabWeight;
@@ -29,19 +30,18 @@ public class LevelManager : MonoBehaviour {
 
     private void Awake() {
         currCoroutine = null;
-        loadWeight.Value = 0;
+
+        boat.AddNumLeaksCallback(NumLeaks);
+
         grabWeight.Value = 0;
 
-        // TODO: Will need to handle all character types in the future.
-        passSetStartLen = passengerSet.Count;
-        foreach (GameObject passenger in passengerSet) {
-            Passenger passScpt = passenger.GetComponent<Passenger>();
-            loadWeight.Value += passScpt.weight;
-            passScpt.AddCharGrabCallback(CharGrab);
-            passScpt.AddCharReleaseCallback(CharRelease);
+        charSetStartCount = characterSet.Count;
+        foreach (Character character in characterSet) {
+            character.AddCharGrabCallback(CharGrab);
+            character.AddCharReleaseCallback(CharRelease);
         }
 
-        passengerSet.OnItemRemoved += CharReleased;
+        //characterSet.OnItemRemoved += CharReleased;
     }
 
     private void Start () {
@@ -51,6 +51,21 @@ public class LevelManager : MonoBehaviour {
         if (currCoroutine != null)
             StopCoroutine(currCoroutine);
         currCoroutine = StartCoroutine(SinkShipInterval());
+    }
+
+    private void CheckLevelEndResult() {
+        gameCtrl.GetCurrLevel();
+    }
+
+    private void PauseLevel() {
+        boat.Sinking = false;
+        // Pause animations of all characters except the one being held.
+    }
+    private void UnPauseLevel() {
+        if (!levelActive)
+            return;
+
+        boat.Sinking = true;
     }
 
     private void CharGrab(Vector3 pos, Quaternion rot, Vector2 size, int weight, Character scpt) {
@@ -63,20 +78,8 @@ public class LevelManager : MonoBehaviour {
         scpt.GetCharContAreaBoxCollider(charContArea.GetComponent<BoxCollider2D>());
 
         grabWeight.Value = weight;
-        boat.PauseSinking();
-    }
 
-    private void EndLevel(string msg) {
-        levelCompMsg.Value = msg;
-        levelActive = false;
-
-        foreach (GameObject passenger in passengerSet) {
-            passenger.GetComponent<Passenger>().Saved = true;
-        }
-    }
-
-    private void CheckLevelEndResult() {
-        gameCtrl.GetCurrLevel();
+        PauseLevel();
     }
 
     private void CharRelease(bool charTossed) {
@@ -85,44 +88,48 @@ public class LevelManager : MonoBehaviour {
 
         Destroy(charContArea);
 
-        if (charTossed) {
-            loadWeight.Value -= grabWeight.Value;
-            grabWeight.Value = 0;
-            // level over - these conditions will become much more flushed out of course
-            if (loadWeight.Value <= 0) {
-                EndLevel("Everyone died!");
-                return;
-            }
-            else if (loadWeight.Value <= boat.Buoyancy) {
-                int charLoss = passSetStartLen - passengerSet.Count;
- 
-                if(charLoss <= gameCtrl.GetLevelMaxCharLoss(3)) {
-                    EndLevel("You a winner! 3 star play!");
-                }
-                else if(charLoss <= gameCtrl.GetLevelMaxCharLoss(2)) {
-                    EndLevel("You a winner! 2 star play!");
-                }
-                else if(charLoss <= gameCtrl.GetLevelMaxCharLoss(1)) {
-                    EndLevel("You a winner! 1 star play!");
-                }
-                else {
-                    EndLevel("Too many people died!");
-                }
-                    
-                return;
-            }
-        }
-        else {
-            grabWeight.Value = 0;
-        }
+        if (charTossed)
+            boat.LightenLoad(grabWeight.Value);
 
-        boat.ResumeSinking();
+        grabWeight.Value = 0;
+        UnPauseLevel();
     }
 
-    void CharReleased(object sender, SetModifiedEventArgs<GameObject> e) {
+    void CharReleased(object sender, SetModifiedEventArgs<Character> e) {
         //Debug.Log("Passenger tossed!");
         //Debug.Log(sender);
         //Debug.Log(e);
+    }
+
+    private void NumLeaks(int numLeaks) {
+        // TODO: Have the number of leaks on the gui somewhere?
+        if(numLeaks == 0) {
+
+            // level over
+            int charLoss = charSetStartCount - characterSet.Count;
+
+            if (charLoss <= gameCtrl.GetLevelMaxCharLoss(3)) {
+                EndLevel("You a winner! 3 star play!");
+            }
+            else if (charLoss <= gameCtrl.GetLevelMaxCharLoss(2)) {
+                EndLevel("You a winner! 2 star play!");
+            }
+            else if (charLoss <= gameCtrl.GetLevelMaxCharLoss(1)) {
+                EndLevel("You a winner! 1 star play!");
+            }
+            else {
+                EndLevel("Too many people died!");
+            }
+        }
+    }
+
+    private void EndLevel(string msg) {
+        levelCompMsg.Value = msg;
+        levelActive = false;
+
+        foreach (Character character in characterSet) {
+            character.Saved = true;
+        }
     }
 
     IEnumerator SinkShipInterval() {
