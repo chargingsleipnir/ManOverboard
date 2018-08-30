@@ -20,8 +20,8 @@ GameObject:
   m_Component:
   - component: {fileID: 4523903735050182}
   - component: {fileID: 212479468896409718}
-  - component: {fileID: 61884588046561218}
-  - component: {fileID: 114629883591019714}
+  - component: {fileID: 61339151515023698}
+  - component: {fileID: 114733348931169060}
   m_Layer: 0
   m_Name: CharContArea
   m_TagString: Untagged
@@ -42,7 +42,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!61 &61884588046561218
+--- !u!61 &61339151515023698
 BoxCollider2D:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
@@ -51,7 +51,7 @@ BoxCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
@@ -67,7 +67,7 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!114 &114629883591019714
+--- !u!114 &114733348931169060
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}

@@ -8,19 +8,11 @@ public class Crewman : Character {
         base.Start();
     }
 
-    public override void Update () {
-        base.Update();
-	}
-
     protected override void OnMouseDown() {
         base.OnMouseDown();
-
-        // Need action command system
     }
 
     protected override void OnMouseUp() {
         base.OnMouseUp();
-
-        // Need action command system
     }
 }

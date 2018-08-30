@@ -16,24 +16,36 @@ public class LevelManager : MonoBehaviour {
 
     public Boat boat;
 
-    // TODO: Will need to handle all character types in the future.
     public ComponentSet characterSet;
     private int charSetStartCount;
 
     public IntReference loadWeight;
-    public IntReference grabWeight;
+
+    private GameObject heldChar;
+    private Rigidbody2D heldCharRB;
+    public IntReference holdWeight;
+    private bool prepToss = false;
 
     public GameObject charContAreaPrefab;
-    private GameObject charContArea; 
+    private CharContArea charContAreaScpt;
 
     public StringReference levelCompMsg;
+
+    public Canvas uiCanvas;
+    public GameObject actionBtn;
+
+    // Mouse tracking
+    private Vector3 grabPos;
+    private Vector2 mouseLastPos = Vector2.zero;
+    private Vector2 mouseCurrPos = Vector2.zero;
+    private Vector2 mouseDelta = Vector2.zero;
 
     private void Awake() {
         currCoroutine = null;
 
         boat.AddNumLeaksCallback(NumLeaks);
 
-        grabWeight.Value = 0;
+        holdWeight.Value = 0;
 
         charSetStartCount = characterSet.Count;
         foreach (Character character in characterSet) {
@@ -47,10 +59,46 @@ public class LevelManager : MonoBehaviour {
     private void Start () {
         levelCompMsg.Value = "";
         levelActive = true;
+        heldChar = null;
 
         if (currCoroutine != null)
             StopCoroutine(currCoroutine);
         currCoroutine = StartCoroutine(SinkShipInterval());
+    }
+
+    private void Update() {
+        if (heldChar == null)
+            return;
+
+        if (charContAreaScpt == null)
+            return;
+
+        mouseLastPos = mouseCurrPos;
+
+        Vector3 mouseCalcPos = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0.0f));
+        mouseCurrPos.Set(mouseCalcPos.x, mouseCalcPos.y);
+
+        // TODO: Need to be able to hover over button(s) as well, when mouse is in the containment area.
+        // Simple, make area big enough to accomodate them.
+        charContAreaScpt.CheckMouseOverlap(mouseCurrPos);
+
+        if (prepToss) {
+            heldCharRB.MovePosition(mouseCurrPos);
+            mouseDelta = mouseCurrPos - mouseLastPos;
+        }
+    }
+
+    private void MouseEnterCharContArea() {
+        prepToss = false;
+        heldChar.transform.position = grabPos;
+        if (heldChar.tag == "HasActions")
+            actionBtn.SetActive(true);
+    }
+
+    private void MouseExitCharContArea() {
+        prepToss = true;
+        if (actionBtn.activeSelf)
+            actionBtn.SetActive(false);
     }
 
     private void CheckLevelEndResult() {
@@ -68,30 +116,67 @@ public class LevelManager : MonoBehaviour {
         boat.Sinking = true;
     }
 
-    private void CharGrab(Vector3 pos, Quaternion rot, Vector2 size, int weight, Character scpt) {
+    private void CharGrab(Vector3 pos, Quaternion rot, Vector2 size, int weight, GameObject charObj) {
         if (!levelActive)
             return;
 
-        charContArea = Instantiate(charContAreaPrefab, new Vector3(pos.x, pos.y, pos.z + 0.1f), rot) as GameObject;
+        heldChar = charObj;
+        heldCharRB = charObj.GetComponent<Rigidbody2D>();
+
+        // maintain copy of character's position where grabbed
+        grabPos = pos;
+
+        // Create area where character can be returned of player doesn't want to toss it.
+        GameObject charContArea = Instantiate(charContAreaPrefab, new Vector3(pos.x, pos.y, pos.z + 0.1f), rot) as GameObject;
         charContArea.transform.localScale = new Vector3(size.x, size.y, 1);
+        charContAreaScpt = charContArea.GetComponent<CharContArea>();
+        charContAreaScpt.SetMouseCBs(MouseEnterCharContArea, MouseExitCharContArea);
 
-        scpt.GetCharContAreaBoxCollider(charContArea.GetComponent<BoxCollider2D>());
-
-        grabWeight.Value = weight;
+        holdWeight.Value = weight;
 
         PauseLevel();
+
+        // Display buttons/options this character has available
+        if(heldChar.tag == "HasActions") {
+            actionBtn.SetActive(true);
+            RectTransform rt = actionBtn.GetComponent<RectTransform>();
+            rt.position = Utility.WorldToUISpace(uiCanvas, new Vector3(pos.x, pos.y - (size.y*0.5f), 0.0f));
+            rt.Translate(0.0f, -(rt.rect.height * 0.5f), 0.0f);
+        }
     }
 
-    private void CharRelease(bool charTossed) {
+    private void CharRelease() {
+        if (actionBtn.activeSelf)
+            actionBtn.SetActive(false);
+
         if (!levelActive)
             return;
 
-        Destroy(charContArea);
+        Destroy(charContAreaScpt.gameObject);
+        charContAreaScpt = null;
 
-        if (charTossed)
-            boat.LightenLoad(grabWeight.Value);
 
-        grabWeight.Value = 0;
+        if (prepToss) {
+            Transform t = heldChar.transform;
+            t.parent = null;
+            // Move in front of all other non-water objects
+            t.position = new Vector3(t.position.x, t.position.y, -0.1f);
+            heldChar.layer = 9; // tossed objects
+
+            // TODO: Top out the toss speed to something not TOO unreasonable
+            float tossSpeed = mouseDelta.magnitude / Time.deltaTime;
+            heldChar.GetComponent<Character>().Toss(mouseDelta * tossSpeed);
+
+            // Change weight in boat
+            boat.LightenLoad(holdWeight.Value);
+        }
+        else {
+            heldChar.transform.Translate(0, 0, 1.2f);
+        }
+
+        holdWeight.Value = 0;
+        heldChar = null;
+
         UnPauseLevel();
     }
 
