@@ -104,7 +104,7 @@ namespace ZeroProgress.Common.Editors
             {
                 case EventType.DragUpdated:
 
-                    lastMousePosition = Event.current.mousePosition;
+                    lastMousePosition = GUIUtility.GUIToScreenPoint(Event.current.mousePosition);
 
                     IsInReceiver = ReceiverBox.Contains(lastMousePosition);
 
