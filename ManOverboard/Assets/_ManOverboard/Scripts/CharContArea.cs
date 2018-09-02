@@ -11,9 +11,17 @@ public class CharContArea : MonoBehaviour {
     private SpriteRenderer sr;
     private BoxCollider2D bc;
 
+    private bool prevOverlapState;
+    private bool currOverlapState;
+
     private void Awake() {
         sr = GetComponent<SpriteRenderer>();
         bc = GetComponent<BoxCollider2D>();
+    }
+
+    private void Start() {
+        prevOverlapState = false;
+        currOverlapState = false;
     }
 
     private void MouseEnter() {
@@ -26,12 +34,21 @@ public class CharContArea : MonoBehaviour {
         OnMouseExitCB();
     }
 
-    // TODO: Add bools to specifically make these trigger callbacks only on change.
+    // Added bools to specifically make these trigger callbacks only on change.
+    // I had to do this manually since this object is behind another sprite, and thus, not recieving mouse events. (I couldn't find any efficient way to override this behaviour)
     public void CheckMouseOverlap(Vector2 mousePos) {
-        if (bc.OverlapPoint(mousePos))
-            MouseEnter();
-        else
-            MouseExit();
+        if (bc.OverlapPoint(mousePos)) {
+            currOverlapState = true;
+            if(!prevOverlapState)
+                MouseEnter();
+        }
+        else {
+            currOverlapState = false;
+            if(prevOverlapState)
+                MouseExit();
+        }
+
+        prevOverlapState = currOverlapState;
     }
 
     public void SetMouseCBs(MouseEnterExitDel EnterCB, MouseEnterExitDel ExitCB) {

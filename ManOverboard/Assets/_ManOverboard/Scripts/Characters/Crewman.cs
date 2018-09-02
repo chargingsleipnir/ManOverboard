@@ -1,18 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
-public class Crewman : Character {
+public class Crewman : CharActionable {
+    public void Scoop() {
 
-    public override void Start () {
-        base.Start();
-    }
-
-    protected override void OnMouseDown() {
-        base.OnMouseDown();
-    }
-
-    protected override void OnMouseUp() {
-        base.OnMouseUp();
     }
 }

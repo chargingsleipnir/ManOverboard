@@ -7,8 +7,10 @@ using UnityEngine.UI;
 public class DispIntRefText : MonoBehaviour {
 
     private Text textComp;
-    public string introMsg;
-    public IntReference intRef;
+    [SerializeField]
+    private string introMsg;
+    [SerializeField]
+    private IntReference intRef;
 
     private void Start() {
         textComp = GetComponent<Text>();

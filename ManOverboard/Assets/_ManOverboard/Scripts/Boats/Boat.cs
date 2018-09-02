@@ -78,6 +78,8 @@ public class Boat : MonoBehaviour {
 
     protected void OnStart(int buoyancyTotal) {
 
+        transform.position = new Vector3(transform.position.x, transform.position.y, (float)Consts.ZLayers.Boat);
+
         buoyancy.Value = buoyancyTotal;
 
         // Default boat, no load, max buoyancy
@@ -85,7 +87,7 @@ public class Boat : MonoBehaviour {
         weightTotal.Value = 0;
 
         // Add people - increasing load weight & reducing buoyancy
-        foreach (Character character in characterSet) {
+        foreach (CharBase character in characterSet) {
             weightLoad.Value += character.weight;
         }
         weightTotal.Value += weightLoad.Value;
@@ -176,7 +178,7 @@ public class Boat : MonoBehaviour {
         float randomX = Random.Range(selectedCollider.bounds.min.x, selectedCollider.bounds.max.x);
         float randomY = Random.Range(selectedCollider.bounds.min.y, selectedCollider.bounds.max.y);
 
-        Vector3 position = new Vector3(randomX, randomY, this.transform.position.z);
+        Vector3 position = new Vector3(randomX, randomY, transform.position.z);
         
         Leak newLeak = Instantiate(LeakPrefab, position, Quaternion.identity);
         newLeak.AttachLeak(myRigidbody);

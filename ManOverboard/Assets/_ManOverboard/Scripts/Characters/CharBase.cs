@@ -5,7 +5,7 @@ using ZeroProgress.Common;
 using ZeroProgress.Common.Collections;
 
 [RequireComponent(typeof(SpriteRenderer), typeof(Rigidbody2D), typeof(BoxCollider2D))]
-public class Character : MonoBehaviour {
+public class CharBase : MonoBehaviour {
 
     protected bool tossed = false;
     protected bool saved = false;
@@ -22,16 +22,19 @@ public class Character : MonoBehaviour {
     public int weight;
 
     public delegate void CharGrabDelegate(Vector3 pos, Quaternion rot, Vector2 size, int weight, GameObject obj);
-    CharGrabDelegate OnCharGrab;
+    CharGrabDelegate OnCharHold;
 
     public delegate void CharReleaseDelegate();
     CharReleaseDelegate OnCharRelease;
 
     private Rigidbody2D rb;
+    private SpriteRenderer sr;
     private ComponentSetElement setElem;
+
 
     public void Awake() {
         rb = GetComponent<Rigidbody2D>();
+        sr = GetComponent<SpriteRenderer>();
         setElem = GetComponent<ComponentSetElement>();
     }
 
@@ -39,21 +42,35 @@ public class Character : MonoBehaviour {
         // Rigidbody is essentially inactive until being flung/thrown by user.
         // (Could use posiiton constraints instead) 
         rb.isKinematic = true;
+        Utility.RepositionZ(transform, (float)Consts.ZLayers.BehindBoat);
+    }
+
+    public void MoveRigidbody(Vector2 mousePos) {
+        rb.MovePosition(mousePos);
     }
 
     public void AddCharGrabCallback(CharGrabDelegate CB) {
-        OnCharGrab += CB;
+        OnCharHold += CB;
     }
     public void AddCharReleaseCallback(CharReleaseDelegate CB) {
         OnCharRelease += CB;
     }
 
     public void Toss(Vector2 vel) {
+        Utility.RepositionZ(transform, (float)Consts.ZLayers.BehindWater);
         tossed = true;
         setElem.UnregisterComponent();
         rb.isKinematic = false;
         rb.velocity = vel;
     }
+
+    public void ReturnToBoat() {
+        Utility.RepositionZ(transform, (float)Consts.ZLayers.BehindBoat);
+    }
+
+    public virtual void SetActionBtnActive(bool isActive) {}
+    public virtual void SetCommandBtnsActive(bool isActive) {}
+    public virtual Rect GetActionBtnRect(bool scaledValues) { return new Rect(0, 0, 0, 0); }
 
     protected virtual void OnMouseDown() {
         if (saved)
@@ -62,10 +79,10 @@ public class Character : MonoBehaviour {
             return;
 
         // Bring character to focus, in front of everything.
-        transform.Translate(0, 0, -1.2f);
+        Utility.RepositionZ(transform, (float)Consts.ZLayers.Front);
 
         // Let level manager take control from here.
-        OnCharGrab(transform.position, transform.rotation, GetComponent<SpriteRenderer>().size, weight, gameObject);
+        OnCharHold(transform.position, transform.rotation, sr.size, weight, gameObject);
     }
 
     protected virtual void OnMouseUp() {

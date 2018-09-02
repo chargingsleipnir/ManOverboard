@@ -10,6 +10,8 @@ public class LevelManager : MonoBehaviour {
 
     // TODO: Adjust sink rate based on number of holes
     const float SINK_STEP_SECS = 0.25f;
+    [SerializeField]
+    private GameObject waterObj;
 
     private bool levelActive = true;
     private Coroutine currCoroutine;
@@ -21,8 +23,10 @@ public class LevelManager : MonoBehaviour {
 
     public IntReference loadWeight;
 
-    private GameObject heldChar;
-    private Rigidbody2D heldCharRB;
+    private GameObject heldCharObj;
+    private CharBase heldCharScpt;
+    Rect actionBtnRect;
+
     public IntReference holdWeight;
     private bool prepToss = false;
 
@@ -31,8 +35,17 @@ public class LevelManager : MonoBehaviour {
 
     public StringReference levelCompMsg;
 
-    public Canvas uiCanvas;
-    public GameObject actionBtn;
+    // UI items
+    [SerializeField]
+    private Canvas uiCanvas;
+    [SerializeField]
+    private GameEvent threeStarWinEvent;
+    [SerializeField]
+    private GameEvent twoStarWinEvent;
+    [SerializeField]
+    private GameEvent oneStarWinEvent;
+    [SerializeField]
+    private GameEvent levelLostEvent;
 
     // Mouse tracking
     private Vector3 grabPos;
@@ -48,8 +61,8 @@ public class LevelManager : MonoBehaviour {
         holdWeight.Value = 0;
 
         charSetStartCount = characterSet.Count;
-        foreach (Character character in characterSet) {
-            character.AddCharGrabCallback(CharGrab);
+        foreach (CharBase character in characterSet) {
+            character.AddCharGrabCallback(CharHold);
             character.AddCharReleaseCallback(CharRelease);
         }
 
@@ -57,9 +70,13 @@ public class LevelManager : MonoBehaviour {
     }
 
     private void Start () {
+        Utility.RepositionZ(waterObj.transform, (float)Consts.ZLayers.Water);
+
         levelCompMsg.Value = "";
         levelActive = true;
-        heldChar = null;
+        heldCharObj = null;
+        heldCharScpt = null;
+        actionBtnRect = new Rect(0, 0, 0, 0);
 
         if (currCoroutine != null)
             StopCoroutine(currCoroutine);
@@ -67,7 +84,7 @@ public class LevelManager : MonoBehaviour {
     }
 
     private void Update() {
-        if (heldChar == null)
+        if (heldCharObj == null)
             return;
 
         if (charContAreaScpt == null)
@@ -78,27 +95,25 @@ public class LevelManager : MonoBehaviour {
         Vector3 mouseCalcPos = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0.0f));
         mouseCurrPos.Set(mouseCalcPos.x, mouseCalcPos.y);
 
-        // TODO: Need to be able to hover over button(s) as well, when mouse is in the containment area.
-        // Simple, make area big enough to accomodate them.
         charContAreaScpt.CheckMouseOverlap(mouseCurrPos);
 
         if (prepToss) {
-            heldCharRB.MovePosition(mouseCurrPos);
+            heldCharScpt.MoveRigidbody(mouseCurrPos);
             mouseDelta = mouseCurrPos - mouseLastPos;
         }
     }
 
     private void MouseEnterCharContArea() {
         prepToss = false;
-        heldChar.transform.position = grabPos;
-        if (heldChar.tag == "HasActions")
-            actionBtn.SetActive(true);
+        heldCharObj.transform.position = grabPos;
+        if (heldCharScpt is CharActionable)
+            heldCharScpt.SetActionBtnActive(true);
     }
 
     private void MouseExitCharContArea() {
         prepToss = true;
-        if (actionBtn.activeSelf)
-            actionBtn.SetActive(false);
+        if (heldCharScpt is CharActionable)
+            heldCharScpt.SetActionBtnActive(false);
     }
 
     private void CheckLevelEndResult() {
@@ -116,75 +131,89 @@ public class LevelManager : MonoBehaviour {
         boat.Sinking = true;
     }
 
-    private void CharGrab(Vector3 pos, Quaternion rot, Vector2 size, int weight, GameObject charObj) {
+    private void CharHold(Vector3 pos, Quaternion rot, Vector2 size, int weight, GameObject charObj) {
         if (!levelActive)
             return;
 
-        heldChar = charObj;
-        heldCharRB = charObj.GetComponent<Rigidbody2D>();
+        heldCharObj = charObj;
+        heldCharScpt = charObj.GetComponent<CharBase>();
 
         // maintain copy of character's position where grabbed
         grabPos = pos;
 
-        // Create area where character can be returned of player doesn't want to toss it.
-        GameObject charContArea = Instantiate(charContAreaPrefab, new Vector3(pos.x, pos.y, pos.z + 0.1f), rot) as GameObject;
-        charContArea.transform.localScale = new Vector3(size.x, size.y, 1);
+        // Display action button for this character, if available
+        // Incorporate size/posiiton of action button in character containment area
+        
+        if (heldCharScpt is CharActionable) {
+            heldCharScpt.SetActionBtnActive(true);
+            actionBtnRect = heldCharScpt.GetActionBtnRect(true);
+        }
+        else {
+            actionBtnRect.Set(0, 0, 0, 0);
+        }
+
+        // Create area where character can be returned if player doesn't want to toss it.
+        GameObject charContArea = Instantiate(charContAreaPrefab, new Vector3(pos.x, pos.y - (actionBtnRect.height * 0.5f), (float)Consts.ZLayers.Front + 0.1f), rot) as GameObject;
+        charContArea.transform.localScale = new Vector3(Utility.GreaterOf(size.x, actionBtnRect.width), size.y + actionBtnRect.height, 1);
         charContAreaScpt = charContArea.GetComponent<CharContArea>();
         charContAreaScpt.SetMouseCBs(MouseEnterCharContArea, MouseExitCharContArea);
 
         holdWeight.Value = weight;
 
         PauseLevel();
-
-        // Display buttons/options this character has available
-        if(heldChar.tag == "HasActions") {
-            actionBtn.SetActive(true);
-            RectTransform rt = actionBtn.GetComponent<RectTransform>();
-            rt.position = Utility.WorldToUISpace(uiCanvas, new Vector3(pos.x, pos.y - (size.y*0.5f), 0.0f));
-            rt.Translate(0.0f, -(rt.rect.height * 0.5f), 0.0f);
-        }
     }
 
+
     private void CharRelease() {
-        if (actionBtn.activeSelf)
-            actionBtn.SetActive(false);
 
         if (!levelActive)
             return;
 
+        // TODO: Flesh this out - new menu needs to appear, listing commands available to this character.
+
+        // As this will be a touch game, maybe move "action" button to the top, and commands to the side? If not all around,
+        // if any at all. (Maybe go straight to having interactable items highlight. Do buttons for now. Some chars will have commands not involving items.)
+
+        // What's the exact process here...
+        // Level still paused while options up.
+        // Character can be selected and dragged again, essentially reverting to previous control state
+        // If player clicks anything other than character or action options, close options, resume normal state of play
+
+
+        if (heldCharScpt is CharActionable) {
+            if (actionBtnRect.Contains(mouseCurrPos)) {
+                heldCharScpt.SetCommandBtnsActive(true);
+            }
+            heldCharScpt.SetActionBtnActive(false);
+        }
+
         Destroy(charContAreaScpt.gameObject);
         charContAreaScpt = null;
 
-
         if (prepToss) {
-            Transform t = heldChar.transform;
+            Transform t = heldCharObj.transform;
             t.parent = null;
             // Move in front of all other non-water objects
-            t.position = new Vector3(t.position.x, t.position.y, -0.1f);
-            heldChar.layer = 9; // tossed objects
+            Utility.RepositionZ(t, (float)Consts.ZLayers.BehindWater);
+            heldCharObj.layer = 9; // tossed objects
 
             // TODO: Top out the toss speed to something not TOO unreasonable
             float tossSpeed = mouseDelta.magnitude / Time.deltaTime;
-            heldChar.GetComponent<Character>().Toss(mouseDelta * tossSpeed);
+            heldCharObj.GetComponent<CharBase>().Toss(mouseDelta * tossSpeed);
 
             // Change weight in boat
             boat.LightenLoad(holdWeight.Value);
         }
         else {
-            heldChar.transform.Translate(0, 0, 1.2f);
+            heldCharObj.GetComponent<CharBase>().ReturnToBoat();
         }
 
         holdWeight.Value = 0;
-        heldChar = null;
+        heldCharObj = null;
 
         UnPauseLevel();
     }
 
-    void CharReleased(object sender, SetModifiedEventArgs<Character> e) {
-        //Debug.Log("Passenger tossed!");
-        //Debug.Log(sender);
-        //Debug.Log(e);
-    }
 
     private void NumLeaks(int numLeaks) {
         // TODO: Have the number of leaks on the gui somewhere?
@@ -194,16 +223,16 @@ public class LevelManager : MonoBehaviour {
             int charLoss = charSetStartCount - characterSet.Count;
 
             if (charLoss <= gameCtrl.GetLevelMaxCharLoss(3)) {
-                EndLevel("You a winner! 3 star play!");
+                threeStarWinEvent.RaiseEvent();
             }
             else if (charLoss <= gameCtrl.GetLevelMaxCharLoss(2)) {
-                EndLevel("You a winner! 2 star play!");
+                twoStarWinEvent.RaiseEvent();
             }
             else if (charLoss <= gameCtrl.GetLevelMaxCharLoss(1)) {
-                EndLevel("You a winner! 1 star play!");
+                oneStarWinEvent.RaiseEvent();
             }
             else {
-                EndLevel("Too many people died!");
+                levelLostEvent.RaiseEvent();
             }
         }
     }
@@ -212,7 +241,7 @@ public class LevelManager : MonoBehaviour {
         levelCompMsg.Value = msg;
         levelActive = false;
 
-        foreach (Character character in characterSet) {
+        foreach (CharBase character in characterSet) {
             character.Saved = true;
         }
     }
