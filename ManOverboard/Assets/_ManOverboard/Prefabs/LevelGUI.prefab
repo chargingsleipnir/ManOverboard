@@ -199,10 +199,8 @@ GameObject:
   - component: {fileID: 223301937631329734}
   - component: {fileID: 114233801731077598}
   - component: {fileID: 114321299619895140}
-  - component: {fileID: 114472233326570038}
-  - component: {fileID: 114793685934526520}
-  - component: {fileID: 114169394736694846}
-  - component: {fileID: 114421034597319936}
+  - component: {fileID: 114649355371514238}
+  - component: {fileID: 114496450709632730}
   m_Layer: 5
   m_Name: LevelGUI
   m_TagString: Untagged
@@ -385,34 +383,6 @@ MonoBehaviour:
     UseStraightValue: 0
     StraightValue: 0
     ScriptableValue: {fileID: 11400000, guid: 290b2c240d596074d8927ebff88f0ee7, type: 2}
---- !u!114 &114169394736694846
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1936633247442520}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d74c70bc91d41fb40a1b03a06db6bfce, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Event: {fileID: 11400000, guid: 9a50f79159214ff48adb209b71595b6d, type: 2}
-  EventResponse:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 114652589652905130}
-        m_MethodName: set_text
-        m_Mode: 5
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: You a winner! 1 star play!
-          m_BoolArgument: 0
-        m_CallState: 2
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
 --- !u!114 &114233801731077598
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -575,34 +545,6 @@ MonoBehaviour:
     UseStraightValue: 0
     StraightValue: 0
     ScriptableValue: {fileID: 11400000, guid: ca982ff5ab6d620448b6f7910bcb4c2b, type: 2}
---- !u!114 &114421034597319936
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1936633247442520}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d74c70bc91d41fb40a1b03a06db6bfce, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Event: {fileID: 11400000, guid: eab90244044a8c14c8878ae61c866195, type: 2}
-  EventResponse:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 114652589652905130}
-        m_MethodName: set_text
-        m_Mode: 5
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: Too many people died!
-          m_BoolArgument: 0
-        m_CallState: 2
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
 --- !u!114 &114425618253881766
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -672,7 +614,7 @@ MonoBehaviour:
     UseStraightValue: 0
     StraightValue: 0
     ScriptableValue: {fileID: 11400000, guid: 7663895de4fd2114abad82b39d681cc3, type: 2}
---- !u!114 &114472233326570038
+--- !u!114 &114496450709632730
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
@@ -683,22 +625,94 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d74c70bc91d41fb40a1b03a06db6bfce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Event: {fileID: 11400000, guid: df8a1fe7e8ac46f4bb9ec7c70bb4dbac, type: 2}
+  Event: {fileID: 11400000, guid: f357972b346076942a5abf68ed3f1fd1, type: 2}
   EventResponse:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 114652589652905130}
-        m_MethodName: set_text
-        m_Mode: 5
+      - m_Target: {fileID: 114446786958092814}
+        m_MethodName: UpdateText
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: You a winner! 3 star play!
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 114406066672134488}
+        m_MethodName: UpdateText
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 114403848273676662}
+        m_MethodName: UpdateText
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 114165335799882244}
+        m_MethodName: UpdateText
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 114714296293533568}
+        m_MethodName: UpdateText
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
     m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+--- !u!114 &114649355371514238
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1936633247442520}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34a9ccfa630dffe47b4909122b30af91, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Event: {fileID: 11400000, guid: a6026cd0eae3f99488ad40db1e9c381d, type: 2}
+  EventResponse:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 114652589652905130}
+        m_MethodName: set_text
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_TypeName: ZeroProgress.Common.UnityStringEvent, Assembly-CSharp, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &114652589652905130
 MonoBehaviour:
@@ -801,34 +815,6 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 1
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
-      Culture=neutral, PublicKeyToken=null
---- !u!114 &114793685934526520
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1936633247442520}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d74c70bc91d41fb40a1b03a06db6bfce, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Event: {fileID: 11400000, guid: 5a5805ba14bf7e94f96c2a6d638ad27b, type: 2}
-  EventResponse:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 114652589652905130}
-        m_MethodName: set_text
-        m_Mode: 5
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: You a winner! 2 star play!
-          m_BoolArgument: 0
-        m_CallState: 2
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &114800745675060660
 MonoBehaviour:

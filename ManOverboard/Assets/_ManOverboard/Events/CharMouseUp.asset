@@ -9,5 +9,5 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4d5c812cef59ff2438efa67b84f6b825, type: 3}
-  m_Name: ThreeStarWin
+  m_Name: CharMouseUp
   m_EditorClassIdentifier: 

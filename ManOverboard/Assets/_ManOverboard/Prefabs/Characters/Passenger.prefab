@@ -101,6 +101,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   weight: 0
+  mousePos:
+    UseStraightValue: 0
+    StraightValue: {x: 0, y: 0}
+    ScriptableValue: {fileID: 11400000, guid: 4662ec67a56c16a4eb5641f4edc16bd0, type: 2}
+  charMouseDownEvent: {fileID: 11400000, guid: ed74ac99dee5b734795be5a2d1c5107f, type: 2}
+  charMouseUpEvent: {fileID: 11400000, guid: 19c72426d1b58364b9d624ada5654f12, type: 2}
 --- !u!114 &114544986287875034
 MonoBehaviour:
   m_ObjectHideFlags: 1

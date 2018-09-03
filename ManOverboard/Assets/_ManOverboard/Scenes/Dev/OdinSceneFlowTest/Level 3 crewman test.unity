@@ -118,7 +118,7 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 1031882782153492, guid: 10126059089110c4dbf74678801809dc,
     type: 2}
   m_PrefabInternal: {fileID: 1618989827}
---- !u!1001 &95512913
+--- !u!1001 &183756130
 Prefab:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -127,15 +127,15 @@ Prefab:
     m_Modifications:
     - target: {fileID: 4087144830826592, guid: e27a16e4c99902d48841a849f7495619, type: 2}
       propertyPath: m_LocalPosition.x
-      value: -0.13172029
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4087144830826592, guid: e27a16e4c99902d48841a849f7495619, type: 2}
       propertyPath: m_LocalPosition.y
-      value: -1.7044716
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4087144830826592, guid: e27a16e4c99902d48841a849f7495619, type: 2}
       propertyPath: m_LocalPosition.z
-      value: -3.089005
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4087144830826592, guid: e27a16e4c99902d48841a849f7495619, type: 2}
       propertyPath: m_LocalRotation.x
@@ -159,94 +159,17 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 114991861146813028, guid: e27a16e4c99902d48841a849f7495619,
         type: 2}
-      propertyPath: boat
-      value: 
-      objectReference: {fileID: 1412555917}
-    - target: {fileID: 114991861146813028, guid: e27a16e4c99902d48841a849f7495619,
-        type: 2}
-      propertyPath: uiCanvas
-      value: 
-      objectReference: {fileID: 1855061166}
-    - target: {fileID: 114991861146813028, guid: e27a16e4c99902d48841a849f7495619,
-        type: 2}
       propertyPath: waterObj
       value: 
       objectReference: {fileID: 19164103}
+    - target: {fileID: 114991861146813028, guid: e27a16e4c99902d48841a849f7495619,
+        type: 2}
+      propertyPath: boat
+      value: 
+      objectReference: {fileID: 1412555917}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e27a16e4c99902d48841a849f7495619, type: 2}
   m_IsPrefabAsset: 0
---- !u!21 &372426541
-Material:
-  serializedVersion: 6
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_Name: Game2DWater Material
-  m_Shader: {fileID: 4800000, guid: 13121cb2798342840841b50208da77e6, type: 3}
-  m_ShaderKeywords: Water2D_Reflection Water2D_Refraction
-  m_LightmapFlags: 4
-  m_EnableInstancingVariants: 0
-  m_DoubleSidedGI: 0
-  m_CustomRenderQueue: 2000
-  stringTagMap:
-    RenderType: Opaque
-  disabledShaderPasses: []
-  m_SavedProperties:
-    serializedVersion: 3
-    m_TexEnvs:
-    - _NoiseTexture:
-        m_Texture: {fileID: 1757430227}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _ReflectionTexture:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _RefractionTexture:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _SurfaceTexture:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _WaterTexture:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    m_Floats:
-    - _DstBlend: 0
-    - _Mode: 2000
-    - _ReflectionNoiseSpeed: 0.075
-    - _ReflectionNoiseStrength: 0.02
-    - _ReflectionVisibility: 0.3
-    - _RefractionAmountOfBending: 0
-    - _RefractionNoiseSpeed: 0.075
-    - _RefractionNoiseStrength: 0.015
-    - _SrcBlend: 1
-    - _SurfaceLevel: 0.9
-    - _SurfaceNoiseSpeed: 0.025
-    - _SurfaceNoiseStrength: 0.025
-    - _SurfaceTextureOpacity: 0.5
-    - _Water2D_IsColorGradientEnabled: 0
-    - _Water2D_IsReflectionEnabled: 1
-    - _Water2D_IsRefractionEnabled: 1
-    - _Water2D_IsSurfaceEnabled: 0
-    - _Water2D_IsSurfaceNoiseEnabled: 0
-    - _Water2D_IsWaterNoiseEnabled: 0
-    - _WaterNoiseSpeed: 0.025
-    - _WaterNoiseStrength: 0.025
-    - _WaterTextureOpacity: 0.5
-    - _ZWrite: 1
-    m_Colors:
-    - _ReflectionNoiseScaleOffset: {r: 5, g: 14, b: 0, a: 0}
-    - _RefractionNoiseScaleOffset: {r: 8, g: 5, b: 0, a: 0}
-    - _SurfaceColor: {r: 0.14, g: 0.54, b: 0.85, a: 0.25}
-    - _SurfaceNoiseScaleOffset: {r: 1, g: 1, b: 0, a: 0}
-    - _WaterColor: {r: 0.11, g: 0.64, b: 0.92, a: 0.25}
-    - _WaterColorGradientEnd: {r: 1, g: 1, b: 1, a: 0.25}
-    - _WaterColorGradientStart: {r: 1, g: 1, b: 1, a: 0.25}
-    - _WaterNoiseScaleOffset: {r: 1, g: 1, b: 0, a: 0}
 --- !u!1001 &511225385
 Prefab:
   m_ObjectHideFlags: 0
@@ -530,6 +453,11 @@ Prefab:
     - target: {fileID: 212680825657446284, guid: 957d8d0ea5f6b4a4580217c84b8c72ce,
         type: 2}
       propertyPath: m_SortingLayer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114075095641872364, guid: 957d8d0ea5f6b4a4580217c84b8c72ce,
+        type: 2}
+      propertyPath: mousePos.UseStraightValue
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -818,52 +746,6 @@ Prefab:
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 10126059089110c4dbf74678801809dc, type: 2}
   m_IsPrefabAsset: 0
---- !u!1001 &1635029742
-Prefab:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 1412555918}
-    m_Modifications:
-    - target: {fileID: 4278321236107638, guid: 302eda5becd409747822a124898b4bcf, type: 2}
-      propertyPath: m_LocalPosition.x
-      value: -0.57
-      objectReference: {fileID: 0}
-    - target: {fileID: 4278321236107638, guid: 302eda5becd409747822a124898b4bcf, type: 2}
-      propertyPath: m_LocalPosition.y
-      value: 0.67
-      objectReference: {fileID: 0}
-    - target: {fileID: 4278321236107638, guid: 302eda5becd409747822a124898b4bcf, type: 2}
-      propertyPath: m_LocalPosition.z
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4278321236107638, guid: 302eda5becd409747822a124898b4bcf, type: 2}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4278321236107638, guid: 302eda5becd409747822a124898b4bcf, type: 2}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4278321236107638, guid: 302eda5becd409747822a124898b4bcf, type: 2}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4278321236107638, guid: 302eda5becd409747822a124898b4bcf, type: 2}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4278321236107638, guid: 302eda5becd409747822a124898b4bcf, type: 2}
-      propertyPath: m_RootOrder
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 1025082545456514, guid: 302eda5becd409747822a124898b4bcf, type: 2}
-      propertyPath: m_Name
-      value: crewman200
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 302eda5becd409747822a124898b4bcf, type: 2}
-  m_IsPrefabAsset: 0
 --- !u!1 &1730243322
 GameObject:
   m_ObjectHideFlags: 0
@@ -980,11 +862,6 @@ Texture2D:
     offset: 0
     size: 0
     path: 
---- !u!223 &1855061166 stripped
-Canvas:
-  m_CorrespondingSourceObject: {fileID: 223301937631329734, guid: 854752644c7f275439b14e7e1f9dba5e,
-    type: 2}
-  m_PrefabInternal: {fileID: 511225385}
 --- !u!1001 &2003314389
 Prefab:
   m_ObjectHideFlags: 0
@@ -1099,6 +976,129 @@ Prefab:
       propertyPath: m_SortingLayer
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 114075095641872364, guid: 957d8d0ea5f6b4a4580217c84b8c72ce,
+        type: 2}
+      propertyPath: mousePos.UseStraightValue
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 957d8d0ea5f6b4a4580217c84b8c72ce, type: 2}
   m_IsPrefabAsset: 0
+--- !u!1001 &2021559565
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 1412555918}
+    m_Modifications:
+    - target: {fileID: 4278321236107638, guid: 302eda5becd409747822a124898b4bcf, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: -0.57
+      objectReference: {fileID: 0}
+    - target: {fileID: 4278321236107638, guid: 302eda5becd409747822a124898b4bcf, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 0.67
+      objectReference: {fileID: 0}
+    - target: {fileID: 4278321236107638, guid: 302eda5becd409747822a124898b4bcf, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4278321236107638, guid: 302eda5becd409747822a124898b4bcf, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4278321236107638, guid: 302eda5becd409747822a124898b4bcf, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4278321236107638, guid: 302eda5becd409747822a124898b4bcf, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4278321236107638, guid: 302eda5becd409747822a124898b4bcf, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4278321236107638, guid: 302eda5becd409747822a124898b4bcf, type: 2}
+      propertyPath: m_RootOrder
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1025082545456514, guid: 302eda5becd409747822a124898b4bcf, type: 2}
+      propertyPath: m_Name
+      value: crewman200
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 302eda5becd409747822a124898b4bcf, type: 2}
+  m_IsPrefabAsset: 0
+--- !u!21 &2046741983
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: Game2DWater Material
+  m_Shader: {fileID: 4800000, guid: 13121cb2798342840841b50208da77e6, type: 3}
+  m_ShaderKeywords: Water2D_Reflection Water2D_Refraction
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: 2000
+  stringTagMap:
+    RenderType: Opaque
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _NoiseTexture:
+        m_Texture: {fileID: 1757430227}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ReflectionTexture:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _RefractionTexture:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SurfaceTexture:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _WaterTexture:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - _DstBlend: 0
+    - _Mode: 2000
+    - _ReflectionNoiseSpeed: 0.075
+    - _ReflectionNoiseStrength: 0.02
+    - _ReflectionVisibility: 0.3
+    - _RefractionAmountOfBending: 0
+    - _RefractionNoiseSpeed: 0.075
+    - _RefractionNoiseStrength: 0.015
+    - _SrcBlend: 1
+    - _SurfaceLevel: 0.9
+    - _SurfaceNoiseSpeed: 0.025
+    - _SurfaceNoiseStrength: 0.025
+    - _SurfaceTextureOpacity: 0.5
+    - _Water2D_IsColorGradientEnabled: 0
+    - _Water2D_IsReflectionEnabled: 1
+    - _Water2D_IsRefractionEnabled: 1
+    - _Water2D_IsSurfaceEnabled: 0
+    - _Water2D_IsSurfaceNoiseEnabled: 0
+    - _Water2D_IsWaterNoiseEnabled: 0
+    - _WaterNoiseSpeed: 0.025
+    - _WaterNoiseStrength: 0.025
+    - _WaterTextureOpacity: 0.5
+    - _ZWrite: 1
+    m_Colors:
+    - _ReflectionNoiseScaleOffset: {r: 5, g: 14, b: 0, a: 0}
+    - _RefractionNoiseScaleOffset: {r: 8, g: 5, b: 0, a: 0}
+    - _SurfaceColor: {r: 0.14, g: 0.54, b: 0.85, a: 0.25}
+    - _SurfaceNoiseScaleOffset: {r: 1, g: 1, b: 0, a: 0}
+    - _WaterColor: {r: 0.11, g: 0.64, b: 0.92, a: 0.25}
+    - _WaterColorGradientEnd: {r: 1, g: 1, b: 1, a: 0.25}
+    - _WaterColorGradientStart: {r: 1, g: 1, b: 1, a: 0.25}
+    - _WaterNoiseScaleOffset: {r: 1, g: 1, b: 0, a: 0}

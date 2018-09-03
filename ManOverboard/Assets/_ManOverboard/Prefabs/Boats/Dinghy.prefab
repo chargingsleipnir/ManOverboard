@@ -76,6 +76,7 @@ MonoBehaviour:
     StraightValue: 0
     ScriptableValue: {fileID: 11400000, guid: 290b2c240d596074d8927ebff88f0ee7, type: 2}
   characterSet: {fileID: 11400000, guid: 7fb0cbce62ee1f94cae6883bb861dc3b, type: 2}
+  uiUpdate: {fileID: 11400000, guid: f357972b346076942a5abf68ed3f1fd1, type: 2}
 --- !u!114 &114980580018284778
 MonoBehaviour:
   m_ObjectHideFlags: 1

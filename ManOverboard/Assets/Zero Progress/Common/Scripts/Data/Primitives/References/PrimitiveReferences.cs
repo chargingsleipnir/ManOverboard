@@ -55,6 +55,23 @@ namespace ZeroProgress.Common
     /// Implementation of the ScriptableReference for the Vector3 type
     /// </summary>
     [Serializable]
+    public class Vector2Reference : ScriptableReference<Vector2, ScriptableVector2> {
+        public Vector2Reference() {
+        }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="StartValue">The value</param>
+        public Vector2Reference(Vector3 StartValue)
+            : base(StartValue) {
+        }
+    }
+
+    /// <summary>
+    /// Implementation of the ScriptableReference for the Vector3 type
+    /// </summary>
+    [Serializable]
     public class Vector3Reference : ScriptableReference<Vector3, ScriptableVector3>
     {
         public Vector3Reference()

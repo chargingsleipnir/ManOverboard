@@ -1,29 +1,70 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
+using ZeroProgress.Common;
 
 public class CharActionable : CharBase {
     [SerializeField]
     protected GameObject actionBtnObj;
     [SerializeField]
-    protected GameObject[] cmdBtns;
+    protected GameObject commandPanel;
 
     protected bool GUIActive;
+    protected Rect actionBtnRect;
+    protected Rect cmdPanelRect;
+
+    protected override void Awake() {
+        base.Awake();
+        actionBtnRect = GetCanvasElemRect(actionBtnObj, true);
+    }
+
+    public override void ApplyTransformToContArea(GameObject contAreaObj) {
+        actionBtnRect = GetCanvasElemRect(actionBtnObj, true);
+        float btnTopToCharTop = actionBtnRect.height > 0 ? actionBtnRect.yMax - (transform.position.y + (sr.size.y * 0.5f)) : 0;
+        contAreaObj.transform.position = new Vector3(transform.position.x, transform.position.y + (btnTopToCharTop * 0.5f), (float)Consts.ZLayers.Front + 0.1f);
+        contAreaObj.transform.localScale = new Vector3(Utility.GreaterOf(sr.size.x, actionBtnRect.width) + CONT_AREA_BUFFER, sr.size.y + btnTopToCharTop + CONT_AREA_BUFFER, 1);
+    }
 
     public override void SetActionBtnActive(bool isActive) {
         actionBtnObj.SetActive(isActive);
     }
 
     public override void SetCommandBtnsActive(bool isActive) {
-        for(int i = 0; i < cmdBtns.Length; i++) {
-            cmdBtns[i].SetActive(isActive);
-        }
+        commandPanel.SetActive(isActive);
     }
 
-    public override Rect GetActionBtnRect(bool scaledValues) {
+    public override bool CmdPanelHovered() {
+        cmdPanelRect = GetCanvasElemRect(commandPanel, true);
+        return cmdPanelRect.Contains(mousePos);
+    }
+
+    public override bool GetMenuOpen() {
+        return commandPanel.activeSelf;
+    }
+
+    protected override void OnMouseDown() {
+        actionBtnObj.SetActive(true);
+        commandPanel.SetActive(false);
+
+        base.OnMouseDown();
+    }
+
+    protected override void OnMouseUp() {
+        actionBtnObj.SetActive(false);
+        if (actionBtnRect.Contains(mousePos.Value))
+            commandPanel.SetActive(true);
+
+        base.OnMouseUp();
+    }
+
+
+
+
+
+
+    protected Rect GetCanvasElemRect(GameObject obj, bool scaledValues) {
         if (scaledValues) {
-            RectTransform btnRectTrans = actionBtnObj.GetComponent<RectTransform>();
+            RectTransform btnRectTrans = obj.GetComponent<RectTransform>();
             // Rect transform set to pivot in the middle, whereas unity Rect uses top-left corner, hence modifying position with width/height.
             return new Rect(
                 btnRectTrans.position.x - ((btnRectTrans.lossyScale.x * btnRectTrans.rect.width) * 0.5f),
@@ -33,6 +74,6 @@ public class CharActionable : CharBase {
             );
         }
         else
-            return actionBtnObj.GetComponent<RectTransform>().rect;
+            return obj.GetComponent<RectTransform>().rect;
     }
 }

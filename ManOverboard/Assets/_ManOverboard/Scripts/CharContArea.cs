@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using ZeroProgress.Common;
 
 public class CharContArea : MonoBehaviour {
 
@@ -13,6 +14,10 @@ public class CharContArea : MonoBehaviour {
 
     private bool prevOverlapState;
     private bool currOverlapState;
+
+    // Mouse tracking
+    [SerializeField]
+    private Vector2Reference mousePos;
 
     private void Awake() {
         sr = GetComponent<SpriteRenderer>();
@@ -36,8 +41,8 @@ public class CharContArea : MonoBehaviour {
 
     // Added bools to specifically make these trigger callbacks only on change.
     // I had to do this manually since this object is behind another sprite, and thus, not recieving mouse events. (I couldn't find any efficient way to override this behaviour)
-    public void CheckMouseOverlap(Vector2 mousePos) {
-        if (bc.OverlapPoint(mousePos)) {
+    public void CheckMouseOverlap() {
+        if (bc.OverlapPoint(mousePos.Value)) {
             currOverlapState = true;
             if(!prevOverlapState)
                 MouseEnter();

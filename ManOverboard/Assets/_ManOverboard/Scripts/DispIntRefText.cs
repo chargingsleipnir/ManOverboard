@@ -12,13 +12,15 @@ public class DispIntRefText : MonoBehaviour {
     [SerializeField]
     private IntReference intRef;
 
-    private void Start() {
+    private void Awake() {
         textComp = GetComponent<Text>();
+    }
+
+    private void Start() {
         textComp.text = introMsg + intRef.Value.ToString();
     }
 
-    // TODO: If a callback on ScriptableInt gets implemented, cease this infernal polling.
-    private void Update() {
+    public void UpdateText() {
         textComp.text = introMsg + intRef.Value.ToString();
     }
 }

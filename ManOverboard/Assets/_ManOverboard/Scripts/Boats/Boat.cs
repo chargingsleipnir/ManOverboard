@@ -59,6 +59,10 @@ public class Boat : MonoBehaviour {
     }
     public ComponentSet characterSet;
 
+    // UI update event
+    [SerializeField]
+    private GameEvent uiUpdate;
+
     /// <summary>
     /// The game objects that represent leaks in the boat
     /// </summary>
@@ -96,6 +100,8 @@ public class Boat : MonoBehaviour {
         // Account current water load
         weightWater.Value = weightWater.StraightValue;
         weightTotal.Value += weightWater.Value;
+
+        uiUpdate.RaiseEvent();
 
         // Set height of boat based on current buoyancy and water's surface (usually set to 0)
         sinkHeightIncr = SubmergableAreaRef.height / buoyancyTotal;
@@ -156,12 +162,14 @@ public class Boat : MonoBehaviour {
         // Each hole eaqually contributes to water gain / buoyancy loss
         weightWater.Value += numLeaks;
         weightTotal.Value += numLeaks;
+        uiUpdate.RaiseEvent();
         AdjustSunkenDepth();
     }
 
     public void LightenLoad(int weight) {
         weightLoad.Value -= weight;
         weightTotal.Value -= weight;
+        uiUpdate.RaiseEvent();
         AdjustSunkenDepth();
     }
 
