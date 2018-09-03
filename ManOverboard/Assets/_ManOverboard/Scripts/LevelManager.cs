@@ -107,6 +107,7 @@ public class LevelManager : MonoBehaviour {
                 // Player clicked off into nothing, go back to neutral state.
                 if(!heldCharScpt.SpriteHovered() && !heldCharScpt.CmdPanelHovered()) {
                     heldCharScpt.SetCommandBtnsActive(false);
+                    heldCharScpt.ReturnToBoat();
                     ctrlState = CtrlState.None;
                 }
             }
