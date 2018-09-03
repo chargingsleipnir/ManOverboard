@@ -12,12 +12,12 @@ namespace ZeroProgress.Common
         /// <summary>
         /// All listeners registered to this event
         /// </summary>
-        private readonly List<IGameEventListener> listeners = new List<IGameEventListener>();
+        protected readonly List<IGameEventListener> listeners = new List<IGameEventListener>();
 
         /// <summary>
         /// Invoke/Raise the event
         /// </summary>
-        public void RaiseEvent()
+        public virtual void RaiseEvent()
         {
             foreach (IGameEventListener listener in listeners)
             {
@@ -29,7 +29,7 @@ namespace ZeroProgress.Common
         /// Register a new listener to this event
         /// </summary>
         /// <param name="Listener">The listener to register</param>
-        public void RegisterListener(IGameEventListener Listener)
+        public virtual void RegisterListener(IGameEventListener Listener)
         {
             if (!listeners.Contains(Listener))
                 listeners.Add(Listener);
@@ -39,7 +39,7 @@ namespace ZeroProgress.Common
         /// Unregisters a listener from this event
         /// </summary>
         /// <param name="Listener">The listener to unregister</param>
-        public void UnregisterListener(IGameEventListener Listener)
+        public virtual void UnregisterListener(IGameEventListener Listener)
         {
             listeners.Remove(Listener);
         }
