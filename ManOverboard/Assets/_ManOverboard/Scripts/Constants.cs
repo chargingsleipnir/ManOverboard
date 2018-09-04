@@ -10,4 +10,7 @@ public static class Consts {
         Boat = 3,
         BehindBoat = 4
     }
+    public enum ItemType {
+        Scooping = 0
+    }
 }

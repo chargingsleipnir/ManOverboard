@@ -43,24 +43,30 @@ public class CharActionable : CharBase {
     }
 
     protected override void OnMouseDown() {
+        if (saved || tossed)
+            return;
+
         actionBtnObj.SetActive(true);
         commandPanel.SetActive(false);
 
-        base.OnMouseDown();
+        charMouseDownEvent.RaiseEvent(gameObject);
     }
 
     protected override void OnMouseUp() {
+        if (saved || tossed)
+            return;
+
         actionBtnObj.SetActive(false);
         if (actionBtnRect.Contains(mousePos.Value))
             commandPanel.SetActive(true);
 
-        base.OnMouseUp();
+        charMouseUpEvent.RaiseEvent();
     }
 
 
 
 
-
+    // Internal/helper methods ==========================================
 
     protected Rect GetCanvasElemRect(GameObject obj, bool scaledValues) {
         if (scaledValues) {

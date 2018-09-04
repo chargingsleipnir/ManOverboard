@@ -81,21 +81,14 @@ public class CharBase : MonoBehaviour {
     public virtual bool CmdPanelHovered() { return false; }
 
     protected virtual void OnMouseDown() {
-        if (saved)
+        if (saved || tossed)
             return;
-        if (tossed)
-            return;
-
-        // Bring character to focus, in front of everything.
-        Utility.RepositionZ(transform, (float)Consts.ZLayers.Front);
 
         charMouseDownEvent.RaiseEvent(gameObject);
     }
 
     protected virtual void OnMouseUp() {
-        if (saved)
-            return;
-        if (tossed)
+        if (saved || tossed)
             return;
 
         charMouseUpEvent.RaiseEvent();
