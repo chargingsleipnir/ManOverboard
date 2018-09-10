@@ -1,4 +1,5 @@
 ﻿using UnityEditor;
+using UnityEngine;
 
 namespace ZeroProgress.Common.Editors
 {
@@ -69,6 +70,42 @@ namespace ZeroProgress.Common.Editors
             }
 
             return deletedCount;
+        }
+
+        /// <summary>
+        /// Helper to modify the provided path to be safe for asset creation
+        /// </summary>
+        /// <param name="path">The provided path, local to the project
+        /// 
+        /// i.e. Assets/Scripts/this.cs
+        /// </param>
+        /// <param name="desiredExtension">The extension to be set on the item 
+        /// (even if an extension is provided)</param>
+        /// <returns>The valid path, or null if an error was encountered</returns>
+        public static string GetValidAssetPath(string path, string desiredExtension)
+        {
+            if (string.IsNullOrEmpty(path))
+            {
+                Debug.LogError("No path provided, cannot generate code");
+                return null;
+            }
+            
+            if (path.StartsWith("Assets/"))
+                path = path.Remove(0, "Assets".Length);
+
+            path = Application.dataPath + path;
+
+            string fileName = System.IO.Path.GetFileNameWithoutExtension(path);
+
+            if (string.IsNullOrEmpty(fileName))
+            {
+                Debug.LogError("No file name provided, cannot create file");
+                return null;
+            }
+
+            path = System.IO.Path.ChangeExtension(path, desiredExtension);
+
+            return path;
         }
     }
 }

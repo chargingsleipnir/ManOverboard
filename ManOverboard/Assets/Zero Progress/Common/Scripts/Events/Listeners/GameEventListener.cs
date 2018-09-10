@@ -28,7 +28,7 @@ namespace ZeroProgress.Common
         /// <summary>
         /// Response to the game event
         /// </summary>
-        public virtual void OnEventRaised()
+        public virtual void OnEventRaised(string eventId)
         {
             EventResponse.Invoke();
         }

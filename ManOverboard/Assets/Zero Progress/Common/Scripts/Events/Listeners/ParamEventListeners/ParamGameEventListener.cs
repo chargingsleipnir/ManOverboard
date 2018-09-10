@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Events;
 
 namespace ZeroProgress.Common
@@ -34,7 +32,7 @@ namespace ZeroProgress.Common
         /// <summary>
         /// Response to the game event
         /// </summary>
-        public void OnEventRaised()
+        public void OnEventRaised(string eventId)
         {
             EventResponse.SafeInvoke(default(ParamType));
         }
@@ -42,10 +40,9 @@ namespace ZeroProgress.Common
         /// <summary>
         /// Response to the game event
         /// </summary>
-        public void OnEventRaised(ParamType Param)
+        public void OnEventRaised(string eventId, ParamType Param)
         {
             EventResponse.SafeInvoke(Param);
         }
-
     }
 }

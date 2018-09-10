@@ -41,6 +41,7 @@ namespace ZeroProgress.Common
 
         private ClassGrouping _grouping = ClassGrouping.ByNamespaceFlat;
         private bool _allowAbstract = false;
+        private bool _allowStructs = false;
 
         /// <summary>
         /// Gets or sets grouping of selectable classes. Defaults to <see cref="ClassGrouping.ByNamespaceFlat"/>
@@ -60,6 +61,16 @@ namespace ZeroProgress.Common
         {
             get { return _allowAbstract; }
             set { _allowAbstract = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets whether structs can be selected from drop-down.
+        /// Defaults to a value of <c>false</c> unless explicitly specified.
+        /// </summary>
+        public bool AllowStructs
+        {
+            get { return _allowStructs; }
+            set { _allowStructs = value; }
         }
 
         /// <summary>

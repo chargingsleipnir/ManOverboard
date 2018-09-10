@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b00a52cbcd425f4f8d8c2d00d16645e, type: 3}
+  m_Name: UnityEvent1Param-Namespace
+  m_EditorClassIdentifier: 
+  Description: Code Template for a UnityEvent that takes a single generic parameter
+  DefaultValue: "using System;\r\nusing UnityEngine.Events;\r\n\r\nnamespace ###namespace:string###\r\n{\r\n
+    \   /// <summary>\r\n    /// Instance of a UnityEvent that takes a single ###paramType:type###
+    parameter\r\n    /// </summary>\r\n    [Serializable]\r\n    public class ###className:string###
+    : UnityEvent<###paramType:type###>\r\n    {\r\n    }\r\n}\r\n"
+  currentValue: "using System;\r\nusing UnityEngine.Events;\r\n\r\nnamespace ###namespace:string###\r\n{\r\n
+    \   /// <summary>\r\n    /// Instance of a UnityEvent that takes a single ###paramType:type###
+    parameter\r\n    /// </summary>\r\n    [Serializable]\r\n    public class ###className:string###
+    : UnityEvent<###paramType:type###>\r\n    {\r\n    }\r\n}\r\n"
+  parameters:
+  - Identifier: namespace
+    ParameterType: string
+    ReplacementString: '###namespace:string###'
+  - Identifier: paramType
+    ParameterType: type
+    ReplacementString: '###paramType:type###'
+  - Identifier: className
+    ParameterType: string
+    ReplacementString: '###className:string###'

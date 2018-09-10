@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b00a52cbcd425f4f8d8c2d00d16645e, type: 3}
+  m_Name: ScriptableReference
+  m_EditorClassIdentifier: 
+  Description: Template for the ScriptableReference class
+  DefaultValue: "using System;\r\nusing UnityEngine;\r\n\r\nnamespace ###namespace:string###\n{\r\n
+    \   /// <summary>\r\n    /// Implementation of the ScriptableReference for the
+    ###refType:type### type\r\n    /// </summary>\r\n    [Serializable]\r\n    public
+    class ###className:string###Reference : ScriptableReference<###refType:type###,
+    ###scriptableType:type###>\r\n    {\r\n        public ###className:string###Reference()\r\n
+    \       {\r\n        }\r\n\r\n        public ###className:string###Reference(###refType:type###
+    StartValue)\r\n            :base(StartValue)\r\n        {\r\n        }\r\n    }\n}"
+  currentValue: "using System;\r\nusing UnityEngine;\r\n\r\nnamespace ###namespace:string###\n{\r\n
+    \   /// <summary>\r\n    /// Implementation of the ScriptableReference for the
+    ###refType:type### type\r\n    /// </summary>\r\n    [Serializable]\r\n    public
+    class ###className:string###Reference : ScriptableReference<###refType:type###,
+    ###scriptableType:type###>\r\n    {\r\n        public ###className:string###Reference()\r\n
+    \       {\r\n        }\r\n\r\n        public ###className:string###Reference(###refType:type###
+    StartValue)\r\n            :base(StartValue)\r\n        {\r\n        }\r\n    }\n}"
+  parameters:
+  - Identifier: namespace
+    ParameterType: string
+    ReplacementString: '###namespace:string###'
+  - Identifier: refType
+    ParameterType: type
+    ReplacementString: '###refType:type###'
+  - Identifier: className
+    ParameterType: string
+    ReplacementString: '###className:string###'
+  - Identifier: scriptableType
+    ParameterType: type
+    ReplacementString: '###scriptableType:type###'

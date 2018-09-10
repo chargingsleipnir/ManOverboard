@@ -11,7 +11,7 @@ namespace ZeroProgress.Common
     public class ScriptablePrimitive<T>: ScriptableObject
     {
 #if UNITY_EDITOR
-        [Multiline]
+        [TextArea]
         [Tooltip("Development-Only text block to describe what this assets' purpose is")]
         public string Description = "";
 #endif

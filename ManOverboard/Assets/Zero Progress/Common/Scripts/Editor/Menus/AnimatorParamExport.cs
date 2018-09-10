@@ -49,6 +49,9 @@ namespace ZeroProgress.Common.Editors
         [MenuItem("Assets/Export Animation Parameters", true)]
         private static bool ExportAnimationParamsValidation()
         {
+            if (Selection.activeObject == null)
+                return false;
+
             // This returns true when the selected object is a Texture2D (the menu item will be disabled otherwise).
             return Selection.activeObject.GetType() == typeof(AnimatorController);
         }

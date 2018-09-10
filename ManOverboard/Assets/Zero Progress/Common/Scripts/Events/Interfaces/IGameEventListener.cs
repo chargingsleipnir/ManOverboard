@@ -8,7 +8,9 @@
         /// <summary>
         /// 'Callback' for when the event is fired
         /// </summary>
-        void OnEventRaised();
+        /// <param name="eventId">The Id of the event (in the case multiple events
+        /// are handled, we need a way to identify which is the current)</param>
+        void OnEventRaised(string eventId);
     }
 
     /// <summary>
@@ -19,6 +21,9 @@
         /// <summary>
         /// 'Callback' for when the event is fired
         /// </summary>
-        void OnEventRaised(T Param);
+        /// <param name="eventId">The Id of the event (in the case multiple events
+        /// are handled, we need a way to identify which is the current)</param>
+        /// <param name="Param">The parameter information</param>
+        void OnEventRaised(string eventId, T Param);
     }
 }

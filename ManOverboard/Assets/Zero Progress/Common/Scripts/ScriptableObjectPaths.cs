@@ -11,10 +11,20 @@
         public const string ZERO_PROGRESS_COMMON_PATH = "Zero Progress/";
 
         /// <summary>
+        /// Path for assets related to code generation
+        /// </summary>
+        public const string ZERO_PROGRESS_CODE_GENERATION_PATH = ZERO_PROGRESS_COMMON_PATH + "Code Generation/";
+
+        /// <summary>
         /// Path for assets that are related to collections
         /// </summary>
         public const string ZERO_PROGRESS_COLLECTIONS_PATH = ZERO_PROGRESS_COMMON_PATH + "Collections/";
 
+        /// <summary>
+        /// Path for assets that are used only within the editor
+        /// </summary>
+        public const string ZERO_PROGRESS_EDITOR_ONLY_ASSETS_PATH = ZERO_PROGRESS_COMMON_PATH + "Editor-Only/";
+        
         /// <summary>
         /// Path for assets that are related to scriptable events
         /// </summary>
