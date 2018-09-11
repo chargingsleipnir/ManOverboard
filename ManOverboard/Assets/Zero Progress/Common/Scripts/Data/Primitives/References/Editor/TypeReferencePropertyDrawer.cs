@@ -78,7 +78,7 @@ namespace ZeroProgress.Common
         {
             foreach (var type in assembly.GetTypes())
             {
-                if (!type.IsVisible || !type.IsClass)
+                if (!type.IsVisible || (!filter.AllowStructs && !type.IsClass))
                     continue;
 
                 if (filter != null && !filter.IsConstraintSatisfied(type))

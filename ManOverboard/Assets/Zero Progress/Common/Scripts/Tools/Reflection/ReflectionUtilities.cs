@@ -23,6 +23,23 @@ namespace ZeroProgress.Common.Reflection
     public static class ReflectionUtilities
     {
         /// <summary>
+        /// Helper to invoke the specified method through reflection
+        /// </summary>
+        /// <param name="obj">The object to invoke the method on</param>
+        /// <param name="methodName">The name of the method to invoke</param>
+        /// <param name="bindingFlags">Any flags to be applied to the reflection search</param>
+        /// <param name="args">Arguments to be provided</param>
+        public static void InvokeMethod(object obj, string methodName, BindingFlags bindingFlags, params object[] args)
+        {
+            MethodInfo methodInfo = obj.GetType().GetMethod(methodName, bindingFlags);
+
+            if (methodInfo == null)
+                throw new KeyNotFoundException("Method not found under specified name: " + methodName);
+
+            methodInfo.Invoke(obj, args);
+        }
+
+        /// <summary>
         /// Retrieves the value of a field by its name
         /// </summary>
         /// <typeparam name="T">The type of value to be returned</typeparam>

@@ -55,14 +55,11 @@ namespace ZeroProgress.Common
         /// </summary>
         public void RaiseEvent(T Param)
         {
-            foreach (IGameEventListener listener in listeners)
-            {
-                listener.OnEventRaised();
-            }
+            base.RaiseEvent();
 
             foreach (IGameEventListener<T> paramListener in paramListeners)
             {
-                paramListener.OnEventRaised(Param);
+                paramListener.OnEventRaised(eventId, Param);
             }
         }
     }
