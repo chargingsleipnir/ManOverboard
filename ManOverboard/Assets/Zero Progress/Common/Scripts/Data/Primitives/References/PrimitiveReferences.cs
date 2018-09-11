@@ -52,6 +52,19 @@ namespace ZeroProgress.Common
     }
 
     /// <summary>
+    /// Implementation of the ScriptableReference for the bool type
+    /// </summary>
+    [Serializable]
+    public class BoolReference : ScriptableReference<bool, ScriptableBool> {
+        public BoolReference() {
+        }
+
+        public BoolReference(bool StartValue)
+            : base(StartValue) {
+        }
+    }
+
+    /// <summary>
     /// Implementation of the ScriptableReference for the Vector3 type
     /// </summary>
     [Serializable]
@@ -63,7 +76,7 @@ namespace ZeroProgress.Common
         /// Constructor
         /// </summary>
         /// <param name="StartValue">The value</param>
-        public Vector2Reference(Vector3 StartValue)
+        public Vector2Reference(Vector2 StartValue)
             : base(StartValue) {
         }
     }

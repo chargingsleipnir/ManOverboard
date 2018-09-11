@@ -19,9 +19,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4087144830826592}
+  - component: {fileID: 114508288241445222}
   - component: {fileID: 114991861146813028}
   - component: {fileID: 114547093801297820}
   - component: {fileID: 114647975232967066}
+  - component: {fileID: 114105363493373324}
   m_Layer: 0
   m_Name: LevelManager
   m_TagString: Untagged
@@ -42,6 +44,50 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &114105363493373324
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1463805558684432}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 659511403cb66e648859c55c4c7cf9ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Event: {fileID: 11400000, guid: 61b6f1e0b1b5a52419e1d14cbcdc26b1, type: 2}
+  EventResponse:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 114991861146813028}
+        m_MethodName: OnItemMouseUp
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_TypeName: ZeroProgress.Common.UnityGameObjectEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+--- !u!114 &114508288241445222
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1463805558684432}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52652c96890963349a6f02065b1df71c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mouseTrackers: {fileID: 11400000, guid: 04cd6067bcdb4284eb0b73d7eca0f1cb, type: 2}
+  mousePos:
+    UseStraightValue: 0
+    StraightValue: {x: 0, y: 0}
+    ScriptableValue: {fileID: 11400000, guid: 4662ec67a56c16a4eb5641f4edc16bd0, type: 2}
 --- !u!114 &114547093801297820
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -111,9 +157,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gameCtrl: {fileID: 114395880112188486, guid: 3761e925aed2ac143a1acb06de13283a, type: 2}
   waterObj: {fileID: 0}
+  rearMenuFieldPrefab: {fileID: 1365011474752516, guid: 88dd4ad1446449a469d5b5e78384ded6,
+    type: 2}
   boat: {fileID: 0}
   characterSet: {fileID: 11400000, guid: 7fb0cbce62ee1f94cae6883bb861dc3b, type: 2}
-  itemsScooping: {fileID: 11400000, guid: b297f9d40a399824680be9f4d3e7ca4c, type: 2}
+  itemsCanScoop: {fileID: 11400000, guid: 5aea783d1312d834d9b46f7e7ae54d87, type: 2}
   loadWeight:
     UseStraightValue: 0
     StraightValue: 0
@@ -128,5 +176,9 @@ MonoBehaviour:
     UseStraightValue: 0
     StraightValue: {x: 0, y: 0}
     ScriptableValue: {fileID: 11400000, guid: 4662ec67a56c16a4eb5641f4edc16bd0, type: 2}
+  mouseUpOnSelectableItem:
+    UseStraightValue: 0
+    StraightValue: 0
+    ScriptableValue: {fileID: 11400000, guid: 240140430db594d4ba632c6ffd68f4a8, type: 2}
   uiUpdate: {fileID: 11400000, guid: f357972b346076942a5abf68ed3f1fd1, type: 2}
   levelWinLossDisp: {fileID: 11400000, guid: a6026cd0eae3f99488ad40db1e9c381d, type: 2}

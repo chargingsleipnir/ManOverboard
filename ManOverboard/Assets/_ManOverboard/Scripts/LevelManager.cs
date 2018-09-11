@@ -6,14 +6,7 @@ using ZeroProgress.Common.Collections;
 
 public class LevelManager : MonoBehaviour {
 
-    private enum CtrlState {
-        None,
-        CharHeldToReplace,
-        CharHeldToToss,        
-        CmdMenuOpen,
-        ObjectSelection
-    }
-    CtrlState ctrlState;
+    Consts.LevelState levelState;
 
     public GameCtrl gameCtrl;
 
@@ -21,6 +14,9 @@ public class LevelManager : MonoBehaviour {
     const float SINK_STEP_SECS = 0.25f;
     [SerializeField]
     private GameObject waterObj;
+    [SerializeField]
+    private GameObject rearMenuFieldPrefab;
+    private GameObject rearMenuFieldObj;
 
     private bool levelActive = true;
     private Coroutine currCoroutine;
@@ -32,12 +28,14 @@ public class LevelManager : MonoBehaviour {
     private int charSetStartCount;
 
     [SerializeField]
-    private GameObjectSet itemsScooping;
+    private ComponentSet itemsCanScoop;
 
     public IntReference loadWeight;
 
     private GameObject heldCharObj;
     private CharBase heldCharScpt;
+
+    private GameObject itemObj;
 
     public IntReference holdWeight;
 
@@ -47,6 +45,8 @@ public class LevelManager : MonoBehaviour {
     // Mouse tracking
     [SerializeField]
     private Vector2Reference mousePos;
+    private Vector2 mouseLastPos = Vector2.zero;
+    private Vector2 mouseDelta = Vector2.zero;
 
     // UI update event
     [SerializeField]
@@ -56,27 +56,26 @@ public class LevelManager : MonoBehaviour {
     [SerializeField]
     private StringParamEvent levelWinLossDisp;
 
-    // Mouse tracking
-    private Vector3 grabPos;
-    private Vector2 mouseLastPos = Vector2.zero;
-    private Vector2 mouseCurrPos = Vector2.zero;
-    private Vector2 mouseDelta = Vector2.zero;
+    private Vector3 grabPos;    
 
     private void Awake() {
         currCoroutine = null;
 
         boat.AddNumLeaksCallback(NumLeaks);
-
-        holdWeight.Value = 0;
-        uiUpdate.RaiseEvent();
-
         charSetStartCount = characterSet.Count;
     }
 
     private void Start () {
-        ctrlState = CtrlState.None;
+        levelState = Consts.LevelState.Default;
+        holdWeight.Value = 0;
+        uiUpdate.RaiseEvent();
 
         Utility.RepositionZ(waterObj.transform, (float)Consts.ZLayers.Water);
+
+        rearMenuFieldObj = Instantiate(rearMenuFieldPrefab) as GameObject;
+        rearMenuFieldObj.GetComponent<RearMenuField>().Mngr = this;
+        Utility.RepositionZ(rearMenuFieldObj.transform, (float)Consts.ZLayers.Water - 0.1f);
+        rearMenuFieldObj.SetActive(false);
 
         levelActive = true;
 
@@ -86,43 +85,21 @@ public class LevelManager : MonoBehaviour {
     }
 
     private void Update() {
-        if (ctrlState == CtrlState.None)
-            return;
-
-        mouseLastPos = mouseCurrPos;
-        Vector3 mouseCalcPos = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0.0f));
-        mouseCurrPos.Set(mouseCalcPos.x, mouseCalcPos.y);
-        mousePos.Value = mouseCurrPos;
-
-        if (ctrlState == CtrlState.CharHeldToReplace) {
-            charContAreaScpt.CheckMouseOverlap();
-        }
-        else if (ctrlState == CtrlState.CharHeldToToss) {
+        if (levelState == Consts.LevelState.CharHeldToToss) {
             heldCharScpt.MoveRigidbody();
-            charContAreaScpt.CheckMouseOverlap();
-            mouseDelta = mouseCurrPos - mouseLastPos;
-        }
-        else if (ctrlState == CtrlState.CmdMenuOpen) {
-            if (Input.GetMouseButtonDown(0)) {
-                // Player clicked off into nothing, go back to neutral state.
-                if (!heldCharScpt.SpriteHovered() && !heldCharScpt.CmdPanelHovered()) {
-                    ReturnToNeutral();
-                }
-            }
-        }
-        else if(ctrlState == CtrlState.ObjectSelection) {
-            // TODO: Similar to cmdmenuopen - if anything but the appropriate items are clicked, return to neutral.
-        }
+            mouseDelta = mousePos.Value - mouseLastPos;
+            mouseLastPos = mousePos.Value;
+        }        
     }
 
     private void MouseEnterCharContArea() {
-        ctrlState = CtrlState.CharHeldToReplace;
+        levelState = Consts.LevelState.CharHeldToReplace;
         heldCharObj.transform.position = grabPos;
         heldCharScpt.SetActionBtnActive(true);
     }
 
     private void MouseExitCharContArea() {
-        ctrlState = CtrlState.CharHeldToToss;
+        levelState = Consts.LevelState.CharHeldToToss;
         heldCharScpt.SetActionBtnActive(false);
     }
 
@@ -146,14 +123,14 @@ public class LevelManager : MonoBehaviour {
             return;
 
         // If a different character's menu is currently open, close it.
-        if (ctrlState == CtrlState.CmdMenuOpen && charObj != heldCharObj)
+        if (levelState == Consts.LevelState.CmdMenuOpen && charObj != heldCharObj)
             ReturnToNeutral();
 
         heldCharObj = charObj;
         heldCharScpt = charObj.GetComponent<CharBase>();
 
         // Bring character to focus, in front of everything.
-        Utility.RepositionZ(charObj.transform, (float)Consts.ZLayers.Front);
+        Utility.RepositionZ(charObj.transform, (float)Consts.ZLayers.GrabbedObjHighlight);
 
         // maintain copy of character's position where grabbed
         grabPos = charObj.transform.position;
@@ -176,14 +153,14 @@ public class LevelManager : MonoBehaviour {
             return;
 
         Destroy(charContAreaScpt.gameObject);
-        charContAreaScpt = null;
 
         if (heldCharScpt.GetMenuOpen()) {
-            ctrlState = CtrlState.CmdMenuOpen;
+            levelState = Consts.LevelState.CmdMenuOpen;
+            rearMenuFieldObj.SetActive(true);
             return;
         }
 
-        if (ctrlState == CtrlState.CharHeldToToss) {
+        if (levelState == Consts.LevelState.CharHeldToToss) {
             Transform t = heldCharObj.transform;
             t.parent = null;
             // Move in front of all other non-water objects
@@ -197,11 +174,11 @@ public class LevelManager : MonoBehaviour {
             // Change weight in boat
             boat.LightenLoad(holdWeight.Value);
         }
-        else if (ctrlState == CtrlState.CharHeldToReplace) {
+        else if (levelState == Consts.LevelState.CharHeldToReplace) {
             heldCharScpt.ReturnToBoat();
         }
 
-        ctrlState = CtrlState.None;
+        levelState = Consts.LevelState.Default;
 
         holdWeight.Value = 0;
         uiUpdate.RaiseEvent();
@@ -209,15 +186,24 @@ public class LevelManager : MonoBehaviour {
         UnPauseLevel();
     }
 
-    // TODO: need to find a better way to dynamically select item types. Passing raw ints in the inspector is insufficient
-    public void ToStateObjectSelection(int itemType) {
-        ctrlState = CtrlState.ObjectSelection;
+    public void OnItemMouseUp(GameObject itemObj) {
+        foreach (ItemBase item in itemsCanScoop) {
+            item.UnHighlight();
+        }
+        heldCharScpt.UseItem(itemObj);
+        levelState = Consts.LevelState.Default;
+    }
 
-        // Highlight appropriate items
-        // Other state change effects
-        if(itemType == (int)Consts.ItemType.Scooping) {
-            foreach (GameObject item in itemsScooping) {
-                Debug.Log("item.name: " + item.name);
+    // TODO: need to find a better way to dynamically select item types. Passing raw ints in the inspector is insufficient
+    public void ToState(Consts.LevelState state) {
+        levelState = state;
+    }
+    public void HighlightToSelect(Consts.ItemType itemType) {
+        levelState = Consts.LevelState.ObjectSelection;
+
+        if (itemType == Consts.ItemType.Scooping) {
+            foreach (ItemBase item in itemsCanScoop) {
+                item.HighlightToClick();
             }
         }
     }
@@ -242,7 +228,7 @@ public class LevelManager : MonoBehaviour {
             }
 
             levelActive = false;
-            ctrlState = CtrlState.None;
+            levelState = Consts.LevelState.Default;
             foreach (CharBase character in characterSet) {
                 character.Saved = true;
             }
@@ -259,16 +245,18 @@ public class LevelManager : MonoBehaviour {
 
     // Internal/helper methods ==========================================
 
-    private void ReturnToNeutral() {
-        if (heldCharScpt) {
+    public void ReturnToNeutral() {
+        Debug.Log("In ReturnToNeutral");
+        if (heldCharScpt != null) {
             heldCharScpt.SetActionBtnActive(false);
             heldCharScpt.SetCommandBtnsActive(false);
             heldCharScpt.ReturnToBoat();
         }
 
+        rearMenuFieldObj.SetActive(false);
         holdWeight.Value = 0;
         uiUpdate.RaiseEvent();
-        ctrlState = CtrlState.None;
+        levelState = Consts.LevelState.Default;
         UnPauseLevel();
     }
 }

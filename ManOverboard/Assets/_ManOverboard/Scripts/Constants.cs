@@ -4,13 +4,25 @@ using UnityEngine;
 
 public static class Consts {
     public enum ZLayers {
-        Front = 0,
-        Water = 1,
-        BehindWater = 2,
-        Boat = 3,
-        BehindBoat = 4
+        ActionObjHighlight = 0,
+        GrabbedObjHighlight = 1,
+        Water = 2,
+        BehindWater = 3,
+        Boat = 4,
+        BehindBoat = 5
     }
     public enum ItemType {
         Scooping = 0
+    }
+    public enum LevelState {
+        Default,
+        CharHeldToReplace,
+        CharHeldToToss,
+        CmdMenuOpen,
+        ObjectSelection
+    }
+    public enum CollType {
+        Items,
+        Characters
     }
 }
