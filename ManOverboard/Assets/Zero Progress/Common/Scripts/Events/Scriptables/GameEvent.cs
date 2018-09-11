@@ -9,6 +9,9 @@ namespace ZeroProgress.Common
     [CreateAssetMenu(fileName = "New Game Event", menuName = ScriptableObjectPaths.ZERO_PROGRESS_EVENTS_PATH + "Game Event")]
     public class GameEvent : ScriptableObject
     {
+        [SerializeField, Tooltip("Identifies this event so a single listener can properly handle multiple types of events")]
+        protected string eventId = null;
+
         /// <summary>
         /// All listeners registered to this event
         /// </summary>
@@ -21,7 +24,7 @@ namespace ZeroProgress.Common
         {
             foreach (IGameEventListener listener in listeners)
             {
-                listener.OnEventRaised();
+                listener.OnEventRaised(eventId);
             }
         }
 
