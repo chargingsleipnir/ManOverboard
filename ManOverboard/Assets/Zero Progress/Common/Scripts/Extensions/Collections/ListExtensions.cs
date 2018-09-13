@@ -24,7 +24,7 @@ namespace ZeroProgress.Common
         /// <typeparam name="T">The type of item the list contains</typeparam>
         /// <param name="thisList">The list to add the item to</param>
         /// <param name="newValue">The new item to be added</param>
-        public static void AddUnique<T>(this List<T> thisList, T newValue)
+        public static void AddUnique<T>(this IList<T> thisList, T newValue)
         {
             if (thisList.Contains(newValue))
                 return;
@@ -39,7 +39,7 @@ namespace ZeroProgress.Common
         /// <param name="thisList">The list to add the item to</param>
         /// <param name="newValue">The new item to be added</param>
         /// <param name="condition">The predicate that must succeed for the item to be added</param>
-        public static void AddIf<T>(this List<T> thisList, T newValue, System.Predicate<T> condition)
+        public static void AddIf<T>(this IList<T> thisList, T newValue, System.Predicate<T> condition)
         {
             if (condition(newValue))
                 thisList.Add(newValue);

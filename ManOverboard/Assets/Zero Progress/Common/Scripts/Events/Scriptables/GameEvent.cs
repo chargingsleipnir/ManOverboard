@@ -18,14 +18,40 @@ namespace ZeroProgress.Common
         protected readonly List<IGameEventListener> listeners = new List<IGameEventListener>();
 
         /// <summary>
+        /// Tracks whether or not the game event is currently
+        /// invoking responses
+        /// </summary>
+        protected bool isRaisingEvent = false;
+        
+        /// <summary>
+        /// Tracks the modifications made to the listener collection
+        /// during event invocation
+        /// </summary>
+        protected ListModificationTracker<IGameEventListener> listenerModTracker = 
+            new ListModificationTracker<IGameEventListener>();
+
+        /// <summary>
         /// Invoke/Raise the event
         /// </summary>
         public virtual void RaiseEvent()
         {
+            isRaisingEvent = true;
+
             foreach (IGameEventListener listener in listeners)
             {
+                if(listener == null)
+                {
+                    UnregisterListener(listener);
+                    continue;
+                }
+
                 listener.OnEventRaised(eventId);
             }
+
+            isRaisingEvent = false;
+            
+            listenerModTracker.ApplyStackToList(listeners, addUnique: true);
+            listeners.RemoveNulls();
         }
 
         /// <summary>
@@ -34,8 +60,10 @@ namespace ZeroProgress.Common
         /// <param name="Listener">The listener to register</param>
         public virtual void RegisterListener(IGameEventListener Listener)
         {
-            if (!listeners.Contains(Listener))
-                listeners.Add(Listener);
+            if (isRaisingEvent)
+                listenerModTracker.RecordAddModification(Listener);
+            else
+                listeners.AddUnique(Listener);
         }
 
         /// <summary>
@@ -44,7 +72,10 @@ namespace ZeroProgress.Common
         /// <param name="Listener">The listener to unregister</param>
         public virtual void UnregisterListener(IGameEventListener Listener)
         {
-            listeners.Remove(Listener);
+            if (isRaisingEvent)
+                listenerModTracker.RecordRemoveModification(Listener);
+            else
+                listeners.Remove(Listener);
         }
     }
 }
