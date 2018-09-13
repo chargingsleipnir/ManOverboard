@@ -11,3 +11,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b43c93841c34f9b4a923a4598bfbb67d, type: 3}
   m_Name: GO_ItemMouseUp
   m_EditorClassIdentifier: 
+  eventId: 0

@@ -11,3 +11,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d5c812cef59ff2438efa67b84f6b825, type: 3}
   m_Name: UIUpdate
   m_EditorClassIdentifier: 
+  eventId: 0

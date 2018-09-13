@@ -2,24 +2,24 @@
 using UnityEngine;
 using UnityEngine.Events;
 using ZeroProgress.Common;
-using ZeroProgress.Common.Collections;
 
-public class RefRect2DMouseEvents : RefRect2D, IMouseTrackerCBs {
-
-    //[SerializeField]
-    //private Vector2ParamEvent mouseMoveEventIn;
-    //[SerializeField]
-    //private Vector2ParamEvent mouseDownEventIn;
-    //[SerializeField]
-    //private Vector2ParamEvent mouseUpEventIn;    
+public class RefShape2DMouseTracker : MonoBehaviour, IGameEventListener<Vector2> {
 
     [SerializeField]
-    private ComponentSet mouseTrackers;
+    private RefShape refShape;
+
+    private Vector2ParamEvent mouseMoveEventIn;
+    private Vector2ParamEvent mouseDownEventIn;
+    private Vector2ParamEvent mouseUpEventIn;
 
     private bool containsPointCurr;
 
     [SerializeField]
     private bool linkMouseUpToDown;
+    public bool LinkMouseUpToDown {
+        get { return linkMouseUpToDown; }
+        set { linkMouseUpToDown = value; }
+    }
     private bool mouseDownWithinBounds;
 
     [SerializeField]
@@ -37,43 +37,72 @@ public class RefRect2DMouseEvents : RefRect2D, IMouseTrackerCBs {
     private IMouseExitDetector[] mouseExitScripts;
 
     private void Awake() {
+        if (refShape == null)
+            return;
+
+        mouseMoveEventIn = AssetDatabase.LoadAssetAtPath<Vector2ParamEvent>("Assets/_ManOverboard/Events/WithParam/v2_MouseMove.asset");
+        mouseDownEventIn = AssetDatabase.LoadAssetAtPath<Vector2ParamEvent>("Assets/_ManOverboard/Events/WithParam/v2_MouseDown.asset");
+        mouseUpEventIn = AssetDatabase.LoadAssetAtPath<Vector2ParamEvent>("Assets/_ManOverboard/Events/WithParam/v2_MouseUp.asset");
+    }
+
+    private void Start() {
+        if (refShape == null)
+            return;
+
         mouseDownWithinBounds = false;
+    }
+
+    private void OnEnable() {
+        if (refShape == null)
+            return;
 
         mouseDownScripts = GetComponents<IMouseDownDetector>();
         mouseUpScripts = GetComponents<IMouseUpDetector>();
         mouseEnterScripts = GetComponents<IMouseEnterDetector>();
         mouseExitScripts = GetComponents<IMouseExitDetector>();
-    }
 
-    private void OnEnable() {
-        mouseTrackers.Add(this);
-        //mouseMoveEventIn.RegisterListener(this);
-        //mouseDownEventIn.RegisterListener(this);
-        //mouseUpEventIn.RegisterListener(this);
+        if (mouseMoveEventIn != null)
+            mouseMoveEventIn.RegisterListener(this);
+        if (mouseDownEventIn != null)
+            mouseDownEventIn.RegisterListener(this);
+        if (mouseUpEventIn != null)
+            mouseUpEventIn.RegisterListener(this);
     }
 
     private void OnDisable() {
-        mouseTrackers.Remove(this);
-        //mouseMoveEventIn.UnregisterListener(this);
-        //mouseDownEventIn.UnregisterListener(this);
-        //mouseUpEventIn.UnregisterListener(this);
+        if (refShape == null)
+            return;
+
+        if (mouseMoveEventIn != null)
+            mouseMoveEventIn.UnregisterListener(this);
+        if (mouseDownEventIn != null)
+            mouseDownEventIn.UnregisterListener(this);
+        if (mouseUpEventIn != null)
+            mouseUpEventIn.UnregisterListener(this);
     }
 
-    public void OnEventRaised(Vector2 Param) {
-        // Same callback cannot work for all three event types
-        Debug.Log("Mouse down event raised on object: " + gameObject.name);
+    public void OnEventRaised(string eventId) {
+    }    
+
+    public void OnEventRaised(string eventId, Vector2 mousePos) {
+        if (eventId == "0")
+            MouseMoveCB(mousePos);
+        else if (eventId == "1")
+            MouseDownCB(mousePos);
+        else if (eventId == "2")
+            MouseUpCB(mousePos);
     }
 
     public void MouseDownCB(Vector2 mousePos) {
-        if (ContainsPoint(mousePos)) {
+        if (refShape.ContainsPoint(mousePos)) {
             if (linkMouseUpToDown)
                 mouseDownWithinBounds = true;
 
-            foreach (IMouseDownDetector script in mouseDownScripts) {
-                script.MouseDownCB();
+            for(int i = 0; i < mouseDownScripts.Length; i++) {
+                mouseDownScripts[i].MouseDownCB();
             }
             mouseDownEvent.Invoke();
-        }        
+        }
     }
 
     public void MouseUpCB(Vector2 mousePos) {
@@ -82,17 +111,18 @@ public class RefRect2DMouseEvents : RefRect2D, IMouseTrackerCBs {
             // even without the down connection
             if (mouseDownWithinBounds) {
                 mouseDownWithinBounds = false;
-                foreach (IMouseUpDetector script in mouseUpScripts) {
-                    script.MouseUpCB();
+                for (int i = 0; i < mouseUpScripts.Length; i++) {
+                    mouseUpScripts[i].MouseUpCB();
                 }
                 mouseUpEvent.Invoke();
                 return;
             }
         }
+        mouseDownWithinBounds = false;
 
-        if (ContainsPoint(mousePos)) {
-            foreach (IMouseUpDetector script in mouseUpScripts) {
-                script.MouseUpCB();
+        if (refShape.ContainsPoint(mousePos)) {
+            for (int i = 0; i < mouseUpScripts.Length; i++) {
+                mouseUpScripts[i].MouseUpCB();
             }
             mouseUpEvent.Invoke();
         }
@@ -100,18 +130,18 @@ public class RefRect2DMouseEvents : RefRect2D, IMouseTrackerCBs {
 
     public void MouseMoveCB(Vector2 mousePos) {
         if (containsPointCurr) {
-            if(!ContainsPoint(mousePos)) {
-                foreach (IMouseExitDetector script in mouseExitScripts) {
-                    script.MouseExitCB();
+            if (!refShape.ContainsPoint(mousePos)) {
+                for (int i = 0; i < mouseExitScripts.Length; i++) {
+                    mouseExitScripts[i].MouseExitCB();
                 }
                 mouseExitEvent.Invoke();
                 containsPointCurr = false;
             }
         }
         else {
-            if (ContainsPoint(mousePos)) {
-                foreach (IMouseEnterDetector script in mouseEnterScripts) {
-                    script.MouseEnterCB();
+            if (refShape.ContainsPoint(mousePos)) {
+                for (int i = 0; i < mouseEnterScripts.Length; i++) {
+                    mouseEnterScripts[i].MouseEnterCB();
                 }
                 mouseEnterEvent.Invoke();
                 containsPointCurr = true;
@@ -120,18 +150,13 @@ public class RefRect2DMouseEvents : RefRect2D, IMouseTrackerCBs {
     }
 }
 
-[CustomEditor(typeof(RefRect2DMouseEvents))]
+[CustomEditor(typeof(RefShape2DMouseTracker))]
 [CanEditMultipleObjects]
-public class RefRect2DMouseEventsEditor : Editor {
+public class RefShape2DMouseTrackerEditor : Editor {
 
-    SerializedProperty offsetX;
-    SerializedProperty offsetY;
-    SerializedProperty width;
-    SerializedProperty height;
-
+    SerializedProperty refShape;
     SerializedProperty linkMouseUpToDown;
 
-    SerializedProperty mouseTrackers;
     SerializedProperty mouseDownEvent;
     SerializedProperty mouseUpEvent;
     SerializedProperty mouseEnterEvent;
@@ -140,14 +165,9 @@ public class RefRect2DMouseEventsEditor : Editor {
     bool useEvents;
 
     private void OnEnable() {
-        offsetX = serializedObject.FindProperty("offsetX");
-        offsetY = serializedObject.FindProperty("offsetY");
-        width = serializedObject.FindProperty("width");
-        height = serializedObject.FindProperty("height");
-
+        refShape = serializedObject.FindProperty("refShape");
         linkMouseUpToDown = serializedObject.FindProperty("linkMouseUpToDown");
 
-        mouseTrackers = serializedObject.FindProperty("mouseTrackers");
         mouseDownEvent = serializedObject.FindProperty("mouseDownEvent");
         mouseUpEvent = serializedObject.FindProperty("mouseUpEvent");
         mouseEnterEvent = serializedObject.FindProperty("mouseEnterEvent");
@@ -158,15 +178,13 @@ public class RefRect2DMouseEventsEditor : Editor {
 
     public override void OnInspectorGUI() {
         serializedObject.Update();
-        EditorGUILayout.PropertyField(offsetX);
-        EditorGUILayout.PropertyField(offsetY);
-        EditorGUILayout.PropertyField(width);
-        EditorGUILayout.PropertyField(height);
-        EditorGUILayout.PropertyField(mouseTrackers);
+        EditorGUILayout.LabelField("It only take 1 instance of this component to activate all IMouseDetector callbacks on this GameObject");
 
+        EditorGUILayout.PropertyField(refShape);
+ 
         EditorGUILayout.PropertyField(linkMouseUpToDown);
 
-        useEvents = EditorGUILayout.Foldout(useEvents, "Public events", true);
+        useEvents = EditorGUILayout.Foldout(useEvents, "Public event responses", true);
         if (useEvents) {
             EditorGUILayout.PropertyField(mouseDownEvent);
             EditorGUILayout.PropertyField(mouseUpEvent);

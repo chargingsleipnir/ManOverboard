@@ -21,10 +21,8 @@ public class Crewman : CharActionable {
     }
 
     public void PrepScoop() {
-        Debug.Log("Crewman scoop button pressed");
-
-        //levelManager.HighlightToSelect(Consts.ItemType.Scooping);
-        //setAction = Actions.Scoop;
+        levelManager.HighlightToSelect(Consts.ItemType.Scooping);
+        setAction = Actions.Scoop;
     }
 
     public override void UseItem(GameObject item) {

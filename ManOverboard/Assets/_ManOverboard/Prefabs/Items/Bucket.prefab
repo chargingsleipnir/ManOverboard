@@ -23,7 +23,8 @@ GameObject:
   - component: {fileID: 114971016595286768}
   - component: {fileID: 114703460088114512}
   - component: {fileID: 114077221556541758}
-  - component: {fileID: 114739762502489782}
+  - component: {fileID: 114180297197969102}
+  - component: {fileID: 114350739053361642}
   m_Layer: 0
   m_Name: Bucket
   m_TagString: Untagged
@@ -57,7 +58,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SetToAddTo: {fileID: 11400000, guid: 5aea783d1312d834d9b46f7e7ae54d87, type: 2}
   component: {fileID: 114703460088114512}
---- !u!114 &114703460088114512
+--- !u!114 &114180297197969102
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
@@ -65,34 +66,26 @@ MonoBehaviour:
   m_GameObject: {fileID: 1730812389343228}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 36ca5f7e4a76a3b4dbb86c6538b5e88e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  mousePos:
-    UseStraightValue: 0
-    StraightValue: {x: 0, y: 0}
-    ScriptableValue: {fileID: 11400000, guid: 4662ec67a56c16a4eb5641f4edc16bd0, type: 2}
-  mouseUpOnSelectableItem:
-    UseStraightValue: 0
-    StraightValue: 0
-    ScriptableValue: {fileID: 11400000, guid: 240140430db594d4ba632c6ffd68f4a8, type: 2}
-  itemMouseUpEvent: {fileID: 11400000, guid: 61b6f1e0b1b5a52419e1d14cbcdc26b1, type: 2}
---- !u!114 &114739762502489782
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1730812389343228}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1e96e6c015bcdcb458619fb861e3a0ca, type: 3}
+  m_Script: {fileID: 11500000, guid: 8b92a92bae867bf4eafc6f4e8333124d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   offsetX: 0
   offsetY: 0
-  width: 0.43
-  height: 0.42
-  mouseTrackers: {fileID: 11400000, guid: 04cd6067bcdb4284eb0b73d7eca0f1cb, type: 2}
+  width: 0.44
+  height: 0.44
+--- !u!114 &114350739053361642
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1730812389343228}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3e8d9fc474a15944e8b939f9780b407d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  refShape: {fileID: 114180297197969102}
+  linkMouseUpToDown: 0
   mouseDownEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -113,6 +106,22 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
+--- !u!114 &114703460088114512
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1730812389343228}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 36ca5f7e4a76a3b4dbb86c6538b5e88e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mousePos:
+    UseStraightValue: 0
+    StraightValue: {x: 0, y: 0}
+    ScriptableValue: {fileID: 11400000, guid: 4662ec67a56c16a4eb5641f4edc16bd0, type: 2}
+  itemMouseUpEvent: {fileID: 11400000, guid: 61b6f1e0b1b5a52419e1d14cbcdc26b1, type: 2}
 --- !u!114 &114971016595286768
 MonoBehaviour:
   m_ObjectHideFlags: 1

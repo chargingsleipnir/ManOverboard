@@ -259,6 +259,16 @@ Prefab:
       propertyPath: weight
       value: 200
       objectReference: {fileID: 0}
+    - target: {fileID: 114237709830295586, guid: 957d8d0ea5f6b4a4580217c84b8c72ce,
+        type: 2}
+      propertyPath: height
+      value: 1.18
+      objectReference: {fileID: 0}
+    - target: {fileID: 114237709830295586, guid: 957d8d0ea5f6b4a4580217c84b8c72ce,
+        type: 2}
+      propertyPath: width
+      value: 0.39
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 957d8d0ea5f6b4a4580217c84b8c72ce, type: 2}
   m_IsPrefabAsset: 0
@@ -558,6 +568,26 @@ Prefab:
       propertyPath: weight
       value: 150
       objectReference: {fileID: 0}
+    - target: {fileID: 114237709830295586, guid: 957d8d0ea5f6b4a4580217c84b8c72ce,
+        type: 2}
+      propertyPath: width
+      value: 0.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 114237709830295586, guid: 957d8d0ea5f6b4a4580217c84b8c72ce,
+        type: 2}
+      propertyPath: offsetY
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114237709830295586, guid: 957d8d0ea5f6b4a4580217c84b8c72ce,
+        type: 2}
+      propertyPath: height
+      value: 1.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 114237709830295586, guid: 957d8d0ea5f6b4a4580217c84b8c72ce,
+        type: 2}
+      propertyPath: offsetX
+      value: 0.03
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 957d8d0ea5f6b4a4580217c84b8c72ce, type: 2}
   m_IsPrefabAsset: 0
@@ -835,12 +865,7 @@ Material:
     - _WaterColorGradientEnd: {r: 1, g: 1, b: 1, a: 0.25}
     - _WaterColorGradientStart: {r: 1, g: 1, b: 1, a: 0.25}
     - _WaterNoiseScaleOffset: {r: 1, g: 1, b: 0, a: 0}
---- !u!1 &1520779958 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1031882782153492, guid: 10126059089110c4dbf74678801809dc,
-    type: 2}
-  m_PrefabInternal: {fileID: 1396402154}
---- !u!21 &1633616664
+--- !u!21 &1477291252
 Material:
   serializedVersion: 6
   m_ObjectHideFlags: 0
@@ -912,6 +937,11 @@ Material:
     - _WaterColorGradientEnd: {r: 1, g: 1, b: 1, a: 0.25}
     - _WaterColorGradientStart: {r: 1, g: 1, b: 1, a: 0.25}
     - _WaterNoiseScaleOffset: {r: 1, g: 1, b: 0, a: 0}
+--- !u!1 &1520779958 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1031882782153492, guid: 10126059089110c4dbf74678801809dc,
+    type: 2}
+  m_PrefabInternal: {fileID: 1396402154}
 --- !u!1001 &1650011729
 Prefab:
   m_ObjectHideFlags: 0

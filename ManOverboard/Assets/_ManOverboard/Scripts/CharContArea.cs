@@ -18,6 +18,7 @@ public class CharContArea : MonoBehaviour, IMouseEnterDetector, IMouseExitDetect
     public void SetMouseCBs(MouseEnterExitDel EnterCB, MouseEnterExitDel ExitCB) {
         OnMouseEnterCB = EnterCB;
         OnMouseExitCB = ExitCB;
+        MouseEnterCB();
     }
 
     public void MouseEnterCB() {

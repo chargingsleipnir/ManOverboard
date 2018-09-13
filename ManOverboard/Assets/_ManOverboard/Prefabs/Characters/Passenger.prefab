@@ -24,7 +24,8 @@ GameObject:
   - component: {fileID: 61692186197991814}
   - component: {fileID: 114075095641872364}
   - component: {fileID: 114544986287875034}
-  - component: {fileID: 114843976780528492}
+  - component: {fileID: 114237709830295586}
+  - component: {fileID: 114422628814273428}
   m_Layer: 0
   m_Name: Passenger
   m_TagString: Untagged
@@ -108,7 +109,7 @@ MonoBehaviour:
     ScriptableValue: {fileID: 11400000, guid: 4662ec67a56c16a4eb5641f4edc16bd0, type: 2}
   charMouseDownEvent: {fileID: 11400000, guid: ed74ac99dee5b734795be5a2d1c5107f, type: 2}
   charMouseUpEvent: {fileID: 11400000, guid: 19c72426d1b58364b9d624ada5654f12, type: 2}
---- !u!114 &114544986287875034
+--- !u!114 &114237709830295586
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
@@ -116,27 +117,25 @@ MonoBehaviour:
   m_GameObject: {fileID: 1913222519309660}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8dbfbb12cc434234fa858b6ef28c0217, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  SetToAddTo: {fileID: 11400000, guid: 7fb0cbce62ee1f94cae6883bb861dc3b, type: 2}
-  component: {fileID: 114075095641872364}
---- !u!114 &114843976780528492
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1913222519309660}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1e96e6c015bcdcb458619fb861e3a0ca, type: 3}
+  m_Script: {fileID: 11500000, guid: 8b92a92bae867bf4eafc6f4e8333124d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   offsetX: 0
   offsetY: 0
-  width: 0.33
-  height: 0.59
-  mouseTrackers: {fileID: 11400000, guid: 04cd6067bcdb4284eb0b73d7eca0f1cb, type: 2}
+  width: 0.21
+  height: 0.6
+--- !u!114 &114422628814273428
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1913222519309660}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3e8d9fc474a15944e8b939f9780b407d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  refShape: {fileID: 114237709830295586}
   linkMouseUpToDown: 1
   mouseDownEvent:
     m_PersistentCalls:
@@ -158,6 +157,19 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
+--- !u!114 &114544986287875034
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1913222519309660}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8dbfbb12cc434234fa858b6ef28c0217, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SetToAddTo: {fileID: 11400000, guid: 7fb0cbce62ee1f94cae6883bb861dc3b, type: 2}
+  component: {fileID: 114075095641872364}
 --- !u!212 &212680825657446284
 SpriteRenderer:
   m_ObjectHideFlags: 1

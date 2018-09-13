@@ -2,17 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class RefCircle2D : MonoBehaviour, IRefShape {
+public class RefCircle2D : RefShape {
 
-    public float offsetX;
-    public float offsetY;
     public float radius;
 
-    public Vector2 Position {
+    public override Vector2 Position {
         get { return new Vector2(transform.position.x + offsetX, transform.position.y + offsetY); }
     }
 
-    public bool ContainsPoint(Vector2 point) {
+    public override bool ContainsPoint(Vector2 point) {
         float magSqr = Vector2.SqrMagnitude(point - new Vector2(transform.position.x + offsetX, transform.position.y + offsetY));
         return magSqr < Mathf.Pow(radius * Utility.GreaterOf(transform.lossyScale.x, transform.lossyScale.y), 2);
     }

@@ -83,6 +83,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 52652c96890963349a6f02065b1df71c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mouseMoveEventOut: {fileID: 11400000, guid: 64e1a31f07b28e641a5502ba600dd9c6, type: 2}
+  mouseDownEventOut: {fileID: 11400000, guid: 1e3a2ab6667a7f0468b14d82fec37f40, type: 2}
+  mouseUpEventOut: {fileID: 11400000, guid: 0bad36c8433fcdd46b6fc7974dce3952, type: 2}
   mouseTrackers: {fileID: 11400000, guid: 04cd6067bcdb4284eb0b73d7eca0f1cb, type: 2}
   mousePos:
     UseStraightValue: 0
@@ -176,9 +179,5 @@ MonoBehaviour:
     UseStraightValue: 0
     StraightValue: {x: 0, y: 0}
     ScriptableValue: {fileID: 11400000, guid: 4662ec67a56c16a4eb5641f4edc16bd0, type: 2}
-  mouseUpOnSelectableItem:
-    UseStraightValue: 0
-    StraightValue: 0
-    ScriptableValue: {fileID: 11400000, guid: 240140430db594d4ba632c6ffd68f4a8, type: 2}
   uiUpdate: {fileID: 11400000, guid: f357972b346076942a5abf68ed3f1fd1, type: 2}
   levelWinLossDisp: {fileID: 11400000, guid: a6026cd0eae3f99488ad40db1e9c381d, type: 2}

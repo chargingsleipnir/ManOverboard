@@ -11,3 +11,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa8a42278032df04fbf17689fe432266, type: 3}
   m_Name: Str_LevelWinLossMsg
   m_EditorClassIdentifier: 
+  eventId: 0

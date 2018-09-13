@@ -61,6 +61,12 @@ public class CharBase : MonoBehaviour, IMouseDownDetector, IMouseUpDetector {
         contAreaObj.transform.localScale = new Vector3(sr.size.x + CONT_AREA_BUFFER, sr.size.y + CONT_AREA_BUFFER, 1);
     }
 
+    public void ChangeMouseUpWithDownLinks(bool linkEvents) {
+        RefShape2DMouseTracker[] trackers = GetComponents<RefShape2DMouseTracker>();
+        for (int i = 0; i < trackers.Length; i++)
+            trackers[i].LinkMouseUpToDown = linkEvents;
+    }
+
     public void Toss(Vector2 vel) {
         Utility.RepositionZ(transform, (float)Consts.ZLayers.BehindWater);
         tossed = true;

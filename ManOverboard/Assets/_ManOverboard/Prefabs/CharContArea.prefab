@@ -21,7 +21,8 @@ GameObject:
   - component: {fileID: 4523903735050182}
   - component: {fileID: 212479468896409718}
   - component: {fileID: 114733348931169060}
-  - component: {fileID: 114006775550696492}
+  - component: {fileID: 114896518306707468}
+  - component: {fileID: 114813402716321694}
   m_Layer: 0
   m_Name: CharContArea
   m_TagString: Untagged
@@ -36,13 +37,13 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1527078015339914}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.8204875, y: -1.1251876, z: 0}
+  m_LocalPosition: {x: 4.2151694, y: 2.6266294, z: 5.8098903}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &114006775550696492
+--- !u!114 &114733348931169060
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
@@ -50,14 +51,22 @@ MonoBehaviour:
   m_GameObject: {fileID: 1527078015339914}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1e96e6c015bcdcb458619fb861e3a0ca, type: 3}
+  m_Script: {fileID: 11500000, guid: 909e7c596eadc3747bfd4bf10b5dc0c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  offsetX: 0
-  offsetY: 0
-  width: 1
-  height: 1
-  mouseTrackers: {fileID: 11400000, guid: 04cd6067bcdb4284eb0b73d7eca0f1cb, type: 2}
+--- !u!114 &114813402716321694
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1527078015339914}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3e8d9fc474a15944e8b939f9780b407d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  refShape: {fileID: 114896518306707468}
+  linkMouseUpToDown: 0
   mouseDownEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -78,7 +87,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
---- !u!114 &114733348931169060
+--- !u!114 &114896518306707468
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
@@ -86,9 +95,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 1527078015339914}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 909e7c596eadc3747bfd4bf10b5dc0c9, type: 3}
+  m_Script: {fileID: 11500000, guid: 8b92a92bae867bf4eafc6f4e8333124d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  offsetX: 0
+  offsetY: 0
+  width: 1
+  height: 1
 --- !u!212 &212479468896409718
 SpriteRenderer:
   m_ObjectHideFlags: 1

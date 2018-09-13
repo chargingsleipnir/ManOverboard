@@ -10,7 +10,10 @@ public class CharActionable : CharBase {
     private bool actBtnHovered;
     public bool ActBtnHovered {
         get { return actBtnHovered; }
-        set { actBtnHovered = value; Debug.Log(actBtnHovered); }
+        set {
+            actBtnHovered = value;
+            ChangeMouseUpWithDownLinks(!value);
+        }
     }
 
     [SerializeField]
@@ -23,11 +26,9 @@ public class CharActionable : CharBase {
     protected override void Awake() {
         base.Awake();
         actBtnSR = actionBtnObj.GetComponent<SpriteRenderer>();
-        //actBtnRect = GetCanvasElemRect(actionBtnObj, true);
     }
 
     public override void ApplyTransformToContArea(GameObject contAreaObj) {
-        //actBtnRect = GetCanvasElemRect(actionBtnObj, true);
         actBtnRect = new Rect(
             actionBtnObj.transform.position.x,
             actionBtnObj.transform.position.y,
@@ -65,7 +66,6 @@ public class CharActionable : CharBase {
         if (saved || tossed || ActBtnHovered || commandPanel.activeSelf || held == false)
             return;
 
-        Debug.Log("Made it this far");
         actionBtnObj.SetActive(false);
 
         held = false;
@@ -78,22 +78,4 @@ public class CharActionable : CharBase {
         ActBtnHovered = false;
         charMouseUpEvent.RaiseEvent();
     }
-
-
-    // Internal/helper methods ==========================================
-
-    //protected Rect GetCanvasElemRect(GameObject obj, bool scaledValues) {
-    //    if (scaledValues) {
-    //        RectTransform btnRectTrans = obj.GetComponent<RectTransform>();
-    //        // Rect transform set to pivot in the middle, whereas unity Rect uses top-left corner, hence modifying position with width/height.
-    //        return new Rect(
-    //            btnRectTrans.position.x - ((btnRectTrans.lossyScale.x * btnRectTrans.rect.width) * 0.5f),
-    //            btnRectTrans.position.y - ((btnRectTrans.lossyScale.y * btnRectTrans.rect.height) * 0.5f),
-    //            btnRectTrans.lossyScale.x * btnRectTrans.rect.width,
-    //            btnRectTrans.lossyScale.y * btnRectTrans.rect.height
-    //        );
-    //    }
-    //    else
-    //        return obj.GetComponent<RectTransform>().rect;
-    //}
 }

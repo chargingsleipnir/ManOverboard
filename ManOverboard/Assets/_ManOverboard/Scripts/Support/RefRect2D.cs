@@ -1,12 +1,13 @@
 ﻿using UnityEditor;
 using UnityEngine;
 
-public class RefRect2D : MonoBehaviour, IRefShape {
+public class RefRect2D : RefShape {
 
-    public float offsetX;
-    public float offsetY;
+    ScriptableObject so;
+
     public float width;
     public float height;
+
     private Rect rect;
 
     private void Awake() {
@@ -16,6 +17,17 @@ public class RefRect2D : MonoBehaviour, IRefShape {
         rect.position = new Vector2(pos.x + (offsetX - (width * 0.5f)), pos.y + (offsetY - (height * 0.5f)));
         rect.width = width;
         rect.height = height;
+    }
+
+    public override Vector2 Position {
+        get { return new Vector2(transform.position.x + offsetX, transform.position.y + offsetY); }
+    }
+
+    public override bool ContainsPoint(Vector2 point) {
+        return point.x > XMin &&
+            point.x < XMax &&
+            point.y > YMin &&
+            point.y < YMax;
     }
 
     public Rect Rect { get; set; }
@@ -30,16 +42,6 @@ public class RefRect2D : MonoBehaviour, IRefShape {
     }
     public float YMax {
         get { return transform.position.y + offsetY + ((height * transform.lossyScale.y) * 0.5f); }
-    }
-    public Vector2 Position {
-        get { return new Vector2(transform.position.x + offsetX, transform.position.y + offsetY); }
-    }
-
-    public bool ContainsPoint(Vector2 point) {
-        return point.x > XMin &&
-            point.x < XMax &&
-            point.y > YMin &&
-            point.y < YMax;
     }
 
     private void OnDrawGizmos() {

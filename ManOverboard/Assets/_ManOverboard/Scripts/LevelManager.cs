@@ -242,11 +242,7 @@ public class LevelManager : MonoBehaviour {
         }
     }
 
-
-    // Internal/helper methods ==========================================
-
     public void ReturnToNeutral() {
-        Debug.Log("In ReturnToNeutral");
         if (heldCharScpt != null) {
             heldCharScpt.SetActionBtnActive(false);
             heldCharScpt.SetCommandBtnsActive(false);

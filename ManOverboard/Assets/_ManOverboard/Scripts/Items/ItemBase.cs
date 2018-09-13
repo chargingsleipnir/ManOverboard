@@ -14,6 +14,8 @@ public class ItemBase : MonoBehaviour, IMouseUpDetector {
         set { selected = value; }
     }
 
+    private Transform currParent;
+
     [SerializeField]
     protected Vector2Reference mousePos;
     [SerializeField]
@@ -29,6 +31,9 @@ public class ItemBase : MonoBehaviour, IMouseUpDetector {
     }
 
     public void HighlightToClick() {
+        currParent = transform.parent;
+        transform.parent = null;
+
         currZPos = transform.position.z;
         Utility.RepositionZ(transform, (float)Consts.ZLayers.ActionObjHighlight);
         so.enabled = true;
@@ -37,6 +42,8 @@ public class ItemBase : MonoBehaviour, IMouseUpDetector {
 
     public void UnHighlight() {
         Utility.RepositionZ(transform, currZPos);
+        transform.parent = currParent;
+
         so.enabled = false;
         selectable = false;
         selected = false;

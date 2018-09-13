@@ -21,7 +21,8 @@ GameObject:
   - component: {fileID: 4943719465993254}
   - component: {fileID: 212187582741558218}
   - component: {fileID: 114868819211314572}
-  - component: {fileID: 114737881887496276}
+  - component: {fileID: 114965472579177188}
+  - component: {fileID: 114127952950363298}
   m_Layer: 0
   m_Name: RearMenuField
   m_TagString: Untagged
@@ -42,7 +43,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &114737881887496276
+--- !u!114 &114127952950363298
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
@@ -50,14 +51,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1365011474752516}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1e96e6c015bcdcb458619fb861e3a0ca, type: 3}
+  m_Script: {fileID: 11500000, guid: 3e8d9fc474a15944e8b939f9780b407d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  offsetX: 0
-  offsetY: 0
-  width: 1
-  height: 1
-  mouseTrackers: {fileID: 11400000, guid: 04cd6067bcdb4284eb0b73d7eca0f1cb, type: 2}
+  refShape: {fileID: 114965472579177188}
   linkMouseUpToDown: 0
   mouseDownEvent:
     m_PersistentCalls:
@@ -90,6 +87,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9d8f59a2a6006d47a40348cd03f051e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &114965472579177188
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1365011474752516}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b92a92bae867bf4eafc6f4e8333124d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  offsetX: 0
+  offsetY: 0
+  width: 1
+  height: 1
 --- !u!212 &212187582741558218
 SpriteRenderer:
   m_ObjectHideFlags: 1
