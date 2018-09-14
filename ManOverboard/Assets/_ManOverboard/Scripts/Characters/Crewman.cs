@@ -14,6 +14,9 @@ public class Crewman : CharActionable {
     [SerializeField]
     protected LevelManager levelManager;
 
+    [SerializeField]
+    protected Transform trans_ItemUseHand;
+
     protected override void Start() {
         base.Start();
 
@@ -30,6 +33,7 @@ public class Crewman : CharActionable {
             // Logic for scooping wth item
 
             Debug.Log("Going to scoop with: " + item.name);
+            item.transform.position = trans_ItemUseHand.position;
         }
     }
 }

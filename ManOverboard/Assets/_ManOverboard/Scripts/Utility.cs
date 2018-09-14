@@ -32,4 +32,8 @@ public static class Utility {
     public static void RepositionZ(Transform transform, float newZ) {
         transform.position = new Vector3(transform.position.x, transform.position.y, newZ);
     }
+
+    public static void RepositionLocalZ(Transform transform, float newZ) {
+        transform.localPosition = new Vector3(transform.localPosition.x, transform.localPosition.y, newZ);
+    }
 }

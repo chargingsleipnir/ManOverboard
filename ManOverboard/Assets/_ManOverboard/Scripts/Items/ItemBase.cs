@@ -31,18 +31,17 @@ public class ItemBase : MonoBehaviour, IMouseUpDetector {
     }
 
     public void HighlightToClick() {
+        currZPos = transform.localPosition.z;
         currParent = transform.parent;
-        transform.parent = null;
-
-        currZPos = transform.position.z;
+        transform.parent = null;        
         Utility.RepositionZ(transform, (float)Consts.ZLayers.ActionObjHighlight);
         so.enabled = true;
         selectable = true;
     }
 
     public void UnHighlight() {
-        Utility.RepositionZ(transform, currZPos);
         transform.parent = currParent;
+        Utility.RepositionLocalZ(transform, currZPos);        
 
         so.enabled = false;
         selectable = false;

@@ -9,9 +9,6 @@ namespace ZeroProgress.Common
     /// </summary>
     public abstract class ParamGameEvent<T> : GameEvent
     {
-        delegate void EventBatch(string eventId, T Param);
-        EventBatch batch;
-
         /// <summary>
         /// Second list for listeners that take a parameter so we can properly pass the parameters
         /// </summary>
@@ -60,11 +57,10 @@ namespace ZeroProgress.Common
         {
             base.RaiseEvent();
 
-            batch = null;
             foreach (IGameEventListener<T> paramListener in paramListeners)
-                batch += paramListener.OnEventRaised;
-
-            batch(eventId, Param);
+            {
+                paramListener.OnEventRaised(eventId, Param);
+            }
         }
     }
 }
