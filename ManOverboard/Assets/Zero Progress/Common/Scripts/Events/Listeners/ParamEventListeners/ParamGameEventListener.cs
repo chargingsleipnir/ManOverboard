@@ -32,7 +32,7 @@ namespace ZeroProgress.Common
         /// <summary>
         /// Response to the game event
         /// </summary>
-        public void OnEventRaised(string eventId)
+        public virtual void OnEventRaised(string eventId)
         {
             EventResponse.SafeInvoke(default(ParamType));
         }
@@ -40,7 +40,7 @@ namespace ZeroProgress.Common
         /// <summary>
         /// Response to the game event
         /// </summary>
-        public void OnEventRaised(string eventId, ParamType Param)
+        public virtual void OnEventRaised(string eventId, ParamType Param)
         {
             EventResponse.SafeInvoke(Param);
         }
