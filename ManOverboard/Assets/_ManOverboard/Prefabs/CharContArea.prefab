@@ -66,6 +66,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   refShape: {fileID: 114896518306707468}
+  trackThrough: 0
   linkMouseUpToDown: 0
   mouseDownEvent:
     m_PersistentCalls:
@@ -134,8 +135,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1540567163
+  m_SortingLayer: 10
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 21f13866fb073b44eabace90e8982742, type: 3}
   m_Color: {r: 0, g: 0.9716981, b: 0.22676061, a: 0.39215687}

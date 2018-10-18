@@ -36,9 +36,9 @@ public class CharActionable : CharBase {
             actBtnSR.size.y * actionBtnObj.transform.lossyScale.y
         );
 
-        float btnTopToCharTop = actBtnRect.height > 0 ? actBtnRect.yMax - (transform.position.y + (sr.size.y * 0.5f)) : 0;
-        contAreaObj.transform.position = new Vector3(transform.position.x, transform.position.y + (btnTopToCharTop * 0.5f), (float)Consts.ZLayers.GrabbedObjHighlight + 0.1f);
-        contAreaObj.transform.localScale = new Vector3(Utility.GreaterOf(sr.size.x, actBtnRect.width) + CONT_AREA_BUFFER, sr.size.y + btnTopToCharTop + CONT_AREA_BUFFER, 1);
+        float btnTopToCharTop = actBtnRect.height > 0 ? actBtnRect.yMax - (transform.position.y + (srRef.comp.size.y * 0.5f)) : 0;
+        contAreaObj.transform.position = new Vector3(transform.position.x, transform.position.y + (btnTopToCharTop * 0.5f), (float)Consts.ZLayers.FrontOfWater);
+        contAreaObj.transform.localScale = new Vector3(Utility.GreaterOf(srRef.comp.size.x, actBtnRect.width) + CONT_AREA_BUFFER, srRef.comp.size.y + btnTopToCharTop + CONT_AREA_BUFFER, 1);
     }
 
     public override void SetActionBtnActive(bool isActive) {

@@ -3,46 +3,44 @@ using System.Collections.Generic;
 using UnityEngine;
 using ZeroProgress.Common;
 
-public class ItemBase : MonoBehaviour, IMouseUpDetector {
+public class ItemBase : SpriteTossable, IMouseUpDetector {
 
     protected SpriteOutline so;
-    protected float currZPos;
     protected bool selectable;
     protected bool selected;
+
     public bool Selected {
         get { return selected; }
         set { selected = value; }
     }
-
-    private Transform currParent;
 
     [SerializeField]
     protected Vector2Reference mousePos;
     [SerializeField]
     protected GameObjectParamEvent itemMouseUpEvent;
 
-    protected void Awake() {
+    protected override void Awake() {
+        base.Awake();
         so = GetComponent<SpriteOutline>();
     }
 
-    protected void Start() {
+    protected override void Start() {
+        base.Start();
+
         selectable = false;
         selected = false;
     }
 
     public void HighlightToClick() {
-        currZPos = transform.localPosition.z;
-        currParent = transform.parent;
-        transform.parent = null;        
-        Utility.RepositionZ(transform, (float)Consts.ZLayers.ActionObjHighlight);
+        MoveToTopSpriteGroup();
+        ChangeSortCompLayer(Consts.DrawLayers.FrontOfLevel4);
         so.enabled = true;
         selectable = true;
     }
 
     public void UnHighlight() {
-        transform.parent = currParent;
-        Utility.RepositionLocalZ(transform, currZPos);        
-
+        MoveToOrigSpriteGroup();
+        ChangeSortCompLayer();
         so.enabled = false;
         selectable = false;
         selected = false;

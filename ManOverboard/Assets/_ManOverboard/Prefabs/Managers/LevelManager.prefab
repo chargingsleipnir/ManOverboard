@@ -83,10 +83,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 52652c96890963349a6f02065b1df71c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mouseMoveEventOut: {fileID: 11400000, guid: 64e1a31f07b28e641a5502ba600dd9c6, type: 2}
-  mouseDownEventOut: {fileID: 11400000, guid: 1e3a2ab6667a7f0468b14d82fec37f40, type: 2}
-  mouseUpEventOut: {fileID: 11400000, guid: 0bad36c8433fcdd46b6fc7974dce3952, type: 2}
-  mouseTrackers: {fileID: 11400000, guid: 04cd6067bcdb4284eb0b73d7eca0f1cb, type: 2}
   mousePos:
     UseStraightValue: 0
     StraightValue: {x: 0, y: 0}
@@ -158,7 +154,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be7a30c37ac246e49ac9ed558c8ba2a8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameCtrl: {fileID: 114395880112188486, guid: 3761e925aed2ac143a1acb06de13283a, type: 2}
+  gameCtrl: {fileID: 114446832514159312, guid: 36bfc96ef999cc14f8d0bb0637927c73, type: 2}
   waterObj: {fileID: 0}
   rearMenuFieldPrefab: {fileID: 1365011474752516, guid: 88dd4ad1446449a469d5b5e78384ded6,
     type: 2}

@@ -6,9 +6,10 @@ using ZeroProgress.Common.Collections;
 
 public class LevelManager : MonoBehaviour {
 
-    Consts.LevelState levelState;
+    [SerializeField]
+    private GameCtrl gameCtrl;
 
-    public GameCtrl gameCtrl;
+    Consts.LevelState levelState;
 
     // TODO: Adjust sink rate based on number of holes
     const float SINK_STEP_SECS = 0.25f;
@@ -59,6 +60,10 @@ public class LevelManager : MonoBehaviour {
     private Vector3 grabPos;    
 
     private void Awake() {
+        // ! gameCtrl.Init is just here while building levels, so we don't need to go through PreGame during testing.
+        // Once game is ready to ship, delete it.
+        gameCtrl.Init();
+
         currCoroutine = null;
 
         boat.AddNumLeaksCallback(NumLeaks);
@@ -70,11 +75,15 @@ public class LevelManager : MonoBehaviour {
         holdWeight.Value = 0;
         uiUpdate.RaiseEvent();
 
-        Utility.RepositionZ(waterObj.transform, (float)Consts.ZLayers.Water);
+        GameObject charContArea = Instantiate(charContAreaPrefab) as GameObject;
+        charContAreaScpt = charContArea.GetComponent<CharContArea>();
+        charContAreaScpt.SetMouseCBs(MouseEnterCharContArea, MouseExitCharContArea);
+        charContAreaScpt.gameObject.SetActive(false);
 
         rearMenuFieldObj = Instantiate(rearMenuFieldPrefab) as GameObject;
-        rearMenuFieldObj.GetComponent<RearMenuField>().Mngr = this;
-        Utility.RepositionZ(rearMenuFieldObj.transform, (float)Consts.ZLayers.Water - 0.1f);
+        RearMenuField menuFieldScpt = rearMenuFieldObj.GetComponent<RearMenuField>();
+        menuFieldScpt.Mngr = this;
+
         rearMenuFieldObj.SetActive(false);
 
         levelActive = true;
@@ -90,6 +99,10 @@ public class LevelManager : MonoBehaviour {
             mouseDelta = mousePos.Value - mouseLastPos;
             mouseLastPos = mousePos.Value;
         }        
+    }
+
+    private void OnDestroy() {
+        DrawLayerMngr.ClearSpriteRef();
     }
 
     private void MouseEnterCharContArea() {
@@ -130,19 +143,16 @@ public class LevelManager : MonoBehaviour {
         heldCharScpt = charObj.GetComponent<CharBase>();
 
         // Bring character to focus, in front of everything.
-        Utility.RepositionZ(charObj.transform, (float)Consts.ZLayers.GrabbedObjHighlight);
+        heldCharScpt.ChangeSortCompLayer(Consts.DrawLayers.FrontOfLevel3);
 
         // maintain copy of character's position where grabbed
         grabPos = charObj.transform.position;
 
-        // Create area where character can be returned if player doesn't want to toss it.
-        GameObject charContArea = Instantiate(charContAreaPrefab) as GameObject;
-        heldCharScpt.ApplyTransformToContArea(charContArea);
+        charContAreaScpt.gameObject.SetActive(true);
+        heldCharScpt.ApplyTransformToContArea(charContAreaScpt.gameObject);
+        charContAreaScpt.MouseEnterCB();
 
-        charContAreaScpt = charContArea.GetComponent<CharContArea>();
-        charContAreaScpt.SetMouseCBs(MouseEnterCharContArea, MouseExitCharContArea);
-
-        holdWeight.Value = heldCharScpt.weight;
+        holdWeight.Value = heldCharScpt.Weight;
         uiUpdate.RaiseEvent();
 
         PauseLevel();
@@ -152,7 +162,7 @@ public class LevelManager : MonoBehaviour {
         if (!levelActive)
             return;
 
-        Destroy(charContAreaScpt.gameObject);
+        charContAreaScpt.gameObject.SetActive(false);
 
         if (heldCharScpt.GetMenuOpen()) {
             levelState = Consts.LevelState.CmdMenuOpen;
@@ -161,15 +171,14 @@ public class LevelManager : MonoBehaviour {
         }
 
         if (levelState == Consts.LevelState.CharHeldToToss) {
-            Transform t = heldCharObj.transform;
-            t.parent = null;
-            // Move in front of all other non-water objects
-            Utility.RepositionZ(t, (float)Consts.ZLayers.BehindWater);
-            heldCharObj.layer = 9; // tossed objects
 
             // TODO: Top out the toss speed to something not TOO unreasonable
             float tossSpeed = mouseDelta.magnitude / Time.deltaTime;
+
+            // TODO: Have character removed from sprite grouping, mouse tracker, etc. Save processing.
+
             heldCharScpt.Toss(mouseDelta * tossSpeed);
+            heldCharObj.layer = 9; // tossed objects
 
             // Change weight in boat
             boat.LightenLoad(holdWeight.Value);

@@ -264,7 +264,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 114395880112188486, guid: 3761e925aed2ac143a1acb06de13283a,
+      - m_Target: {fileID: 114446832514159312, guid: 36bfc96ef999cc14f8d0bb0637927c73,
           type: 2}
         m_MethodName: GoToLevel
         m_Mode: 3
@@ -712,7 +712,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 114395880112188486, guid: 3761e925aed2ac143a1acb06de13283a,
+      - m_Target: {fileID: 114446832514159312, guid: 36bfc96ef999cc14f8d0bb0637927c73,
           type: 2}
         m_MethodName: GoToLevel
         m_Mode: 3
@@ -964,7 +964,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 114395880112188486, guid: 3761e925aed2ac143a1acb06de13283a,
+      - m_Target: {fileID: 114446832514159312, guid: 36bfc96ef999cc14f8d0bb0637927c73,
           type: 2}
         m_MethodName: GoToLevel
         m_Mode: 3
@@ -1088,7 +1088,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 114395880112188486, guid: 3761e925aed2ac143a1acb06de13283a,
+      - m_Target: {fileID: 114446832514159312, guid: 36bfc96ef999cc14f8d0bb0637927c73,
           type: 2}
         m_MethodName: GoToTitle
         m_Mode: 1

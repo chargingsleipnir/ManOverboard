@@ -8,7 +8,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 86338d2a245a2174da49359406d43e42, type: 3}
-  m_Name: v2_MouseMove
+  m_Script: {fileID: 11500000, guid: 003603b5ae9366c4bb85d34711d232ba, type: 3}
+  m_Name: MouseTrackerFullSet
   m_EditorClassIdentifier: 
-  eventId: 0
+  Items: []
+  ClearOnEnable: 1

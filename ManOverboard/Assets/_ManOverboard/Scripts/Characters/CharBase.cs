@@ -5,12 +5,10 @@ using ZeroProgress.Common;
 using ZeroProgress.Common.Collections;
 
 [RequireComponent(typeof(SpriteRenderer), typeof(Rigidbody2D), typeof(BoxCollider2D))]
-public class CharBase : MonoBehaviour, IMouseDownDetector, IMouseUpDetector {
+public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
 
     protected const float CONT_AREA_BUFFER = 0.1f;
 
-    protected bool held = false;
-    protected bool tossed = false;
     protected bool saved = false;
     public bool Saved {
         get {
@@ -22,11 +20,6 @@ public class CharBase : MonoBehaviour, IMouseDownDetector, IMouseUpDetector {
         }
     }
 
-    public int weight;
-
-    protected SpriteRenderer sr;
-    protected Rigidbody2D rb;
-    protected BoxCollider2D bc;
     protected ComponentSetElement setElem;
 
     // Mouse tracking
@@ -37,19 +30,20 @@ public class CharBase : MonoBehaviour, IMouseDownDetector, IMouseUpDetector {
     [SerializeField]
     protected GameEvent charMouseUpEvent;
 
-    protected virtual void Awake() {
-        sr = GetComponent<SpriteRenderer>();
-        rb = GetComponent<Rigidbody2D>();
-        bc = GetComponent<BoxCollider2D>();
+    protected override void Awake() {
+        base.Awake();
         setElem = GetComponent<ComponentSetElement>();
     }
 
-    protected virtual void Start () {
+    protected override void Start () {
+        base.Start();
+
         // Rigidbody is essentially inactive until being flung/thrown by user.
-        // (Could use posiiton constraints instead) 
+        // (Could use posiiton constraints instead)
         rb.isKinematic = true;
         bc.enabled = false;
-        Utility.RepositionZ(transform, (float)Consts.ZLayers.BehindBoat);
+
+        ChangeSortCompLayer(Consts.DrawLayers.BoatLevel1Contents);
     }
 
     public void MoveRigidbody() {
@@ -57,8 +51,8 @@ public class CharBase : MonoBehaviour, IMouseDownDetector, IMouseUpDetector {
     }
 
     public virtual void ApplyTransformToContArea(GameObject contAreaObj) {
-        contAreaObj.transform.position = new Vector3(transform.position.x, transform.position.y, (float)Consts.ZLayers.GrabbedObjHighlight + 0.1f);
-        contAreaObj.transform.localScale = new Vector3(sr.size.x + CONT_AREA_BUFFER, sr.size.y + CONT_AREA_BUFFER, 1);
+        contAreaObj.transform.position = new Vector3(transform.position.x, transform.position.y, (float)Consts.ZLayers.FrontOfWater);
+        contAreaObj.transform.localScale = new Vector3(srRef.comp.size.x + CONT_AREA_BUFFER, srRef.comp.size.y + CONT_AREA_BUFFER, 1);
     }
 
     public void ChangeMouseUpWithDownLinks(bool linkEvents) {
@@ -68,7 +62,9 @@ public class CharBase : MonoBehaviour, IMouseDownDetector, IMouseUpDetector {
     }
 
     public void Toss(Vector2 vel) {
-        Utility.RepositionZ(transform, (float)Consts.ZLayers.BehindWater);
+        transform.parent = null;
+        // Move in front of all other non-water objects
+        ChangeSortCompLayer(Consts.DrawLayers.BehindWater);
         tossed = true;
         setElem.UnregisterComponent();
         rb.isKinematic = false;
@@ -77,12 +73,8 @@ public class CharBase : MonoBehaviour, IMouseDownDetector, IMouseUpDetector {
     }
 
     public void ReturnToBoat() {
-        Utility.RepositionZ(transform, (float)Consts.ZLayers.BehindBoat);
+        ChangeSortCompLayer(Consts.DrawLayers.BoatLevel1Contents);
     }
-
-    //public bool SpriteHovered() {
-    //    return 
-    //}
 
     public virtual void SetActionBtnActive(bool isActive) {}
     public virtual void SetCommandBtnsActive(bool isActive) {}

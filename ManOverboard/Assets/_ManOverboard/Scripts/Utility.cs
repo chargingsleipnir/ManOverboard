@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public static class Utility {
     public static Vector3 WorldToUISpace(Canvas uiCanvas, Vector3 worldPos) {
@@ -17,6 +15,13 @@ public static class Utility {
     public static Vector3 UIToWorldSpace(Canvas uiCanvas, Vector3 uiPos) {
         Vector3 screenPos = RectTransformUtility.WorldToScreenPoint(uiCanvas.worldCamera, uiPos);
         return Camera.main.ScreenToWorldPoint(screenPos);
+    }
+
+    public static int LesserOf(int num1, int num2) {
+        return num1 < num2 ? num1 : num2;
+    }
+    public static float LesserOf(float num1, float num2) {
+        return num1 < num2 ? num1 : num2;
     }
 
     public static float GreaterOf(float num1, float num2) {

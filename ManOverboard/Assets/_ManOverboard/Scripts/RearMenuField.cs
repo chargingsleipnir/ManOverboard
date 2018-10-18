@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class RearMenuField : MonoBehaviour, IMouseUpDetector {
+public class RearMenuField : SpriteBase, IMouseUpDetector {
 
     public LevelManager Mngr { get; set; }
 

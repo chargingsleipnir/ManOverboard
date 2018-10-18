@@ -9,7 +9,8 @@ public class Dinghy : Boat {
         get { return BUOYANCY_MAX; }
     }
 
-    protected void Start() {
-        base.OnStart(BUOYANCY_MAX);
+    protected override void Start() {
+        base.Start();
+        OnStart(BUOYANCY_MAX);
     }
 }

@@ -1,18 +1,28 @@
-﻿using UnityEditor;
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Events;
 using ZeroProgress.Common;
+using ZeroProgress.Common.Collections;
 
-public class RefShape2DMouseTracker : MonoBehaviour, IGameEventListener<Vector2> {
+[RequireComponent(typeof(SpriteBase))]
+public class RefShape2DMouseTracker : MonoBehaviour {
 
     [SerializeField]
     private RefShape refShape;
+    public bool trackThrough;
 
-    private Vector2ParamEvent mouseMoveEventIn;
-    private Vector2ParamEvent mouseDownEventIn;
-    private Vector2ParamEvent mouseUpEventIn;
+    private bool lateStartLaunched;
 
-    private bool containsPointCurr;
+    // Holding reference to SpriteBase for easy access to each object's draw layer
+    public SpriteBase SB { get; private set; }
+
+    // TODO: Specify component type - WAY too many conversions happening
+    private ComponentSet mouseTrackerFullSet;
+    private ComponentSet mouseTrackerEnteredSet;
+
+    public bool containsMousePoint;
 
     [SerializeField]
     private bool linkMouseUpToDown;
@@ -37,22 +47,24 @@ public class RefShape2DMouseTracker : MonoBehaviour, IGameEventListener<Vector2>
     private IMouseExitDetector[] mouseExitScripts;
 
     private void Awake() {
+        SB = GetComponent<SpriteBase>();
+        lateStartLaunched = false;
+
         if (refShape == null)
             return;
 
-        mouseMoveEventIn = AssetDatabase.LoadAssetAtPath<Vector2ParamEvent>("Assets/_ManOverboard/Events/WithParam/v2_MouseMove.asset");
-        mouseDownEventIn = AssetDatabase.LoadAssetAtPath<Vector2ParamEvent>("Assets/_ManOverboard/Events/WithParam/v2_MouseDown.asset");
-        mouseUpEventIn = AssetDatabase.LoadAssetAtPath<Vector2ParamEvent>("Assets/_ManOverboard/Events/WithParam/v2_MouseUp.asset");
-    }
-
-    private void Start() {
-        if (refShape == null)
-            return;
-
-        mouseDownWithinBounds = false;
+        mouseTrackerFullSet = AssetDatabase.LoadAssetAtPath<ComponentSet>("Assets/_ManOverboard/Variables/Sets/MouseTrackerFullSet.asset");
+        mouseTrackerEnteredSet = AssetDatabase.LoadAssetAtPath<ComponentSet>("Assets/_ManOverboard/Variables/Sets/MouseTrackerEnteredSet.asset");
     }
 
     private void OnEnable() {
+        if (refShape == null || lateStartLaunched == false)
+            return;
+
+        AddToSet();
+    }
+
+    private void Start() {
         if (refShape == null)
             return;
 
@@ -61,46 +73,120 @@ public class RefShape2DMouseTracker : MonoBehaviour, IGameEventListener<Vector2>
         mouseEnterScripts = GetComponents<IMouseEnterDetector>();
         mouseExitScripts = GetComponents<IMouseExitDetector>();
 
-        if (mouseMoveEventIn != null)
-            mouseMoveEventIn.RegisterListener(this);
-        if (mouseDownEventIn != null)
-            mouseDownEventIn.RegisterListener(this);
-        if (mouseUpEventIn != null)
-            mouseUpEventIn.RegisterListener(this);
+        // * Absolutely necessary to have this short delay
+        StartCoroutine(LateStart());
+
+        mouseDownWithinBounds = false;
+    }
+
+    private IEnumerator LateStart() {
+        yield return 0;
+        lateStartLaunched = true;
+        OnEnable();
     }
 
     private void OnDisable() {
         if (refShape == null)
             return;
 
-        if (mouseMoveEventIn != null)
-            mouseMoveEventIn.UnregisterListener(this);
-        if (mouseDownEventIn != null)
-            mouseDownEventIn.UnregisterListener(this);
-        if (mouseUpEventIn != null)
-            mouseUpEventIn.UnregisterListener(this);
+        RemoveFromSet();
     }
 
-    public void OnEventRaised(string eventId) {
-    }    
+    private void AddToSet() {
+        if (mouseTrackerFullSet.Contains(this))
+            return;
 
-    public void OnEventRaised(string eventId, Vector2 mousePos) {
-        if (eventId == "0")
-            MouseMoveCB(mousePos);
-        else if (eventId == "1")
-            MouseDownCB(mousePos);
-        else if (eventId == "2")
-            MouseUpCB(mousePos);
+        int insertionPnt = -1;
+        for (int i = 0; i < mouseTrackerFullSet.Count; i++) {
+            if (SB.IsCloserThan((mouseTrackerFullSet[i] as RefShape2DMouseTracker).SB)) {
+                insertionPnt = i;
+                break;
+            }
+        }
+        if (insertionPnt > -1) {
+            mouseTrackerFullSet.Insert(insertionPnt, this);
+
+            // TODO - Maybe find a more direct/quicker approach to correcting this set.
+            if (containsMousePoint)
+                RedoEnteredSet();
+        }
+        else {
+            mouseTrackerFullSet.Add(this);
+            if (containsMousePoint)
+                mouseTrackerEnteredSet.Add(this);
+        }
+
+
+        //for (int i = 0; i < refShapeMouseTrackerSet.Count; i++)
+        //    Debug.Log(refShapeMouseTrackerSet[i]);
     }
+    private void AddToSet(List<Component> range) {
+        int insertionPnt = -1;
+        for (int i = 0; i < mouseTrackerFullSet.Count; i++) {
+            if ((range[0] as RefShape2DMouseTracker).SB.IsCloserThan((mouseTrackerFullSet[i] as RefShape2DMouseTracker).SB)) {
+                insertionPnt = i;
+                break;
+            }
+        }
+        if (insertionPnt > -1)
+            mouseTrackerFullSet.InsertRange(insertionPnt, range);
+        else
+            mouseTrackerFullSet.AddRange(range);
+
+        RedoEnteredSet();
+    }
+    public void RemoveFromSet() {
+        mouseTrackerFullSet.Remove(this);
+        mouseTrackerEnteredSet.Remove(this);
+    }
+
+    public void RepositionInTrackerSet() {
+        // TODO: Need to modify this, for not just this item, but any children also effected
+        int currIdx = mouseTrackerFullSet.IndexOf(this);
+        List<Component> transferSet = new List<Component>();
+
+        for (int i = 0; i < mouseTrackerFullSet.Count; i++) {
+            if (mouseTrackerFullSet[i] == this) {
+                transferSet.Add(this);
+            }
+            else if ((mouseTrackerFullSet[i] as RefShape2DMouseTracker).SB.IsChildOf(SB)) {
+                transferSet.Add(mouseTrackerFullSet[i]);
+            }
+            // ? I should be able to stop check at the first instance of a non-child found. How could a non-child be closer than a child? Shouldn't be possible
+            else {
+                if(transferSet.Count > 0)
+                    break;
+            }
+        }
+
+        if (transferSet.Count == 1) {
+            RemoveFromSet();
+            AddToSet();
+        }
+        else if (transferSet.Count > 1) {
+            mouseTrackerFullSet.RemoveRangeFromSet(transferSet);
+            mouseTrackerEnteredSet.RemoveRangeFromSet(transferSet);
+            AddToSet(transferSet);
+        }
+    }
+
+    private void RedoEnteredSet() {
+        mouseTrackerEnteredSet.Clear();
+        for (int i = 0; i < mouseTrackerFullSet.Count; i++) {
+            if ((mouseTrackerFullSet[i] as RefShape2DMouseTracker).containsMousePoint)
+                mouseTrackerEnteredSet.Add(mouseTrackerFullSet[i]);
+        }
+    }
+
 
     public void MouseDownCB(Vector2 mousePos) {
         if (refShape.ContainsPoint(mousePos)) {
             if (linkMouseUpToDown)
                 mouseDownWithinBounds = true;
 
-            for(int i = 0; i < mouseDownScripts.Length; i++) {
+            for(int i = 0; i < mouseDownScripts.Length; i++)
                 mouseDownScripts[i].MouseDownCB();
-            }
+
             mouseDownEvent.Invoke();
         }
     }
@@ -111,9 +197,9 @@ public class RefShape2DMouseTracker : MonoBehaviour, IGameEventListener<Vector2>
             // even without the down connection
             if (mouseDownWithinBounds) {
                 mouseDownWithinBounds = false;
-                for (int i = 0; i < mouseUpScripts.Length; i++) {
+                for (int i = 0; i < mouseUpScripts.Length; i++)
                     mouseUpScripts[i].MouseUpCB();
-                }
+
                 mouseUpEvent.Invoke();
                 return;
             }
@@ -121,30 +207,33 @@ public class RefShape2DMouseTracker : MonoBehaviour, IGameEventListener<Vector2>
         mouseDownWithinBounds = false;
 
         if (refShape.ContainsPoint(mousePos)) {
-            for (int i = 0; i < mouseUpScripts.Length; i++) {
+            for (int i = 0; i < mouseUpScripts.Length; i++)
                 mouseUpScripts[i].MouseUpCB();
-            }
+
             mouseUpEvent.Invoke();
         }
     }
 
     public void MouseMoveCB(Vector2 mousePos) {
-        if (containsPointCurr) {
+        if (containsMousePoint) {
             if (!refShape.ContainsPoint(mousePos)) {
-                for (int i = 0; i < mouseExitScripts.Length; i++) {
+                for (int i = 0; i < mouseExitScripts.Length; i++)
                     mouseExitScripts[i].MouseExitCB();
-                }
+
                 mouseExitEvent.Invoke();
-                containsPointCurr = false;
+                containsMousePoint = false;
+                mouseTrackerEnteredSet.Remove(this);
             }
         }
         else {
             if (refShape.ContainsPoint(mousePos)) {
-                for (int i = 0; i < mouseEnterScripts.Length; i++) {
+                for (int i = 0; i < mouseEnterScripts.Length; i++)
                     mouseEnterScripts[i].MouseEnterCB();
-                }
+
                 mouseEnterEvent.Invoke();
-                containsPointCurr = true;
+                containsMousePoint = true;
+                // TODO: Find a more efficient way to add "this" to entered list at this point
+                RedoEnteredSet();
             }
         }
     }
@@ -155,6 +244,7 @@ public class RefShape2DMouseTracker : MonoBehaviour, IGameEventListener<Vector2>
 public class RefShape2DMouseTrackerEditor : Editor {
 
     SerializedProperty refShape;
+    SerializedProperty trackThrough;
     SerializedProperty linkMouseUpToDown;
 
     SerializedProperty mouseDownEvent;
@@ -166,6 +256,7 @@ public class RefShape2DMouseTrackerEditor : Editor {
 
     private void OnEnable() {
         refShape = serializedObject.FindProperty("refShape");
+        trackThrough = serializedObject.FindProperty("trackThrough");
         linkMouseUpToDown = serializedObject.FindProperty("linkMouseUpToDown");
 
         mouseDownEvent = serializedObject.FindProperty("mouseDownEvent");
@@ -181,7 +272,7 @@ public class RefShape2DMouseTrackerEditor : Editor {
         EditorGUILayout.LabelField("It only take 1 instance of this component to activate all IMouseDetector callbacks on this GameObject");
 
         EditorGUILayout.PropertyField(refShape);
- 
+        EditorGUILayout.PropertyField(trackThrough);
         EditorGUILayout.PropertyField(linkMouseUpToDown);
 
         useEvents = EditorGUILayout.Foldout(useEvents, "Public event responses", true);

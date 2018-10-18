@@ -124,6 +124,21 @@ namespace ZeroProgress.Common.Collections
         }
 
         /// <summary>
+        /// Inserts a collection of items to the set
+        /// </summary>
+        /// <param name="index">The index to insert at</param>
+        /// <param name="ItemsToAdd">The items to be inserted</param>
+        public void InsertRange(int index, IEnumerable<T> ItemsToAdd) {
+            Items.InsertRange(index, ItemsToAdd);
+
+            foreach (T item in ItemsToAdd) {
+                RaiseItemChange(OnItemAdded, item);
+            }
+
+            RaiseSetModified();
+        }
+
+        /// <summary>
         /// Removes an item at the specified index
         /// </summary>
         /// <param name="index">The index to remove the item from</param>
@@ -222,6 +237,28 @@ namespace ZeroProgress.Common.Collections
                 Items.Remove(item);
                 RaiseItemChange(OnItemRemoved, item);
             }
+
+            RaiseSetModified();
+        }
+
+        /// <summary>
+        /// Removes a collection of items from the set
+        /// </summary>
+        /// <param name="index1">The index of one item to swap</param>
+        /// <param name="index2">The index of the other item to swap</param>
+        public void Swap(int index1, int index2) {
+            bool validIndex = index1 < Items.Count && index2 < Items.Count;
+
+            if (!validIndex)
+                return;
+
+            T temp = Items[index1];
+            Items[index1] = Items[index2];
+            Items[index2] = temp;
+
+            // Necessary to do this? Mayhaps;
+            //RaiseItemChange(OnItemRemoved, removedItem1);
+            //RaiseItemChange(OnItemRemoved, removedItem2);
 
             RaiseSetModified();
         }

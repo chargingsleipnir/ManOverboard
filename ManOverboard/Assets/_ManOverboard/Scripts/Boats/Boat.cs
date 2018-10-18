@@ -16,7 +16,7 @@ public class Hole {
 }
 
 //[RequireComponent(typeof(Rigidbody2D), typeof(Collider2D))]
-public class Boat : MonoBehaviour {
+public class Boat : SpriteBase {
 
     public delegate void NumLeaksDelegate(int numLeaks);
     NumLeaksDelegate NumLeaksCB;
@@ -68,8 +68,10 @@ public class Boat : MonoBehaviour {
     /// </summary>
     protected List<Leak> activeLeaks = new List<Leak>();
 
-    protected void Awake()
+    protected override void Awake()
     {
+        base.Awake();
+
         myRigidbody = this.GetComponentIfNull(myRigidbody);
         
         if(myColliders == null || myColliders.Length == 0)
@@ -82,7 +84,7 @@ public class Boat : MonoBehaviour {
 
     protected void OnStart(int buoyancyTotal) {
 
-        transform.position = new Vector3(transform.position.x, transform.position.y, (float)Consts.ZLayers.Boat);
+        ChangeSortCompLayer(Consts.DrawLayers.BoatLevel1);
 
         buoyancy.Value = buoyancyTotal;
 
@@ -92,7 +94,7 @@ public class Boat : MonoBehaviour {
 
         // Add people - increasing load weight & reducing buoyancy
         foreach (CharBase character in characterSet) {
-            weightLoad.Value += character.weight;
+            weightLoad.Value += character.Weight;
         }
         weightTotal.Value += weightLoad.Value;
         // TODO: Add ITEMS - increasing load weight & reducing buoyancy
