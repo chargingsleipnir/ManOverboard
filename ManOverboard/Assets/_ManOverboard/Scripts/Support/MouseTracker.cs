@@ -7,88 +7,98 @@ using ZeroProgress.Common.Collections;
 
 public class MouseTracker : MonoBehaviour {
 
-    // TODO: Specify component type - WAY too many conversions happening
-    private ComponentSet mouseTrackerFullSet;
-    private ComponentSet mouseTrackerEnteredSet;
+    private RefShape2DMouseTrackerSet mouseTrackerFullSet;
+    private RefShape2DMouseTrackerSet mouseTrackerEnteredSet;
+    private RefShape2DMouseTrackerSet mouseTrackerLinkedSet;
 
     delegate void MouseEventsDel(Vector2 mousePos);
     MouseEventsDel MouseMoveCalls;
     MouseEventsDel MouseDownCalls;
     MouseEventsDel MouseUpCalls;
 
-    [SerializeField]
-    private Vector2Reference mousePos;
+    private ScriptableVector2 mousePos;
     private Vector2 prevPos;
 
     private void Awake() {
-        Vector3 mouseCalcPos = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0.0f));
-        prevPos = mousePos.Value = new Vector2(mouseCalcPos.x, mouseCalcPos.y);
+        mousePos = AssetDatabase.LoadAssetAtPath<ScriptableVector2>("Assets/_ManOverboard/Variables/v2_mouseWorldPos.asset");
 
-        mouseTrackerFullSet = AssetDatabase.LoadAssetAtPath<ComponentSet>("Assets/_ManOverboard/Variables/Sets/MouseTrackerFullSet.asset");
+        Vector3 mouseCalcPos = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0.0f));
+        prevPos = mousePos.CurrentValue = new Vector2(mouseCalcPos.x, mouseCalcPos.y);
+
+        mouseTrackerFullSet = AssetDatabase.LoadAssetAtPath<RefShape2DMouseTrackerSet>("Assets/_ManOverboard/Variables/Sets/MouseTrackerSetFull.asset");
         mouseTrackerFullSet.OnItemAdded += OnItemAdded;
         mouseTrackerFullSet.OnItemRemoved += OnItemRemoved;
 
-        mouseTrackerEnteredSet = AssetDatabase.LoadAssetAtPath<ComponentSet>("Assets/_ManOverboard/Variables/Sets/MouseTrackerEnteredSet.asset");
+        mouseTrackerEnteredSet = AssetDatabase.LoadAssetAtPath<RefShape2DMouseTrackerSet>("Assets/_ManOverboard/Variables/Sets/MouseTrackerSetEntered.asset");
+        mouseTrackerLinkedSet = AssetDatabase.LoadAssetAtPath<RefShape2DMouseTrackerSet>("Assets/_ManOverboard/Variables/Sets/MouseTrackerSetLinked.asset");
     }
 
-    private void OnItemAdded(object sender, SetModifiedEventArgs<Component> e) {
-        RedoMouseMoveDelegate();
-        // ? Essentially calling mouse-enter straight away, if item was adde with mouse being over-top of it.
-        //(e.Item as RefShape2DMouseTracker).MouseMoveCB(mousePos.Value);
+    private void OnItemAdded(object sender, SetModifiedEventArgs<RefShape2DMouseTracker> e) {
+        ResetMouseMoveDelegate();
+        // ? Essentially calling mouse-enter straight away, if item was added with mouse being over-top of it.
+        e.Item.MouseMoveCB(mousePos.CurrentValue);
     }
-    private void OnItemRemoved(object sender, SetModifiedEventArgs<Component> e) {
-        RedoMouseMoveDelegate();
+    private void OnItemRemoved(object sender, SetModifiedEventArgs<RefShape2DMouseTracker> e) {
+        ResetMouseMoveDelegate();
     }
 
-    private void RedoMouseMoveDelegate() {
+    private void ResetMouseMoveDelegate() {
         MouseMoveCalls = null;
         for (int i = 0; i < mouseTrackerFullSet.Count; i++)
-            MouseMoveCalls += (mouseTrackerFullSet[i] as RefShape2DMouseTracker).MouseMoveCB;
+            MouseMoveCalls += mouseTrackerFullSet[i].MouseMoveCB;
     }
-    private void RedoMouseDownDelegate() {
+    private void ResetMouseDownDelegate() {
         MouseDownCalls = null;
         for (int i = 0; i < mouseTrackerEnteredSet.Count; i++) {
-            MouseDownCalls += (mouseTrackerEnteredSet[i] as RefShape2DMouseTracker).MouseDownCB;
-            if ((mouseTrackerEnteredSet[i] as RefShape2DMouseTracker).trackThrough == false)
+            MouseDownCalls += mouseTrackerEnteredSet[i].MouseDownCB;
+            if (mouseTrackerEnteredSet[i].clickThrough == false)
                 break;
         }
     }
-    private void RedoMouseUpDelegate() {
+    private void ResetMouseUpDelegate() {
         MouseUpCalls = null;
+
+        // Start by calling mouse up on any element that is no longer being hovered but had (and still has) it's mouse down & up calls linked
+        for (int i = 0; i < mouseTrackerLinkedSet.Count; i++)
+            if(mouseTrackerLinkedSet[i].LinkMouseUpToDown)
+                MouseUpCalls += mouseTrackerLinkedSet[i].MouseUpCB;
+
+        // Add the rest of the hovered mouse up calls
         for (int i = 0; i < mouseTrackerEnteredSet.Count; i++) {
-            MouseUpCalls += (mouseTrackerEnteredSet[i] as RefShape2DMouseTracker).MouseUpCB;
-            if ((mouseTrackerEnteredSet[i] as RefShape2DMouseTracker).trackThrough == false)
+            if(!mouseTrackerLinkedSet.Contains(mouseTrackerEnteredSet[i]))
+                MouseUpCalls += mouseTrackerEnteredSet[i].MouseUpCB;
+            if (mouseTrackerEnteredSet[i].clickThrough == false)
                 break;
         }
     }
 
 
     private void Start() {
-        RedoMouseMoveDelegate();
+        ResetMouseMoveDelegate();
     }
 
     private void Update() {
         Vector3 mouseCalcPos = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0.0f));
-        mousePos.Value = new Vector2(mouseCalcPos.x, mouseCalcPos.y);
+        mousePos.CurrentValue = new Vector2(mouseCalcPos.x, mouseCalcPos.y);
 
-        if (prevPos != mousePos.Value) {
-            prevPos = mousePos.Value;
-            if (MouseMoveCalls != null) {
-                MouseMoveCalls(mousePos.Value);
-            }
+        if (prevPos != mousePos.CurrentValue) {
+            prevPos = mousePos.CurrentValue;
+            if (MouseMoveCalls != null)
+                MouseMoveCalls(mousePos.CurrentValue);
         }
 
         if (Input.GetMouseButtonDown(0)) {
-            RedoMouseDownDelegate();
-            if (MouseDownCalls != null) {
-                MouseDownCalls(mousePos.Value);
-            }
+            ResetMouseDownDelegate();
+            if (MouseDownCalls != null)
+                MouseDownCalls(mousePos.CurrentValue);
         }
 
         if (Input.GetMouseButtonUp(0)) {
-            RedoMouseUpDelegate();
+            ResetMouseUpDelegate();
             if (MouseUpCalls != null)
-                MouseUpCalls(mousePos.Value);
+                MouseUpCalls(mousePos.CurrentValue);
+
+            mouseTrackerLinkedSet.Clear();
         }
 
         // TODO: Delete when debugging lists no longer required

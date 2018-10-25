@@ -7,6 +7,17 @@ public static class Consts {
     public const int LEVEL_SCENE_IDX_DIFF = 2;
     public const int LEVEL_DATA_IDX_DIFF = 1;
 
+    public const float CONT_AREA_BUFFER = 0.1f;
+
+    public const float SINK_STEP_SECS = 0.25f;
+    public const float MIN_SCOOP_RATE = 1.0f;
+
+    public enum LeakTypesAndRates {
+        Pinhole = 1,
+        Bullet = 3,
+        CannonBall = 10
+    }
+
     public enum ZLayers {
         BehindWater = 1,
         Water = 0,
@@ -36,11 +47,14 @@ public static class Consts {
     public enum ItemType {
         Scooping = 0
     }
+    public enum CharState {
+        Default,
+        MenuOpen,
+        Scooping
+    }
     public enum LevelState {
         Default,
-        CharHeldToReplace,
         CharHeldToToss,
-        CmdMenuOpen,
         ObjectSelection
     }
     public enum CollType {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using ZeroProgress.Common;
 using ZeroProgress.Common.Collections;
+using UnityEditor;
 
 public class LevelManager : MonoBehaviour {
 
@@ -12,29 +13,29 @@ public class LevelManager : MonoBehaviour {
     Consts.LevelState levelState;
 
     // TODO: Adjust sink rate based on number of holes
-    const float SINK_STEP_SECS = 0.25f;
     [SerializeField]
     private GameObject waterObj;
     [SerializeField]
     private GameObject rearMenuFieldPrefab;
     private GameObject rearMenuFieldObj;
 
-    private bool levelActive = true;
-    private Coroutine currCoroutine;
+    private bool levelActive;
+    private bool levelPaused;
+    private Coroutine shipSinkCoroutine;
+    private List<Coroutine> removeWaterCoroutines;
 
     public Boat boat;
 
-    [SerializeField]
-    private ComponentSet characterSet;
+    private SpriteTossableSet spriteTossableSet;
+
+    private List<CharBase> characterSet;
     private int charSetStartCount;
 
-    [SerializeField]
-    private ComponentSet itemsCanScoop;
+    private ItemCanScoopSet itemsCanScoop;
 
-    public IntReference loadWeight;
-
-    private GameObject heldCharObj;
-    private CharBase heldCharScpt;
+    private GameObject heldObj;
+    private SpriteTossable heldSpriteTossable;
+    private CharActionable heldCharActionable;
 
     private GameObject itemObj;
 
@@ -64,13 +65,27 @@ public class LevelManager : MonoBehaviour {
         // Once game is ready to ship, delete it.
         gameCtrl.Init();
 
-        currCoroutine = null;
-
-        boat.AddNumLeaksCallback(NumLeaks);
-        charSetStartCount = characterSet.Count;
+        spriteTossableSet = AssetDatabase.LoadAssetAtPath<SpriteTossableSet>("Assets/_ManOverboard/Variables/Sets/SpriteTossableSet.asset");
+        itemsCanScoop = AssetDatabase.LoadAssetAtPath<ItemCanScoopSet>("Assets/_ManOverboard/Variables/Sets/ItemCanScoopSet.asset");
     }
 
     private void Start () {
+        shipSinkCoroutine = null;
+        removeWaterCoroutines = new List<Coroutine>();
+
+        boat.AddNumLeaksCallback(NumLeaks);
+
+        characterSet = new List<CharBase>();
+        for (int i = 0; i < spriteTossableSet.Count; i++) {
+            spriteTossableSet[i].SetMouseRespCallbacks(OnTossableSpriteMouseDown, OnTossableSpriteMouseUp);
+            if (spriteTossableSet[i] is CharBase)
+                characterSet.Add(spriteTossableSet[i] as CharBase);
+            else if (spriteTossableSet[i] is ItemBase) {
+                (spriteTossableSet[i] as ItemBase).SetItemSelectionCallback(OnItemSelection);
+            }
+        }
+        charSetStartCount = characterSet.Count;
+
         levelState = Consts.LevelState.Default;
         holdWeight.Value = 0;
         uiUpdate.RaiseEvent();
@@ -87,15 +102,16 @@ public class LevelManager : MonoBehaviour {
         rearMenuFieldObj.SetActive(false);
 
         levelActive = true;
+        levelPaused = false;
 
-        if (currCoroutine != null)
-            StopCoroutine(currCoroutine);
-        currCoroutine = StartCoroutine(SinkShipInterval());
+        if (shipSinkCoroutine != null)
+            StopCoroutine(shipSinkCoroutine);
+        shipSinkCoroutine = StartCoroutine(SinkShipInterval());
     }
 
     private void Update() {
         if (levelState == Consts.LevelState.CharHeldToToss) {
-            heldCharScpt.MoveRigidbody();
+            heldSpriteTossable.MoveRigidbody();
             mouseDelta = mousePos.Value - mouseLastPos;
             mouseLastPos = mousePos.Value;
         }        
@@ -106,14 +122,14 @@ public class LevelManager : MonoBehaviour {
     }
 
     private void MouseEnterCharContArea() {
-        levelState = Consts.LevelState.CharHeldToReplace;
-        heldCharObj.transform.position = grabPos;
-        heldCharScpt.SetActionBtnActive(true);
+        levelState = Consts.LevelState.Default;
+        heldObj.transform.position = grabPos;
+        heldSpriteTossable.OverheadButtonActive(true);
     }
 
     private void MouseExitCharContArea() {
         levelState = Consts.LevelState.CharHeldToToss;
-        heldCharScpt.SetActionBtnActive(false);
+        heldSpriteTossable.OverheadButtonActive(false);
     }
 
     private void CheckLevelEndResult() {
@@ -121,71 +137,81 @@ public class LevelManager : MonoBehaviour {
     }
 
     private void PauseLevel() {
-        boat.Sinking = false;
+        levelPaused = true;
         // Pause animations of all characters except the one being held.
     }
     private void UnPauseLevel() {
         if (!levelActive)
             return;
 
-        boat.Sinking = true;
+        levelPaused = false;
     }
 
-    public void OnCharMouseDown(GameObject charObj) {
+    public void OnTossableSpriteMouseDown(GameObject spriteObj) {
         if (!levelActive)
             return;
 
         // If a different character's menu is currently open, close it.
-        if (levelState == Consts.LevelState.CmdMenuOpen && charObj != heldCharObj)
+        if (spriteObj != heldObj)
             ReturnToNeutral();
 
-        heldCharObj = charObj;
-        heldCharScpt = charObj.GetComponent<CharBase>();
+        heldObj = spriteObj;
+        heldSpriteTossable = spriteObj.GetComponent<SpriteTossable>();
+        if(heldSpriteTossable is CharActionable) {
+            heldCharActionable = spriteObj.GetComponent<CharActionable>();
+            heldCharActionable.SetCallbacks(HighlightToSelectCB, StartRemoveWaterCB, StopRemoveWaterCB);
+        }
+        else {
+            heldCharActionable = null;
+        }
 
         // Bring character to focus, in front of everything.
-        heldCharScpt.ChangeSortCompLayer(Consts.DrawLayers.FrontOfLevel3);
+        heldSpriteTossable.SortCompLayerChange(Consts.DrawLayers.FrontOfLevel3, null);
 
         // maintain copy of character's position where grabbed
-        grabPos = charObj.transform.position;
+        grabPos = spriteObj.transform.position;
 
         charContAreaScpt.gameObject.SetActive(true);
-        heldCharScpt.ApplyTransformToContArea(charContAreaScpt.gameObject);
+        heldSpriteTossable.ApplyTransformToContArea(charContAreaScpt.gameObject);
         charContAreaScpt.MouseEnterCB();
 
-        holdWeight.Value = heldCharScpt.Weight;
+        holdWeight.Value = heldSpriteTossable.Weight;
         uiUpdate.RaiseEvent();
 
         PauseLevel();
     }
 
-    public void OnCharMouseUp() {
+    public void OnTossableSpriteMouseUp() {
         if (!levelActive)
             return;
 
         charContAreaScpt.gameObject.SetActive(false);
 
-        if (heldCharScpt.GetMenuOpen()) {
-            levelState = Consts.LevelState.CmdMenuOpen;
-            rearMenuFieldObj.SetActive(true);
-            return;
+        if (heldCharActionable != null) {
+            if(heldCharActionable.state == Consts.CharState.MenuOpen) {
+                rearMenuFieldObj.SetActive(true);
+                return;
+            }
         }
 
         if (levelState == Consts.LevelState.CharHeldToToss) {
 
             // TODO: Top out the toss speed to something not TOO unreasonable
             float tossSpeed = mouseDelta.magnitude / Time.deltaTime;
+            heldSpriteTossable.Toss(mouseDelta * tossSpeed);
 
-            // TODO: Have character removed from sprite grouping, mouse tracker, etc. Save processing.
-
-            heldCharScpt.Toss(mouseDelta * tossSpeed);
-            heldCharObj.layer = 9; // tossed objects
+            heldObj.layer = 9; // tossed objects
 
             // Change weight in boat
-            boat.LightenLoad(holdWeight.Value);
+            boat.RemoveLoad(holdWeight.Value);
+
+            characterSet.Remove(heldCharActionable);
+            heldSpriteTossable.RemoveFromSet(); // TODO: Flesh this out - remove from everything it could be wasting calculations with
+            heldCharActionable = null;
+            heldSpriteTossable = null;
         }
-        else if (levelState == Consts.LevelState.CharHeldToReplace) {
-            heldCharScpt.ReturnToBoat();
-        }
+        else
+            heldSpriteTossable.ReturnToBoat();
 
         levelState = Consts.LevelState.Default;
 
@@ -195,26 +221,15 @@ public class LevelManager : MonoBehaviour {
         UnPauseLevel();
     }
 
-    public void OnItemMouseUp(GameObject itemObj) {
-        foreach (ItemBase item in itemsCanScoop) {
-            item.UnHighlight();
-        }
-        heldCharScpt.UseItem(itemObj);
-        levelState = Consts.LevelState.Default;
+    public void OnItemSelection(ItemBase item) {
+        ReturnToNeutral();
+        if (heldCharActionable != null)
+            heldCharActionable.UseItem(item);
     }
 
     // TODO: need to find a better way to dynamically select item types. Passing raw ints in the inspector is insufficient
     public void ToState(Consts.LevelState state) {
         levelState = state;
-    }
-    public void HighlightToSelect(Consts.ItemType itemType) {
-        levelState = Consts.LevelState.ObjectSelection;
-
-        if (itemType == Consts.ItemType.Scooping) {
-            foreach (ItemBase item in itemsCanScoop) {
-                item.HighlightToClick();
-            }
-        }
     }
 
     private void NumLeaks(int numLeaks) {
@@ -244,23 +259,58 @@ public class LevelManager : MonoBehaviour {
         }
     }
 
+    public void HighlightToSelectCB(Consts.ItemType itemType) {
+        levelState = Consts.LevelState.ObjectSelection;
+
+        if (itemType == Consts.ItemType.Scooping) {
+            foreach (ItemCanScoop item in itemsCanScoop)
+                item.HighlightToClick();
+        }
+    }
+    public Coroutine StartRemoveWaterCB(int waterWeight, float removalRate) {
+        Coroutine retCo = StartCoroutine(RemoveWaterInterval(waterWeight, removalRate));
+        removeWaterCoroutines.Add(retCo);
+        return retCo;
+    }
+    public void StopRemoveWaterCB(Coroutine co) {
+        StopCoroutine(co);
+        removeWaterCoroutines.Remove(co);
+    }
+
     IEnumerator SinkShipInterval() {
         while (levelActive) {
-            boat.SinkInterval();
-            yield return new WaitForSeconds(SINK_STEP_SECS);
+            if(!levelPaused)
+                boat.AddWater();
+            yield return new WaitForSeconds(Consts.SINK_STEP_SECS);
+        }
+    }
+
+    IEnumerator RemoveWaterInterval(int waterWeight, float removalRate) {
+        while (levelActive) {
+            if (!levelPaused)
+                boat.RemoveWater(waterWeight);
+            yield return new WaitForSeconds(removalRate);
         }
     }
 
     public void ReturnToNeutral() {
-        if (heldCharScpt != null) {
-            heldCharScpt.SetActionBtnActive(false);
-            heldCharScpt.SetCommandBtnsActive(false);
-            heldCharScpt.ReturnToBoat();
+        if (heldCharActionable != null) {
+            heldCharActionable.IsActionBtnActive = false;
+            heldCharActionable.IsCancelBtnActive = false;
+            heldCharActionable.IsCommandPanelOpen = false;
+            heldCharActionable.ChangeMouseUpToDownLinks(true);
         }
+
+        if(heldSpriteTossable != null)
+            heldSpriteTossable.ReturnToBoat();
 
         rearMenuFieldObj.SetActive(false);
         holdWeight.Value = 0;
         uiUpdate.RaiseEvent();
+
+        foreach (ItemCanScoop item in itemsCanScoop)
+            item.UnHighlight();
+
         levelState = Consts.LevelState.Default;
         UnPauseLevel();
     }

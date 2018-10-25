@@ -1,18 +1,25 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 using ZeroProgress.Common;
 using ZeroProgress.Common.Collections;
 using Game2DWaterKit;
 
 public class Hole {
     public GameObject obj;
-    public bool submerged;
+    public int leakRate;   
 
-    public Hole(GameObject obj, bool submerged) {
+    public Hole(GameObject obj, int leakRate) {
         this.obj = obj;
-        this.submerged = submerged;
+        this.leakRate = leakRate;        
     }
+}
+
+[System.Serializable]
+public struct HoleData {
+    public int heightByBuoyancy;
+    public Consts.LeakTypesAndRates leakType;
 }
 
 //[RequireComponent(typeof(Rigidbody2D), typeof(Collider2D))]
@@ -36,19 +43,13 @@ public class Boat : SpriteBase {
     private float waterSurfaceYPos;
     private RefRect2D SubmergableAreaRef;
 
-    protected bool sinking = false;
-    public bool Sinking {
-        get { return sinking; }
-        set { sinking = value; }
-    }
-
     float sinkHeightIncr;
 
     public GameObject hole;
     [Tooltip("Use values in line with object weight, buoyancy, etc. from the bottom of the boat, upward.")]
-    public int[] holeHeightsByBuoyancy;
-    private List<Hole> holes;
-    private int numLeaks;
+    public HoleData[] holeDataSet;
+    private List<Hole> holesSubm;
+    private List<Hole> holesSurf;
 
     public IntReference buoyancy;
     public IntReference weightWater;
@@ -57,7 +58,7 @@ public class Boat : SpriteBase {
     public int WeightTotal {
         get { return weightTotal.Value; }
     }
-    public ComponentSet characterSet;
+    private SpriteTossableSet spriteTossableSet;
 
     // UI update event
     [SerializeField]
@@ -72,6 +73,8 @@ public class Boat : SpriteBase {
     {
         base.Awake();
 
+        spriteTossableSet = AssetDatabase.LoadAssetAtPath<SpriteTossableSet>("Assets/_ManOverboard/Variables/Sets/SpriteTossableSet.asset");
+
         myRigidbody = this.GetComponentIfNull(myRigidbody);
         
         if(myColliders == null || myColliders.Length == 0)
@@ -79,12 +82,13 @@ public class Boat : SpriteBase {
 
         SubmergableAreaRef = GetComponent<RefRect2D>();
         waterSurfaceYPos = (water.transform.position.y + (water.GetComponent<Game2DWater>().WaterSize.y * 0.5f));
-        holes = new List<Hole>();
+        holesSubm = new List<Hole>();
+        holesSurf = new List<Hole>();
     }
 
     protected void OnStart(int buoyancyTotal) {
 
-        ChangeSortCompLayer(Consts.DrawLayers.BoatLevel1);
+        SortCompLayerChange(Consts.DrawLayers.BoatLevel1);
 
         buoyancy.Value = buoyancyTotal;
 
@@ -93,8 +97,8 @@ public class Boat : SpriteBase {
         weightTotal.Value = 0;
 
         // Add people - increasing load weight & reducing buoyancy
-        foreach (CharBase character in characterSet) {
-            weightLoad.Value += character.Weight;
+        foreach (SpriteTossable sprite in spriteTossableSet) {
+            weightLoad.Value += sprite.Weight;
         }
         weightTotal.Value += weightLoad.Value;
         // TODO: Add ITEMS - increasing load weight & reducing buoyancy
@@ -107,72 +111,81 @@ public class Boat : SpriteBase {
 
         // Set height of boat based on current buoyancy and water's surface (usually set to 0)
         sinkHeightIncr = SubmergableAreaRef.height / buoyancyTotal;
-        AdjustSunkenDepth();
+        AdjustBoatDepth();
 
         // Put hole(s) in boat
-        numLeaks = 0;
-        for (var i = 0; i < holeHeightsByBuoyancy.Length; i++) {
+        for (var i = 0; i < holeDataSet.Length; i++) {
             // Calulate proper height
-            float yPos = SubmergableAreaRef.YMin + (holeHeightsByBuoyancy[i] * sinkHeightIncr);
+            float yPos = SubmergableAreaRef.YMin + (holeDataSet[i].heightByBuoyancy * sinkHeightIncr);
 
             GameObject holeObj = Instantiate(hole, new Vector3(Random.Range(SubmergableAreaRef.XMin, SubmergableAreaRef.XMax), yPos, transform.position.z - 0.1f), transform.rotation, transform) as GameObject;
             if (yPos <= waterSurfaceYPos) {
-                numLeaks++;
-                holes.Add(new Hole(holeObj, true));
+                holesSubm.Add(new Hole(holeObj, (int)holeDataSet[i].leakType));
             }
             else {
-                holes.Add(new Hole(holeObj, false));
+                holesSurf.Add(new Hole(holeObj, (int)holeDataSet[i].leakType));
             }
         }
-
-        sinking = true;
     }
 
     public void AddNumLeaksCallback(NumLeaksDelegate CB) {
         NumLeaksCB = CB;
     }
 
-    protected void AdjustSunkenDepth() {
-        // Set the boat to where the top of the submergable area is directly on the water's surface, and raise by the buoyancy minus current weight
-        float newYPos = waterSurfaceYPos - (Mathf.Abs(transform.position.y - SubmergableAreaRef.YMax)) + (sinkHeightIncr * (buoyancy.Value - weightTotal.Value));
-        transform.position = new Vector3(transform.position.x, newYPos, transform.position.z);
-
-        // TODO: Try to make this more efficient. Keep a reference to the next closest leaks above & below the water line?
-        for (var i = 0; i < holes.Count; i++) {
-            if (holes[i].submerged) {
-                if (holes[i].obj.transform.position.y > waterSurfaceYPos) {
-                    holes[i].submerged = false;
-                    numLeaks--;
-                    // TODO: Do something with hole.obj reference - change animation to show it's no longer taking in water
-                    NumLeaksCB(numLeaks);
-                }
-            }
-            else {
-                if(holes[i].obj.transform.position.y <= waterSurfaceYPos) {
-                    holes[i].submerged = true;
-                    numLeaks++;
-                    NumLeaksCB(numLeaks);
-                }
+    private void CheckHolesBoatRaised() {
+        for (var i = 0; i < holesSubm.Count; i++) {
+            if (holesSubm[i].obj.transform.position.y > waterSurfaceYPos) {
+                // TODO: Do something with hole.obj reference - change animation to show it's no longer taking in water (change obj reference to a script reference if needed)
+                holesSurf.Add(holesSubm[i]);
+                holesSubm.RemoveAt(i);
+                NumLeaksCB(holesSubm.Count);
             }
         }
     }
-
-    public virtual void SinkInterval() {
-        if (!sinking)
-            return;
-
-        // Each hole eaqually contributes to water gain / buoyancy loss
-        weightWater.Value += numLeaks;
-        weightTotal.Value += numLeaks;
-        uiUpdate.RaiseEvent();
-        AdjustSunkenDepth();
+    private void CheckHolesBoatLowered() {
+        for (var i = 0; i < holesSurf.Count; i++) {
+            if (holesSurf[i].obj.transform.position.y <= waterSurfaceYPos) {
+                // TODO: Do something with hole.obj reference - change animation to show it's taking in water (change obj reference to a script reference if needed)
+                holesSubm.Add(holesSurf[i]);
+                holesSurf.RemoveAt(i);
+            }
+        }
+    }
+    protected void AdjustBoatDepth() {
+        // Set the boat to where the top of the submergable area is directly on the water's surface, and raise by the buoyancy minus current weight
+        float newYPos = waterSurfaceYPos - (Mathf.Abs(transform.position.y - SubmergableAreaRef.YMax)) + (sinkHeightIncr * (buoyancy.Value - weightTotal.Value));
+        transform.position = new Vector3(transform.position.x, newYPos, transform.position.z);
     }
 
-    public void LightenLoad(int weight) {
-        weightLoad.Value -= weight;
+    public virtual void AddWater() {
+        // Calculate water change value
+        int waterWeightChange = 0;
+        for (var i = 0; i < holesSubm.Count; i++)
+            waterWeightChange += holesSubm[i].leakRate;
+
+        // Each hole eaqually contributes to water gain / buoyancy loss
+        weightWater.Value += waterWeightChange;
+        weightTotal.Value += waterWeightChange;
+        uiUpdate.RaiseEvent();
+
+        AdjustBoatDepth();
+        CheckHolesBoatLowered();
+    }
+
+    private void Surface(int weight) {
         weightTotal.Value -= weight;
         uiUpdate.RaiseEvent();
-        AdjustSunkenDepth();
+
+        AdjustBoatDepth();
+        CheckHolesBoatRaised();
+    }
+    public void RemoveWater(int weight) {
+        weightWater.Value -= weight;
+        Surface(weight);
+    }
+    public void RemoveLoad(int weight) {
+        weightLoad.Value -= weight;
+        Surface(weight);
     }
 
     /// <summary>

@@ -8,8 +8,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 003603b5ae9366c4bb85d34711d232ba, type: 3}
-  m_Name: MouseTrackerFullSet
+  m_Script: {fileID: 11500000, guid: c3302c549896cdf4988ea1a0e21ecccf, type: 3}
+  m_Name: ItemCanScoopSet
   m_EditorClassIdentifier: 
   Items: []
   ClearOnEnable: 1

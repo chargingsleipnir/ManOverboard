@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using ZeroProgress.Common;
 
-public class ItemBase : SpriteTossable, IMouseUpDetector {
+public class ItemBase : SpriteTossable {
+
+    public delegate void DelPassItemBase(ItemBase item);
+    DelPassItemBase OnItemSelect;
 
     protected SpriteOutline so;
     protected bool selectable;
@@ -13,11 +16,6 @@ public class ItemBase : SpriteTossable, IMouseUpDetector {
         get { return selected; }
         set { selected = value; }
     }
-
-    [SerializeField]
-    protected Vector2Reference mousePos;
-    [SerializeField]
-    protected GameObjectParamEvent itemMouseUpEvent;
 
     protected override void Awake() {
         base.Awake();
@@ -32,24 +30,35 @@ public class ItemBase : SpriteTossable, IMouseUpDetector {
     }
 
     public void HighlightToClick() {
-        MoveToTopSpriteGroup();
-        ChangeSortCompLayer(Consts.DrawLayers.FrontOfLevel4);
+        if (so.enabled)
+            return;
+
+        SortCompLayerChange(Consts.DrawLayers.FrontOfLevel4, null);
         so.enabled = true;
         selectable = true;
     }
 
     public void UnHighlight() {
-        MoveToOrigSpriteGroup();
-        ChangeSortCompLayer();
+        if (!so.enabled)
+            return;
+
+        SortCompFullReset();
         so.enabled = false;
         selectable = false;
         selected = false;
     }
 
-    public void MouseUpCB() {
+    public override void MouseUpCB() {
         if (selectable) {
             selected = true;
-            itemMouseUpEvent.RaiseEvent(gameObject);
+            OnItemSelect(this);
         }
+        else {
+            base.MouseUpCB();
+        }
+    }
+
+    public void SetItemSelectionCallback(DelPassItemBase OnItemSelect) {
+        this.OnItemSelect = OnItemSelect;
     }
 }

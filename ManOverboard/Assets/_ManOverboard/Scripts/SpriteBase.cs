@@ -23,35 +23,37 @@ public abstract class SpriteLayerComponentData {
         this.sprite = sprite;
     }
 
-    ///<summary>
-    ///Resets to original layer
-    ///</summary>
-    public void ChangeLayer() {
-        ChangeLayer(DrawLayerOrig, false);
-    }
-    public void ChangeLayer(Consts.DrawLayers newLayer, bool resetGroupParent) {
-        CheckChangeZDepth(newLayer);
-
+    public void LayerChange(Consts.DrawLayers newLayer, bool resetGroupParent) {
         GroupParent.RemoveFromGroupList(this);
 
-        DrawLayerCurr = newLayer;
         if(resetGroupParent)
             SetGroupParent();
 
+        DrawLayerCurr = newLayer;
+        CheckChangeZDepth();
+
+        GroupParent.AddToGroupList(this);
+    }
+    public void LayerReset() {
+        LayerChange(DrawLayerOrig, true);
+    }
+    public void ResetGroupParent() {
+        GroupParent.RemoveFromGroupList(this);
+        SetGroupParent();
+        CheckChangeZDepth();
         GroupParent.AddToGroupList(this);
     }
 
     public abstract string GetDebugString();
 
-    protected void CheckChangeZDepth(Consts.DrawLayers newLayer) {
-        // Applies to only DrawLayerMngr.topSortGroup
-        if (GroupParent == DrawLayerMngr.topSortGroup) {
-            // Adjust z depth based around water, which is always at z = 0, and is not a sprite
-            if (newLayer >= Consts.DrawLayers.Water)
-                Utility.RepositionZ(sprite.gameObject.transform, (float)Consts.ZLayers.FrontOfWater);
-            else
-                Utility.RepositionZ(sprite.gameObject.transform, (float)Consts.ZLayers.BehindWater);
-        }
+    protected void CheckChangeZDepth() {
+        Consts.DrawLayers layerToCheck = GetTopLayerInLineage();
+
+        // Adjust z depth based around water, which is always at z = 0, and is not a sprite
+        if (layerToCheck >= Consts.DrawLayers.Water)
+            Utility.RepositionZ(sprite.gameObject.transform, (float)Consts.ZLayers.FrontOfWater);
+        else
+            Utility.RepositionZ(sprite.gameObject.transform, (float)Consts.ZLayers.BehindWater);
     }
 
     enum QtyCompare { GREATER, EQUAL, LESSER }
@@ -121,10 +123,18 @@ public abstract class SpriteLayerComponentData {
         return retList;
     }
 
-    public void EstablishRelationships() {
-        GroupParent.RemoveFromGroupList(this);
-        SetGroupParent();
-        GroupParent.AddToGroupList(this);
+    public virtual Consts.DrawLayers GetTopLayerInLineage() {
+        Consts.DrawLayers retLayer = DrawLayerCurr;
+
+        Transform transParent = sprite.transform.parent;
+        while (transParent != null) {
+            if (transParent.GetComponent<SortingGroup>() != null) {
+                retLayer = transParent.GetComponent<SpriteBase>().SGRef.DrawLayerCurr;
+            }
+            transParent = transParent.parent;
+        }
+
+        return retLayer;
     }
 }
 
@@ -185,6 +195,23 @@ public class SpriteRendererComponentRef : SpriteLayerComponentData {
         retList.Reverse();
 
         return retList;
+    }
+
+    public override Consts.DrawLayers GetTopLayerInLineage() {
+        Consts.DrawLayers retLayer = DrawLayerCurr;
+
+        if (sprite.SGRef != null)
+            retLayer = sprite.SGRef.DrawLayerCurr;
+
+        Transform transParent = sprite.transform.parent;
+        while (transParent != null) {
+            if (transParent.GetComponent<SortingGroup>() != null) {
+                retLayer = transParent.GetComponent<SpriteBase>().SGRef.DrawLayerCurr;
+            }
+            transParent = transParent.parent;
+        }
+
+        return retLayer;
     }
 
     public bool IsChildOf(SortingGroupComponentRef sgRef) {
@@ -287,9 +314,10 @@ public class SpriteBase : MonoBehaviour {
         }
     }
 
-    private bool removedFromGroup = false;
     private Transform origParent;
     private Transform currParent;
+
+    private Vector3 origPos;
 
     protected virtual void Awake() {
         sgRef = null;
@@ -300,10 +328,17 @@ public class SpriteBase : MonoBehaviour {
 
         // Get whatever parent sprite group data is available
         origParent = currParent = transform.parent;
+
+        origPos = transform.position;
     }
 
     protected virtual void Start() {
         EstablishPlacement();
+    }
+
+    public void GoToOrigPlacement() {
+        transform.position = origPos;
+        SortCompFullReset();
     }
 
     public void EstablishPlacement() {
@@ -321,26 +356,33 @@ public class SpriteBase : MonoBehaviour {
 
     protected virtual void Update() {
         if(currParent != transform.parent) {
-            LayerSortComp.EstablishRelationships();
             currParent = transform.parent;
+            LayerSortComp.ResetGroupParent();
             SendChangeToTracker();
         }            
     }
 
-    ///<summary>
-    ///Resets to original layer
-    ///</summary>
-    public void ChangeSortCompLayer() {
-        LayerSortComp.ChangeLayer();
+    public void SortCompLayerReset() {
+        LayerSortComp.LayerReset();
         SendChangeToTracker();
     }
-    public void ChangeSortCompLayer(Consts.DrawLayers newLayer) {
-        LayerSortComp.ChangeLayer(newLayer, false);
-        SendChangeToTracker();
-    }
-    public void ChangeSortCompLayer(Consts.DrawLayers newLayer, Transform newParent) {
+    public void SortCompLayerReset(Transform newParent) {
         currParent = transform.parent = newParent;
-        LayerSortComp.ChangeLayer(newLayer, true);
+        LayerSortComp.LayerReset();
+        SendChangeToTracker();
+    }
+    public void SortCompFullReset() {
+        currParent = transform.parent = origParent;
+        LayerSortComp.LayerReset();
+        SendChangeToTracker();
+    }
+    public void SortCompLayerChange(Consts.DrawLayers newLayer) {
+        LayerSortComp.LayerChange(newLayer, false);
+        SendChangeToTracker();
+    }
+    public void SortCompLayerChange(Consts.DrawLayers newLayer, Transform newParent) {
+        currParent = transform.parent = newParent;
+        LayerSortComp.LayerChange(newLayer, true);
         SendChangeToTracker();
 
         // TODO: Should also have a version that changes the layer order
@@ -363,21 +405,6 @@ public class SpriteBase : MonoBehaviour {
     private void SendChangeToTracker() {
         if (GetComponent<RefShape2DMouseTracker>() != null)
             GetComponent<RefShape2DMouseTracker>().RepositionInTrackerSet();
-    }
-
-    protected void MoveToTopSpriteGroup() {
-        removedFromGroup = true;
-        transform.parent = null;
-        //DrawLayerMngr.AddSprite(this);
-    }
-
-    protected void MoveToOrigSpriteGroup() {
-        if (!removedFromGroup)
-            return;
-
-        removedFromGroup = false;
-        transform.parent = origParent;
-        //DrawLayerMngr.RemoveSprite(this);
     }
 
     private void OnDestroy() {

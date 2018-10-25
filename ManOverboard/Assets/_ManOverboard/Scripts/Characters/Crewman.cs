@@ -5,35 +5,82 @@ using ZeroProgress.Common.Collections;
 
 public class Crewman : CharActionable {
 
-    enum Actions {
-        None,
-        Scoop
+    DelSetItemType delSet;
+    DelStartCoroutine delStart;
+    DelStopCoroutine delStop;
+
+    private Coroutine activeCo;
+
+    [SerializeField]
+    protected ItemBase sailorHat;
+
+    private ItemBase activeItem;
+
+    protected override void Awake() {
+        base.Awake();
+        strength = 125;
     }
-    Actions setAction;
-
-    [SerializeField]
-    protected LevelManager levelManager;
-
-    [SerializeField]
-    protected Transform trans_ItemUseHand;
-
     protected override void Start() {
         base.Start();
+        heldItems.Add(sailorHat);
+    }
 
-        setAction = Actions.None;
+    private void ClickThroughHat(bool clickThrough) {
+        RefShape2DMouseTracker[] trackers = sailorHat.GetComponents<RefShape2DMouseTracker>();
+        for (int i = 0; i < trackers.Length; i++)
+            trackers[i].clickThrough = clickThrough;
     }
 
     public void PrepScoop() {
-        levelManager.HighlightToSelect(Consts.ItemType.Scooping);
-        setAction = Actions.Scoop;
+        ClickThroughHat(false);
+
+        IsCommandPanelOpen = false;
+        delSet(Consts.ItemType.Scooping);
+        state = Consts.CharState.Scooping;
     }
 
-    public override void UseItem(GameObject item) {
-        if(setAction == Actions.Scoop) {
-            // Logic for scooping wth item
+    public override void UseItem(ItemBase item) {
+        activeItem = item;
+        if (!heldItems.Contains(item))
+            heldItems.Add(item);
 
-            Debug.Log("Going to scoop with: " + item.name);
+        if (state == Consts.CharState.Scooping) {
+            // Logic for scooping wth item
             item.transform.position = trans_ItemUseHand.position;
+            item.transform.parent = trans_ItemUseHand.parent;
+            ClickThroughHat(true);
+
+            if (item is ItemCanScoop) {
+                int capWeight = (item as ItemCanScoop).capacity;
+                float heldWeight = item.Weight + capWeight;
+                float scoopRate = (heldWeight / strength) * heldWeight;
+                if (scoopRate < Consts.MIN_SCOOP_RATE)
+                    scoopRate = Consts.MIN_SCOOP_RATE;
+
+                activeCo = delStart(capWeight, scoopRate);
+            }
+            else {
+                Debug.Log("Crewman.cs, UseItem, ItemBase obj is not of proper action type");
+            }
         }
+    }
+
+
+    // TODO: Really flush this out
+    // Item need to go somewhere, keeping it's relative position to it's parent intact - not necessarily it's original position (bucket), just a proper y level near the player.
+
+    public override void CancelAction() {
+        if (state == Consts.CharState.Scooping) {
+            activeItem.GoToOrigPlacement();
+            delStop(activeCo);
+        }
+
+        base.CancelAction();
+    }
+
+    public override void SetCallbacks(DelSetItemType setTypeCB, DelStartCoroutine startCoCB, DelStopCoroutine stopCoCB) {
+        delSet = setTypeCB;
+        delStart = startCoCB;
+        delStop = stopCoCB;
     }
 }

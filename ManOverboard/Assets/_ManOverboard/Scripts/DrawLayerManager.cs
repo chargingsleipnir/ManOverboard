@@ -31,24 +31,24 @@ public static class DrawLayerMngr {
         initialized = true;
 
         // TODO: Erase when no longer needed
-        debugTextBox1 = GameObject.Find("DebugDisp1").GetComponent<Text>();
-        debugTextBox2 = GameObject.Find("DebugDisp2").GetComponent<Text>();
+        //debugTextBox1 = GameObject.Find("DebugDisp1").GetComponent<Text>();
+        //debugTextBox2 = GameObject.Find("DebugDisp2").GetComponent<Text>();
     }
 
     // TODO: Erase when no longer needed
-    public static void Update(ComponentSet mouseTrackerFullSet, ComponentSet mouseTrackerEnteredSet) {
+    public static void Update(RefShape2DMouseTrackerSet mouseTrackerFullSet, RefShape2DMouseTrackerSet mouseTrackerEnteredSet) {
         //debugTextBox1.text = "RAW SPRITE DRAW ORDER\n";
         //debugTextBox1.text += topSortGroup.GetDebugString();
 
-        debugTextBox1.text = "MOUSE TRACKER ORDER\n";
-        for (int i = 0; i < mouseTrackerFullSet.Count; i++) {
-            debugTextBox1.text += mouseTrackerFullSet[i].name + "\n";
-        }
+        //debugTextBox1.text = "MOUSE TRACKER ORDER\n";
+        //for (int i = 0; i < mouseTrackerFullSet.Count; i++) {
+        //    debugTextBox1.text += mouseTrackerFullSet[i].name + "\n";
+        //}
 
-        debugTextBox2.text = "TRACKERS HOVERED\n";
-        for (int i = 0; i < mouseTrackerEnteredSet.Count; i++) {
-            debugTextBox2.text += mouseTrackerEnteredSet[i].name + "\n";
-        }
+        //debugTextBox2.text = "TRACKERS HOVERED\n";
+        //for (int i = 0; i < mouseTrackerEnteredSet.Count; i++) {
+        //    debugTextBox2.text += mouseTrackerEnteredSet[i].name + "\n";
+        //}
     }
 
     public static void ClearSpriteRef() {

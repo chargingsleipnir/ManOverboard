@@ -8,7 +8,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 86338d2a245a2174da49359406d43e42, type: 3}
-  m_Name: v2_MouseDown
+  m_Script: {fileID: 11500000, guid: 1546bfdee57871f459eff1bce5d59ab2, type: 3}
+  m_Name: MouseTrackerSetLinked
   m_EditorClassIdentifier: 
-  eventId: 1
+  Items: []
+  ClearOnEnable: 1

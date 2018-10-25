@@ -4,27 +4,42 @@ using UnityEngine;
 using ZeroProgress.Common;
 
 public class CharActionable : CharBase {
+
+    protected int strength;
+
     [SerializeField]
     protected GameObject actionBtnObj;
-    private SpriteRenderer actBtnSR;
-    private bool actBtnHovered;
-    public bool ActBtnHovered {
-        get { return actBtnHovered; }
-        set {
-            actBtnHovered = value;
-            ChangeMouseUpWithDownLinks(!value);
-        }
+    public override bool IsActionBtnActive {
+        get { return actionBtnObj.activeSelf; }
+        set { actionBtnObj.SetActive(value); }
     }
 
     [SerializeField]
+    protected GameObject cancelBtnObj;
+    public override bool IsCancelBtnActive {
+        get { return cancelBtnObj.activeSelf; }
+        set { cancelBtnObj.SetActive(value); }
+    }
+
+    private SpriteRenderer actBtnSR;
+
+    [SerializeField]
     protected GameObject commandPanel;
+    public override bool IsCommandPanelOpen {
+        get { return commandPanel.activeSelf; }
+        set { commandPanel.SetActive(value); }
+    }
 
     protected bool GUIActive;
     protected Rect actBtnRect;
     protected Rect cmdPanelRect;
 
+    [SerializeField]
+    protected Transform trans_ItemUseHand;
+
     protected override void Awake() {
         base.Awake();
+        strength = 50;
         actBtnSR = actionBtnObj.GetComponent<SpriteRenderer>();
     }
 
@@ -38,44 +53,48 @@ public class CharActionable : CharBase {
 
         float btnTopToCharTop = actBtnRect.height > 0 ? actBtnRect.yMax - (transform.position.y + (srRef.comp.size.y * 0.5f)) : 0;
         contAreaObj.transform.position = new Vector3(transform.position.x, transform.position.y + (btnTopToCharTop * 0.5f), (float)Consts.ZLayers.FrontOfWater);
-        contAreaObj.transform.localScale = new Vector3(Utility.GreaterOf(srRef.comp.size.x, actBtnRect.width) + CONT_AREA_BUFFER, srRef.comp.size.y + btnTopToCharTop + CONT_AREA_BUFFER, 1);
-    }
-
-    public override void SetActionBtnActive(bool isActive) {
-        actionBtnObj.SetActive(isActive);
-    }
-
-    public override void SetCommandBtnsActive(bool isActive) {
-        commandPanel.SetActive(isActive);
-    }
-
-    public override bool GetMenuOpen() {
-        return commandPanel.activeSelf;
+        contAreaObj.transform.localScale = new Vector3(Utility.GreaterOf(srRef.comp.size.x, actBtnRect.width) + Consts.CONT_AREA_BUFFER, srRef.comp.size.y + btnTopToCharTop + Consts.CONT_AREA_BUFFER, 1);
     }
 
     public override void MouseDownCB() {
-        if (saved || tossed || commandPanel.activeSelf)
+        if (IsCommandPanelOpen)
             return;
 
-        actionBtnObj.SetActive(true);
+        base.MouseDownCB();
 
-        held = true;
-        charMouseDownEvent.RaiseEvent(gameObject);
+        if (state == Consts.CharState.Default)
+            IsActionBtnActive = true;
+        else
+            IsCancelBtnActive = true;
     }
     public override void MouseUpCB() {
-        if (saved || tossed || ActBtnHovered || commandPanel.activeSelf || held == false)
+        if (IsCommandPanelOpen)
             return;
 
-        actionBtnObj.SetActive(false);
+        base.MouseUpCB();
 
-        held = false;
-        charMouseUpEvent.RaiseEvent();
+        if (state == Consts.CharState.Default)
+            IsActionBtnActive = false;
+        else
+            IsCancelBtnActive = false;
     }
 
-    public void ActBtnMouseUp() {
-        commandPanel.SetActive(true);
-        actionBtnObj.SetActive(false);
-        ActBtnHovered = false;
-        charMouseUpEvent.RaiseEvent();
+    public override void OverheadButtonActive(bool isActive) {
+        if (state == Consts.CharState.Default)
+            IsActionBtnActive = isActive;
+        else
+            IsCancelBtnActive = isActive;
+    }
+
+    public void OpenCommandPanel() {
+        IsCommandPanelOpen = true;
+        IsActionBtnActive = false;
+        IsCancelBtnActive = false;
+        state = Consts.CharState.MenuOpen;
+    }
+
+    public virtual void CancelAction() {
+        IsCancelBtnActive = false;
+        state = Consts.CharState.Default;
     }
 }
