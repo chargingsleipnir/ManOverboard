@@ -67,6 +67,7 @@ public class RefShape2DMouseTracker : MonoBehaviour {
         if (refShape == null || lateStartLaunched == false)
             return;
 
+        // TODO: Need to consider children/range of items
         AddToSet();
     }
 
@@ -95,6 +96,7 @@ public class RefShape2DMouseTracker : MonoBehaviour {
         if (refShape == null)
             return;
 
+        // TODO: Need to consider children/range of items
         RemoveFromSet();
     }
 

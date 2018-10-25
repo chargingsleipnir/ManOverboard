@@ -5,6 +5,16 @@ using ZeroProgress.Common;
 
 public class CharActionable : CharBase {
 
+    protected DelPassItemType DelSetItemType;
+    protected DelPassWaterRemoveData DelStartWaterRemove;
+    protected DelPassWaterRemoveCo DelStopWaterRemove;
+    protected DelVoid FadeLevel;
+    protected DelVoid UnFadeLevel;
+
+    protected Coroutine activeCo;
+
+    protected ItemBase activeItem;
+
     protected int strength;
 
     [SerializeField]
@@ -79,6 +89,14 @@ public class CharActionable : CharBase {
             IsCancelBtnActive = false;
     }
 
+    public override void SetCallbacks(DelPassItemType setTypeCB, DelPassWaterRemoveData startCoCB, DelPassWaterRemoveCo stopCoCB, DelVoid fadeLevelCB, DelVoid unfadeLevelCB) {
+        DelSetItemType = setTypeCB;
+        DelStartWaterRemove = startCoCB;
+        DelStopWaterRemove = stopCoCB;
+        FadeLevel = fadeLevelCB;
+        UnFadeLevel = unfadeLevelCB;
+    }
+
     public override void OverheadButtonActive(bool isActive) {
         if (state == Consts.CharState.Default)
             IsActionBtnActive = isActive;
@@ -89,12 +107,13 @@ public class CharActionable : CharBase {
     public void OpenCommandPanel() {
         IsCommandPanelOpen = true;
         IsActionBtnActive = false;
-        IsCancelBtnActive = false;
         state = Consts.CharState.MenuOpen;
+        FadeLevel();
     }
 
     public virtual void CancelAction() {
         IsCancelBtnActive = false;
         state = Consts.CharState.Default;
+        UnFadeLevel();
     }
 }

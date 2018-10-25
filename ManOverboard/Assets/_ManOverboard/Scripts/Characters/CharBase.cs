@@ -9,9 +9,9 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
 
     public Consts.CharState state;
 
-    public delegate void DelSetItemType(Consts.ItemType type);
-    public delegate Coroutine DelStartCoroutine(int waterWeight, float removalRate);
-    public delegate void DelStopCoroutine(Coroutine co);
+    public delegate void DelPassItemType(Consts.ItemType type);
+    public delegate Coroutine DelPassWaterRemoveData(int waterWeight, float removalRate);
+    public delegate void DelPassWaterRemoveCo(Coroutine co);
 
     protected List<ItemBase> heldItems;
 
@@ -39,12 +39,6 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
         SortCompLayerChange(Consts.DrawLayers.BoatLevel1Contents);
     }
 
-    public void ChangeMouseUpToDownLinks(bool linkEvents) {
-        RefShape2DMouseTracker[] trackers = GetComponents<RefShape2DMouseTracker>();
-        for (int i = 0; i < trackers.Length; i++)
-            trackers[i].LinkMouseUpToDown = linkEvents;
-    }
-
     public override void MouseDownCB() {
         if (saved)
             return;
@@ -59,5 +53,5 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
     }
 
     public virtual void UseItem(ItemBase item) { }
-    public virtual void SetCallbacks(DelSetItemType setTypeCB, DelStartCoroutine startCoCB, DelStopCoroutine stopCoCB) { }
+    public virtual void SetCallbacks(DelPassItemType setTypeCB, DelPassWaterRemoveData startCoCB, DelPassWaterRemoveCo stopCoCB, DelVoid fadeLevelCB, DelVoid unfadeLevelCB) { }
 }

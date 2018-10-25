@@ -3,20 +3,14 @@ using UnityEngine;
 
 public class RefRect2D : RefShape {
 
-    ScriptableObject so;
-
     public float width;
     public float height;
 
-    private Rect rect;
-
-    private void Awake() {
-        rect = new Rect();
-
-        Vector3 pos = transform.position;
-        rect.position = new Vector2(pos.x + (offsetX - (width * 0.5f)), pos.y + (offsetY - (height * 0.5f)));
-        rect.width = width;
-        rect.height = height;
+    public override float Width {
+        get { return width; }
+    }
+    public override float Height {
+        get { return height; }
     }
 
     public override Vector2 Position {
@@ -30,17 +24,16 @@ public class RefRect2D : RefShape {
             point.y < YMax;
     }
 
-    public Rect Rect { get; set; }
-    public float XMin {
+    public override float XMin {
         get { return transform.position.x + offsetX - ((width * transform.lossyScale.x) * 0.5f); }
     }
-    public float XMax {
+    public override float XMax {
         get { return transform.position.x + offsetX + ((width * transform.lossyScale.x) * 0.5f); }
     }
-    public float YMin {
+    public override float YMin {
         get { return transform.position.y + offsetY - ((height * transform.lossyScale.y) * 0.5f); }
     }
-    public float YMax {
+    public override float YMax {
         get { return transform.position.y + offsetY + ((height * transform.lossyScale.y) * 0.5f); }
     }
 

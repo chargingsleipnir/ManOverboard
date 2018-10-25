@@ -43,6 +43,10 @@ public class Boat : SpriteBase {
     private float waterSurfaceYPos;
     private RefRect2D SubmergableAreaRef;
 
+    public float FloorY {
+        get { return SubmergableAreaRef.YMax - Consts.BOAT_LEDGE_FLOOR_DIFF; }
+    }
+
     float sinkHeightIncr;
 
     public GameObject hole;

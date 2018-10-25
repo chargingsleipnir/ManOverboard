@@ -9,6 +9,9 @@ public static class Consts {
 
     public const float CONT_AREA_BUFFER = 0.1f;
 
+    public const float BOAT_LEDGE_FLOOR_DIFF = 0.2f;
+    public const float ITEM_DROP_X_BUFF = 0.25f;
+
     public const float SINK_STEP_SECS = 0.25f;
     public const float MIN_SCOOP_RATE = 1.0f;
 

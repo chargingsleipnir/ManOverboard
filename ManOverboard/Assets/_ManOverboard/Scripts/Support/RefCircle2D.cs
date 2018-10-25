@@ -6,6 +6,13 @@ public class RefCircle2D : RefShape {
 
     public float radius;
 
+    public override float Width {
+        get { return radius * 2; }
+    }
+    public override float Height {
+        get { return radius * 2; }
+    }
+
     public override Vector2 Position {
         get { return new Vector2(transform.position.x + offsetX, transform.position.y + offsetY); }
     }
@@ -13,6 +20,19 @@ public class RefCircle2D : RefShape {
     public override bool ContainsPoint(Vector2 point) {
         float magSqr = Vector2.SqrMagnitude(point - new Vector2(transform.position.x + offsetX, transform.position.y + offsetY));
         return magSqr < Mathf.Pow(radius * Utility.GreaterOf(transform.lossyScale.x, transform.lossyScale.y), 2);
+    }
+
+    public override float XMin {
+        get { return transform.position.x + offsetX - (radius * transform.lossyScale.x); }
+    }
+    public override float XMax {
+        get { return transform.position.x + offsetX + (radius * transform.lossyScale.x); }
+    }
+    public override float YMin {
+        get { return transform.position.y + offsetY - (radius * transform.lossyScale.y); }
+    }
+    public override float YMax {
+        get { return transform.position.y + offsetY + (radius * transform.lossyScale.y); }
     }
 
     private void OnDrawGizmos() {

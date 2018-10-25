@@ -49,6 +49,12 @@ public class SpriteTossable : SpriteBase, IMouseDownDetector, IMouseUpDetector {
         tossed = false;
     }
 
+    public void ChangeMouseUpToDownLinks(bool linkEvents) {
+        RefShape2DMouseTracker[] trackers = GetComponents<RefShape2DMouseTracker>();
+        for (int i = 0; i < trackers.Length; i++)
+            trackers[i].LinkMouseUpToDown = linkEvents;
+    }
+
     public virtual void MouseDownCB() {
         if (tossed)
             return;

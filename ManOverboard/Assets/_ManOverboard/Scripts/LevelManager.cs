@@ -81,7 +81,7 @@ public class LevelManager : MonoBehaviour {
             if (spriteTossableSet[i] is CharBase)
                 characterSet.Add(spriteTossableSet[i] as CharBase);
             else if (spriteTossableSet[i] is ItemBase) {
-                (spriteTossableSet[i] as ItemBase).SetItemSelectionCallback(OnItemSelection);
+                (spriteTossableSet[i] as ItemBase).SetItemSelectionCallback(OnItemSelectionCB, OnItemDeselectionCB);
             }
         }
         charSetStartCount = characterSet.Count;
@@ -159,7 +159,7 @@ public class LevelManager : MonoBehaviour {
         heldSpriteTossable = spriteObj.GetComponent<SpriteTossable>();
         if(heldSpriteTossable is CharActionable) {
             heldCharActionable = spriteObj.GetComponent<CharActionable>();
-            heldCharActionable.SetCallbacks(HighlightToSelectCB, StartRemoveWaterCB, StopRemoveWaterCB);
+            heldCharActionable.SetCallbacks(HighlightToSelectCB, StartRemoveWaterCB, StopRemoveWaterCB, FadeLevelCB, UnfadeLevelCB);
         }
         else {
             heldCharActionable = null;
@@ -186,13 +186,6 @@ public class LevelManager : MonoBehaviour {
             return;
 
         charContAreaScpt.gameObject.SetActive(false);
-
-        if (heldCharActionable != null) {
-            if(heldCharActionable.state == Consts.CharState.MenuOpen) {
-                rearMenuFieldObj.SetActive(true);
-                return;
-            }
-        }
 
         if (levelState == Consts.LevelState.CharHeldToToss) {
 
@@ -221,10 +214,15 @@ public class LevelManager : MonoBehaviour {
         UnPauseLevel();
     }
 
-    public void OnItemSelection(ItemBase item) {
+    public void OnItemSelectionCB(ItemBase item) {
         ReturnToNeutral();
         if (heldCharActionable != null)
             heldCharActionable.UseItem(item);
+    }
+    public void OnItemDeselectionCB(ItemBase item) {
+        if(item is ItemCanScoop) {
+            // TODO: Fill out as needed
+        }
     }
 
     // TODO: need to find a better way to dynamically select item types. Passing raw ints in the inspector is insufficient
@@ -259,6 +257,16 @@ public class LevelManager : MonoBehaviour {
         }
     }
 
+    public void FadeLevelCB() {
+        charContAreaScpt.gameObject.SetActive(false);
+        rearMenuFieldObj.SetActive(true);
+        PauseLevel();        
+    }
+    public void UnfadeLevelCB() {
+        charContAreaScpt.gameObject.SetActive(false);
+        rearMenuFieldObj.SetActive(false);
+        UnPauseLevel();
+    }
     public void HighlightToSelectCB(Consts.ItemType itemType) {
         levelState = Consts.LevelState.ObjectSelection;
 
@@ -296,8 +304,8 @@ public class LevelManager : MonoBehaviour {
     public void ReturnToNeutral() {
         if (heldCharActionable != null) {
             heldCharActionable.IsActionBtnActive = false;
-            heldCharActionable.IsCancelBtnActive = false;
             heldCharActionable.IsCommandPanelOpen = false;
+            heldCharActionable.CancelAction();
             heldCharActionable.ChangeMouseUpToDownLinks(true);
         }
 

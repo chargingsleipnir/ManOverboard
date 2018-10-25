@@ -314,6 +314,9 @@ public class SpriteBase : MonoBehaviour {
         }
     }
 
+    // TODO: Build this up to take multiple ref shapes per sprite. Give them assignable names and/or indices
+    public RefShape RefShape { get; private set; }
+
     private Transform origParent;
     private Transform currParent;
 
@@ -325,6 +328,8 @@ public class SpriteBase : MonoBehaviour {
             sgRef = new SortingGroupComponentRef(this, GetComponent<SortingGroup>());
 
         srRef = new SpriteRendererComponentRef(this, GetComponent<SpriteRenderer>(), sgRef);
+
+        RefShape = GetComponent<RefShape>();
 
         // Get whatever parent sprite group data is available
         origParent = currParent = transform.parent;
@@ -405,6 +410,12 @@ public class SpriteBase : MonoBehaviour {
     private void SendChangeToTracker() {
         if (GetComponent<RefShape2DMouseTracker>() != null)
             GetComponent<RefShape2DMouseTracker>().RepositionInTrackerSet();
+    }
+
+    public void EnableMouseTracking(bool isEnabled) {
+        RefShape2DMouseTracker[] trackers = GetComponents<RefShape2DMouseTracker>();
+        for (int i = 0; i < trackers.Length; i++)
+            trackers[i].enabled = isEnabled;
     }
 
     private void OnDestroy() {

@@ -7,6 +7,7 @@ public class ItemBase : SpriteTossable {
 
     public delegate void DelPassItemBase(ItemBase item);
     DelPassItemBase OnItemSelect;
+    DelPassItemBase OnItemDeselect;
 
     protected SpriteOutline so;
     protected bool selectable;
@@ -33,6 +34,7 @@ public class ItemBase : SpriteTossable {
         if (so.enabled)
             return;
 
+        ChangeMouseUpToDownLinks(false);
         SortCompLayerChange(Consts.DrawLayers.FrontOfLevel4, null);
         so.enabled = true;
         selectable = true;
@@ -42,10 +44,18 @@ public class ItemBase : SpriteTossable {
         if (!so.enabled)
             return;
 
+        ChangeMouseUpToDownLinks(true);
         SortCompFullReset();
         so.enabled = false;
         selectable = false;
         selected = false;
+    }
+
+    public override void MouseDownCB() {
+        if (selectable)
+            return;
+
+        base.MouseDownCB();
     }
 
     public override void MouseUpCB() {
@@ -58,7 +68,13 @@ public class ItemBase : SpriteTossable {
         }
     }
 
-    public void SetItemSelectionCallback(DelPassItemBase OnItemSelect) {
+    public void Deselect() {
+        SortCompFullReset();
+        OnItemDeselect(this);
+    }
+
+    public void SetItemSelectionCallback(DelPassItemBase OnItemSelect, DelPassItemBase OnItemDeselect) {
         this.OnItemSelect = OnItemSelect;
+        this.OnItemDeselect = OnItemDeselect;
     }
 }
