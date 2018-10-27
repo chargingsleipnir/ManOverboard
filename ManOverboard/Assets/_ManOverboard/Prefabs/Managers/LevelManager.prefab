@@ -19,6 +19,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4087144830826592}
+  - component: {fileID: 114508288241445222}
   - component: {fileID: 114991861146813028}
   m_Layer: 0
   m_Name: LevelManager
@@ -34,12 +35,23 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1463805558684432}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.13172029, y: -1.7044716, z: -3.089005}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &114508288241445222
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1463805558684432}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52652c96890963349a6f02065b1df71c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114991861146813028
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -51,20 +63,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be7a30c37ac246e49ac9ed558c8ba2a8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameCtrl: {fileID: 114395880112188486, guid: 3761e925aed2ac143a1acb06de13283a, type: 2}
+  gameCtrl: {fileID: 114446832514159312, guid: 36bfc96ef999cc14f8d0bb0637927c73, type: 2}
+  waterObj: {fileID: 0}
+  rearMenuFieldPrefab: {fileID: 1365011474752516, guid: 88dd4ad1446449a469d5b5e78384ded6,
+    type: 2}
   boat: {fileID: 0}
-  passengerSet: {fileID: 11400000, guid: 7fb0cbce62ee1f94cae6883bb861dc3b, type: 2}
-  loadWeight:
-    UseStraightValue: 0
-    StraightValue: 0
-    ScriptableValue: {fileID: 11400000, guid: ca982ff5ab6d620448b6f7910bcb4c2b, type: 2}
-  grabWeight:
+  holdWeight:
     UseStraightValue: 0
     StraightValue: 0
     ScriptableValue: {fileID: 11400000, guid: 91540696289c981458b3a4269b888920, type: 2}
   charContAreaPrefab: {fileID: 1527078015339914, guid: 8b67eb1eb990113448bbb4bf57d3d234,
     type: 2}
-  levelCompMsg:
+  mousePos:
     UseStraightValue: 0
-    StraightValue: 
-    ScriptableValue: {fileID: 11400000, guid: b2106bc8703142640a3fbbc39c0407b1, type: 2}
+    StraightValue: {x: 0, y: 0}
+    ScriptableValue: {fileID: 11400000, guid: 4662ec67a56c16a4eb5641f4edc16bd0, type: 2}
+  uiUpdate: {fileID: 11400000, guid: f357972b346076942a5abf68ed3f1fd1, type: 2}
+  levelWinLossDisp: {fileID: 11400000, guid: a6026cd0eae3f99488ad40db1e9c381d, type: 2}

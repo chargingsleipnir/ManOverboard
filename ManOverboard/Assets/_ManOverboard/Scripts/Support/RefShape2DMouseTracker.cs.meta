@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 3e8d9fc474a15944e8b939f9780b407d
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - refShape: {instanceID: 0}
+  - mouseMoveEventIn: {fileID: 11400000, guid: 64e1a31f07b28e641a5502ba600dd9c6, type: 2}
+  - mouseDownEventIn: {fileID: 11400000, guid: 1e3a2ab6667a7f0468b14d82fec37f40, type: 2}
+  - mouseUpEventIn: {fileID: 11400000, guid: 0bad36c8433fcdd46b6fc7974dce3952, type: 2}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

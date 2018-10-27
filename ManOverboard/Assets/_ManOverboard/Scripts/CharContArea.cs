@@ -1,21 +1,26 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using ZeroProgress.Common;
 
-[RequireComponent(typeof(SpriteRenderer))]
-public class CharContArea : MonoBehaviour {
+public class CharContArea : SpriteBase, IMouseEnterDetector, IMouseExitDetector {
 
-    private SpriteRenderer sr;
+    public delegate void MouseEnterExitDel();
+    MouseEnterExitDel OnMouseEnterCB;
+    MouseEnterExitDel OnMouseExitCB;
 
-    private void Awake() {
-        sr = GetComponent<SpriteRenderer>();
+    public void SetMouseCBs(MouseEnterExitDel EnterCB, MouseEnterExitDel ExitCB) {
+        OnMouseEnterCB = EnterCB;
+        OnMouseExitCB = ExitCB;
     }
 
-    public void CharCollTrue() {
-        sr.color = new Color(sr.color.r, sr.color.g, sr.color.b, 0.66f);
+    public void MouseEnterCB() {
+        ChangeColour(null, null, null, 0.66f);
+        OnMouseEnterCB();
     }
 
-    public void CharCollFalse() {
-        sr.color = new Color(sr.color.r, sr.color.g, sr.color.b, 0.33f);
+    public void MouseExitCB() {
+        ChangeColour(null, null, null, 0.33f);
+        OnMouseExitCB();
     }
 }

@@ -3,7 +3,8 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - HasActions
   layers:
   - Default
   - TransparentFX
@@ -14,7 +15,7 @@ TagManager:
   - 
   - 
   - PostProcessing
-  - 
+  - Tossed Object
   - 
   - 
   - 
@@ -40,4 +41,40 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Background2
+    uniqueID: 2823364955
+    locked: 0
+  - name: Background1
+    uniqueID: 1523859595
+    locked: 0
+  - name: BoatLevel1Contents
+    uniqueID: 1982025277
+    locked: 0
+  - name: BoatLevel1
+    uniqueID: 2948417559
+    locked: 0
+  - name: BehindWater
+    uniqueID: 4237841631
+    locked: 0
+  - name: Water
+    uniqueID: 713187055
+    locked: 0
+  - name: Foreground1
+    uniqueID: 1931542231
+    locked: 0
+  - name: Foreground2
+    uniqueID: 3617921119
+    locked: 0
+  - name: FrontOfLevel1
+    uniqueID: 219535203
+    locked: 0
+  - name: FrontOfLevel2
+    uniqueID: 2754400133
+    locked: 0
+  - name: FrontOfLevel3
+    uniqueID: 1787810001
+    locked: 0
+  - name: FrontOfLevel4
+    uniqueID: 812252753
     locked: 0

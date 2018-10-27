@@ -20,7 +20,8 @@ GameObject:
   m_Component:
   - component: {fileID: 4390486840726994}
   - component: {fileID: 212751243012516420}
-  - component: {fileID: 114945469175567492}
+  - component: {fileID: 114791493001334558}
+  - component: {fileID: 114980580018284778}
   m_Layer: 0
   m_Name: Dinghy
   m_TagString: Untagged
@@ -34,14 +35,14 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1765118266380454}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -1.63, z: -4}
-  m_LocalScale: {x: 2, y: 1.5, z: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 3.7705674, y: 2.8130612, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &114945469175567492
+--- !u!114 &114791493001334558
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
@@ -49,16 +50,48 @@ MonoBehaviour:
   m_GameObject: {fileID: 1765118266380454}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7620692a97ef64148a02bfb01f465154, type: 3}
+  m_Script: {fileID: 11500000, guid: cb08a14eed822aa4eaedb680d6a34f82, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   myRigidbody: {fileID: 0}
   myColliders: []
   LeakPrefab: {fileID: 0}
+  water: {fileID: 0}
+  hole: {fileID: 1972881796021520, guid: 4f6f48558b089544d888515a0cee53c5, type: 2}
+  holeHeightsByBuoyancy: 
   buoyancy:
     UseStraightValue: 0
-    StraightValue: 350
+    StraightValue: 0
+    ScriptableValue: {fileID: 11400000, guid: 7663895de4fd2114abad82b39d681cc3, type: 2}
+  weightWater:
+    UseStraightValue: 0
+    StraightValue: 0
+    ScriptableValue: {fileID: 11400000, guid: 8e684f9ce88db20459207d9140165550, type: 2}
+  weightLoad:
+    UseStraightValue: 0
+    StraightValue: 0
+    ScriptableValue: {fileID: 11400000, guid: ca982ff5ab6d620448b6f7910bcb4c2b, type: 2}
+  weightTotal:
+    UseStraightValue: 0
+    StraightValue: 0
     ScriptableValue: {fileID: 11400000, guid: 290b2c240d596074d8927ebff88f0ee7, type: 2}
+  characterSet: {fileID: 11400000, guid: 7fb0cbce62ee1f94cae6883bb861dc3b, type: 2}
+  uiUpdate: {fileID: 11400000, guid: f357972b346076942a5abf68ed3f1fd1, type: 2}
+--- !u!114 &114980580018284778
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1765118266380454}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b92a92bae867bf4eafc6f4e8333124d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  offsetX: 0
+  offsetY: 0.05
+  width: 3.65
+  height: 0.45
 --- !u!212 &212751243012516420
 SpriteRenderer:
   m_ObjectHideFlags: 1
