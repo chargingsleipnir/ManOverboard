@@ -341,6 +341,10 @@ public class SpriteBase : MonoBehaviour {
         EstablishPlacement();
     }
 
+    public void ChangeColour(float? r, float? g, float? b, float? a) {
+        srRef.comp.color = new Color(r ?? srRef.comp.color.r, g ?? srRef.comp.color.g, b ?? srRef.comp.color.b, a ?? srRef.comp.color.a);
+    }
+
     public void GoToOrigPlacement() {
         transform.position = origPos;
         SortCompFullReset();

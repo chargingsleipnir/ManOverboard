@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 using ZeroProgress.Common.Collections;
 
 public class Crewman : CharActionable {
@@ -9,14 +10,25 @@ public class Crewman : CharActionable {
     protected ItemBase sailorHat;
     Vector3 hatPos;
 
+    private ItemCanScoopSet itemsCanScoop;
+    [SerializeField]
+    protected SpriteBase scoopBtnSprite;
+
+    private bool blockScooping;
+
     protected override void Awake() {
         base.Awake();
         strength = 125;
         hatPos = sailorHat.transform.localPosition;
+        itemsCanScoop = AssetDatabase.LoadAssetAtPath<ItemCanScoopSet>("Assets/_ManOverboard/Variables/Sets/ItemCanScoopSet.asset");
     }
     protected override void Start() {
         base.Start();
+        sailorHat.heldBy = this;
         heldItems.Add(sailorHat);
+        heldItemWeight += sailorHat.Weight;
+
+        blockScooping = false;
     }
 
     private void ClickThroughHat(bool clickThrough) {
@@ -30,7 +42,23 @@ public class Crewman : CharActionable {
         sailorHat.transform.localPosition = hatPos;
     }
 
+    public override void CheckCommandViability() {
+        if (itemsCanScoop.Count > 0) {
+            blockScooping = false;
+            scoopBtnSprite.ChangeColour(null, null, null, 1.0f);
+        }
+        else {
+            blockScooping = true;
+            scoopBtnSprite.ChangeColour(null, null, null, Consts.BTN_DISABLE_FADE);
+        }
+
+        // TODO: Follow up with any other command buttons.
+    }
+
     public void PrepScoop() {
+        if (blockScooping)
+            return;
+
         ClickThroughHat(false);
 
         IsCommandPanelOpen = false;
@@ -41,8 +69,10 @@ public class Crewman : CharActionable {
         activeItem = item;
         activeItem.EnableMouseTracking(false);
 
-        if (!heldItems.Contains(item))
+        if (!heldItems.Contains(item)) {
             heldItems.Add(item);
+            heldItemWeight += item.Weight;
+        }
 
         if (item is ItemCanScoop) {
             state = Consts.CharState.Scooping;
@@ -63,6 +93,7 @@ public class Crewman : CharActionable {
     }
 
     public override void CancelAction() {
+        // TODO: Modify to reflect clearly that there may or may not be an active item
         if (state == Consts.CharState.Scooping) {
             if (activeItem == sailorHat)
                 ReturnHatToHead();
@@ -74,7 +105,10 @@ public class Crewman : CharActionable {
                 float posY = RefShape.YMin + (activeItem.RefShape.Height * 0.5f);
                 activeItem.transform.position = new Vector3(posX, posY, activeItem.transform.position.z);
 
-                
+                if (heldItems.Contains(activeItem)) {
+                    heldItems.Remove(activeItem);
+                    heldItemWeight -= activeItem.Weight;
+                }
             }
 
             activeItem.EnableMouseTracking(true);

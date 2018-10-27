@@ -15,6 +15,8 @@ public static class Consts {
     public const float SINK_STEP_SECS = 0.25f;
     public const float MIN_SCOOP_RATE = 1.0f;
 
+    public const float BTN_DISABLE_FADE = 0.33f;
+
     public enum LeakTypesAndRates {
         Pinhole = 1,
         Bullet = 3,

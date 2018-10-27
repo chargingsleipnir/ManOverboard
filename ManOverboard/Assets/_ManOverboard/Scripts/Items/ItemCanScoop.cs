@@ -14,8 +14,8 @@ public class ItemCanScoop : ItemBase {
         canScoopSet.Add(this);
     }
 
-    public override void RemoveFromSet() {
+    public override void Toss(Vector2 vel) {
         canScoopSet.Remove(this);
-        base.RemoveFromSet();
+        base.Toss(vel);
     }
 }

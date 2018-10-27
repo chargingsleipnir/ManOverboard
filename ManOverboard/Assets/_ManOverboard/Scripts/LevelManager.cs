@@ -119,6 +119,8 @@ public class LevelManager : MonoBehaviour {
 
     private void OnDestroy() {
         DrawLayerMngr.ClearSpriteRef();
+        spriteTossableSet.Clear();
+        itemsCanScoop.Clear();
     }
 
     private void MouseEnterCharContArea() {
@@ -161,9 +163,8 @@ public class LevelManager : MonoBehaviour {
             heldCharActionable = spriteObj.GetComponent<CharActionable>();
             heldCharActionable.SetCallbacks(HighlightToSelectCB, StartRemoveWaterCB, StopRemoveWaterCB, FadeLevelCB, UnfadeLevelCB);
         }
-        else {
+        else
             heldCharActionable = null;
-        }
 
         // Bring character to focus, in front of everything.
         heldSpriteTossable.SortCompLayerChange(Consts.DrawLayers.FrontOfLevel3, null);
@@ -189,8 +190,13 @@ public class LevelManager : MonoBehaviour {
 
         if (levelState == Consts.LevelState.CharHeldToToss) {
 
+            characterSet.Remove(heldSpriteTossable as CharBase);        
+
             // TODO: Top out the toss speed to something not TOO unreasonable
             float tossSpeed = mouseDelta.magnitude / Time.deltaTime;
+
+            // TODO: Consider that when a character is holding 1 or more items, they should maybe be unparented and given varying trajectories upon being tossed.
+            // Takes care of set removal
             heldSpriteTossable.Toss(mouseDelta * tossSpeed);
 
             heldObj.layer = 9; // tossed objects
@@ -198,8 +204,6 @@ public class LevelManager : MonoBehaviour {
             // Change weight in boat
             boat.RemoveLoad(holdWeight.Value);
 
-            characterSet.Remove(heldCharActionable);
-            heldSpriteTossable.RemoveFromSet(); // TODO: Flesh this out - remove from everything it could be wasting calculations with
             heldCharActionable = null;
             heldSpriteTossable = null;
         }
@@ -235,6 +239,9 @@ public class LevelManager : MonoBehaviour {
         if(numLeaks == 0) {
             // level over
             int charLoss = charSetStartCount - characterSet.Count;
+
+            Debug.Log(charSetStartCount);
+            Debug.Log(characterSet.Count);
 
             if (charLoss <= gameCtrl.GetLevelMaxCharLoss(3)) {
                 levelWinLossDisp.RaiseEvent("You a winner! 3 star play!");
@@ -304,8 +311,8 @@ public class LevelManager : MonoBehaviour {
     public void ReturnToNeutral() {
         if (heldCharActionable != null) {
             heldCharActionable.IsActionBtnActive = false;
+            heldCharActionable.IsCancelBtnActive = false;
             heldCharActionable.IsCommandPanelOpen = false;
-            heldCharActionable.CancelAction();
             heldCharActionable.ChangeMouseUpToDownLinks(true);
         }
 

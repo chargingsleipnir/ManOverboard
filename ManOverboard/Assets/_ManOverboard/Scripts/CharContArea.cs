@@ -15,12 +15,12 @@ public class CharContArea : SpriteBase, IMouseEnterDetector, IMouseExitDetector 
     }
 
     public void MouseEnterCB() {
-        srRef.comp.color = new Color(srRef.comp.color.r, srRef.comp.color.g, srRef.comp.color.b, 0.66f);
+        ChangeColour(null, null, null, 0.66f);
         OnMouseEnterCB();
     }
 
     public void MouseExitCB() {
-        srRef.comp.color = new Color(srRef.comp.color.r, srRef.comp.color.g, srRef.comp.color.b, 0.33f);
+        ChangeColour(null, null, null, 0.33f);
         OnMouseExitCB();
     }
 }

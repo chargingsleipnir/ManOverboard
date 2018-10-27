@@ -5,13 +5,12 @@ using ZeroProgress.Common;
 public class SpriteTossable : SpriteBase, IMouseDownDetector, IMouseUpDetector {
 
     public delegate void DelPassGO(GameObject obj);
-    DelPassGO OnMouseDownCB;
+    protected DelPassGO OnMouseDownCB;
 
     public delegate void DelVoid();
-    DelVoid OnMouseUpCB;
+    protected DelVoid OnMouseUpCB;
 
     private SpriteTossableSet set;
-    [SerializeField]
     protected ScriptableVector2 mousePos;
 
     protected bool held;
@@ -22,7 +21,7 @@ public class SpriteTossable : SpriteBase, IMouseDownDetector, IMouseUpDetector {
 
     [SerializeField]
     protected int weight;
-    public int Weight {
+    public virtual int Weight {
         get { return weight; }
     }
 
@@ -77,28 +76,32 @@ public class SpriteTossable : SpriteBase, IMouseDownDetector, IMouseUpDetector {
 
     public virtual void ApplyTransformToContArea(GameObject contAreaObj) {
         contAreaObj.transform.position = new Vector3(transform.position.x, transform.position.y, (float)Consts.ZLayers.FrontOfWater);
-        contAreaObj.transform.localScale = new Vector3(srRef.comp.size.x + Consts.CONT_AREA_BUFFER, srRef.comp.size.y + Consts.CONT_AREA_BUFFER, 1);
+        contAreaObj.transform.localScale = new Vector3(srRef.comp.sprite.bounds.size.x + Consts.CONT_AREA_BUFFER, srRef.comp.sprite.bounds.size.y + Consts.CONT_AREA_BUFFER, 1);
     }
 
     public void MoveRigidbody() {
         rb.MovePosition(mousePos.CurrentValue);
     }
 
-    public void Toss(Vector2 vel) {
+
+    // TODO: Flesh this out - remove from everything it could be wasting calculations with
+    public virtual void Toss(Vector2 vel) {
+        set.Remove(this);
+
         // Move in front of all other non-water objects
         SortCompLayerChange(Consts.DrawLayers.BehindWater, null);
         tossed = true;
         rb.isKinematic = false;
         rb.velocity = vel;
         bc.enabled = true;
+
+        RefShape2DMouseTracker[] trackers = GetComponents<RefShape2DMouseTracker>();
+        for (int i = 0; i < trackers.Length; i++)
+            trackers[i].enabled = false;
     }
 
     public void ReturnToBoat() {
         SortCompFullReset();
-    }
-
-    public virtual void RemoveFromSet() {
-        set.Remove(this);
     }
 
     // Virtual function here for child use only -----------------------------------------------

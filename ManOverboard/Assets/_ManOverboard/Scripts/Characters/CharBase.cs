@@ -14,6 +14,10 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
     public delegate void DelPassWaterRemoveCo(Coroutine co);
 
     protected List<ItemBase> heldItems;
+    protected int heldItemWeight;
+    public override int Weight {
+        get { return weight + heldItemWeight; }
+    }
 
     protected bool saved = false;
     public bool Saved {
@@ -35,21 +39,29 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
 
         state = Consts.CharState.Default;
         heldItems = new List<ItemBase>();
+        heldItemWeight = 0;
 
         SortCompLayerChange(Consts.DrawLayers.BoatLevel1Contents);
     }
 
     public override void MouseDownCB() {
-        if (saved)
+        if (saved || tossed)
             return;
 
-        base.MouseDownCB();
+        held = true;
+        OnMouseDownCB(gameObject);
     }
     public override void MouseUpCB() {
-        if (saved)
+        if (saved || tossed || held == false)
             return;
 
-        base.MouseUpCB();
+        held = false;
+        OnMouseUpCB();
+    }
+
+    public void LoseItem(ItemBase item) {
+        if (heldItems.Remove(item))
+            heldItemWeight -= item.Weight;
     }
 
     public virtual void UseItem(ItemBase item) { }

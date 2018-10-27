@@ -9,6 +9,8 @@ public class ItemBase : SpriteTossable {
     DelPassItemBase OnItemSelect;
     DelPassItemBase OnItemDeselect;
 
+    public CharBase heldBy;
+
     protected SpriteOutline so;
     protected bool selectable;
     protected bool selected;
@@ -28,6 +30,13 @@ public class ItemBase : SpriteTossable {
 
         selectable = false;
         selected = false;
+    }
+
+    public override void Toss(Vector2 vel) {
+        if (heldBy != null)
+            heldBy.LoseItem(this);
+
+        base.Toss(vel);
     }
 
     public void HighlightToClick() {

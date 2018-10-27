@@ -59,9 +59,6 @@ public class Boat : SpriteBase {
     public IntReference weightWater;
     public IntReference weightLoad; // Weight of people and items, things that can be tossed off by the player directly.
     public IntReference weightTotal;
-    public int WeightTotal {
-        get { return weightTotal.Value; }
-    }
     private SpriteTossableSet spriteTossableSet;
 
     // UI update event
