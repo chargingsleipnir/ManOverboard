@@ -28,7 +28,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &1205529151605406
 GameObject:
   m_ObjectHideFlags: 1
@@ -385,6 +385,7 @@ MonoBehaviour:
   commandPanel: {fileID: 1025082545456514}
   trans_ItemUseHand: {fileID: 4472367107038212}
   sailorHat: {fileID: 114446486217314818}
+  scoopBtnSprite: {fileID: 114824874276744556}
 --- !u!114 &114280921442393894
 MonoBehaviour:
   m_ObjectHideFlags: 1

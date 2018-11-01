@@ -52,6 +52,7 @@ public static class Consts {
     public enum ItemType {
         Scooping = 0
     }
+    public enum FitSizes { adult, child }
     public enum CharState {
         Default,
         MenuOpen,

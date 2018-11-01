@@ -7,7 +7,7 @@ using ZeroProgress.Common.Collections;
 [RequireComponent(typeof(SpriteRenderer), typeof(Rigidbody2D), typeof(BoxCollider2D))]
 public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
 
-    public Consts.CharState state;
+    protected Consts.CharState state;
 
     public delegate void DelPassItemType(Consts.ItemType type);
     public delegate Coroutine DelPassWaterRemoveData(int waterWeight, float removalRate);

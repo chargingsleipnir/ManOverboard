@@ -31,7 +31,10 @@ public class LevelManager : MonoBehaviour {
     private List<CharBase> characterSet;
     private int charSetStartCount;
 
-    private ItemCanScoopSet itemsCanScoop;
+    private ItemBaseSet items;
+    private List<ItemCanScoop> itemsCanScoop;
+    private List<LifeJacket> lifeJacketsAdult;
+    private List<LifeJacket> lifeJacketsChild;
 
     private GameObject heldObj;
     private SpriteTossable heldSpriteTossable;
@@ -66,7 +69,7 @@ public class LevelManager : MonoBehaviour {
         gameCtrl.Init();
 
         spriteTossableSet = AssetDatabase.LoadAssetAtPath<SpriteTossableSet>("Assets/_ManOverboard/Variables/Sets/SpriteTossableSet.asset");
-        itemsCanScoop = AssetDatabase.LoadAssetAtPath<ItemCanScoopSet>("Assets/_ManOverboard/Variables/Sets/ItemCanScoopSet.asset");
+        items = AssetDatabase.LoadAssetAtPath<ItemBaseSet>("Assets/_ManOverboard/Variables/Sets/ItemBaseSet.asset");
     }
 
     private void Start () {
@@ -101,6 +104,22 @@ public class LevelManager : MonoBehaviour {
 
         rearMenuFieldObj.SetActive(false);
 
+        itemsCanScoop = new List<ItemCanScoop>();
+        lifeJacketsAdult = new List<LifeJacket>();
+        lifeJacketsChild = new List<LifeJacket>();
+        foreach (ItemBase item in items) {
+            if (item is ItemCanScoop)
+                itemsCanScoop.Add(item as ItemCanScoop);
+            else if(item is LifeJacket) {
+                LifeJacket jacket = item as LifeJacket;
+                Debug.Log(jacket.size);
+                if (jacket.size == Consts.FitSizes.adult)
+                    lifeJacketsAdult.Add(jacket);
+                else
+                    lifeJacketsChild.Add(jacket);
+            }
+        }
+
         levelActive = true;
         levelPaused = false;
 
@@ -120,7 +139,7 @@ public class LevelManager : MonoBehaviour {
     private void OnDestroy() {
         DrawLayerMngr.ClearSpriteRef();
         spriteTossableSet.Clear();
-        itemsCanScoop.Clear();
+        items.Clear();
     }
 
     private void MouseEnterCharContArea() {
@@ -240,9 +259,6 @@ public class LevelManager : MonoBehaviour {
             // level over
             int charLoss = charSetStartCount - characterSet.Count;
 
-            Debug.Log(charSetStartCount);
-            Debug.Log(characterSet.Count);
-
             if (charLoss <= gameCtrl.GetLevelMaxCharLoss(3)) {
                 levelWinLossDisp.RaiseEvent("You a winner! 3 star play!");
             }
@@ -278,8 +294,8 @@ public class LevelManager : MonoBehaviour {
         levelState = Consts.LevelState.ObjectSelection;
 
         if (itemType == Consts.ItemType.Scooping) {
-            foreach (ItemCanScoop item in itemsCanScoop)
-                item.HighlightToClick();
+            foreach (ItemCanScoop itemCS in itemsCanScoop)
+                itemCS.HighlightToClick();
         }
     }
     public Coroutine StartRemoveWaterCB(int waterWeight, float removalRate) {
@@ -323,7 +339,7 @@ public class LevelManager : MonoBehaviour {
         holdWeight.Value = 0;
         uiUpdate.RaiseEvent();
 
-        foreach (ItemCanScoop item in itemsCanScoop)
+        foreach (ItemBase item in items)
             item.UnHighlight();
 
         levelState = Consts.LevelState.Default;

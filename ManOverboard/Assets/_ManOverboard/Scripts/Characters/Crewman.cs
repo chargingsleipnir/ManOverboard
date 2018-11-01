@@ -6,11 +6,16 @@ using ZeroProgress.Common.Collections;
 
 public class Crewman : CharActionable {
 
+    // TODO: Crewmen can scoop with each other's hats, which is fine, but a little buggy. Clean it up.
+    // TODO: Figure out how exactly children donning life jackets is to be implemented. Click on them to do it, than an adult to put it on? Click on the adult to do it?
+    // Or click on any person and change the amount of time. 5 secs for crewman, 10 secs for passenger adult, 30 seconds for child (With a probability of being on wrong?).
+    // Might need better/more abstract command system, and perhaps to consider every Character as "Actionable" in some way.
+
     [SerializeField]
     protected ItemBase sailorHat;
     Vector3 hatPos;
 
-    private ItemCanScoopSet itemsCanScoop;
+    private ItemBaseSet items;
     [SerializeField]
     protected SpriteBase scoopBtnSprite;
 
@@ -20,11 +25,11 @@ public class Crewman : CharActionable {
         base.Awake();
         strength = 125;
         hatPos = sailorHat.transform.localPosition;
-        itemsCanScoop = AssetDatabase.LoadAssetAtPath<ItemCanScoopSet>("Assets/_ManOverboard/Variables/Sets/ItemCanScoopSet.asset");
+        items = AssetDatabase.LoadAssetAtPath<ItemBaseSet>("Assets/_ManOverboard/Variables/Sets/ItemBaseSet.asset");
     }
     protected override void Start() {
         base.Start();
-        sailorHat.heldBy = this;
+        sailorHat.CharHeldBy = this;
         heldItems.Add(sailorHat);
         heldItemWeight += sailorHat.Weight;
 
@@ -43,7 +48,7 @@ public class Crewman : CharActionable {
     }
 
     public override void CheckCommandViability() {
-        if (itemsCanScoop.Count > 0) {
+        if (items.Count > 0) {
             blockScooping = false;
             scoopBtnSprite.ChangeColour(null, null, null, 1.0f);
         }

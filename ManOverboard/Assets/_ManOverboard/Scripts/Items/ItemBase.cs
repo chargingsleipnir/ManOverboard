@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 using ZeroProgress.Common;
 
 public class ItemBase : SpriteTossable {
@@ -9,11 +10,13 @@ public class ItemBase : SpriteTossable {
     DelPassItemBase OnItemSelect;
     DelPassItemBase OnItemDeselect;
 
-    public CharBase heldBy;
+    public CharBase CharHeldBy { get; set; }
 
     protected SpriteOutline so;
     protected bool selectable;
     protected bool selected;
+
+    private ItemBaseSet items;
 
     public bool Selected {
         get { return selected; }
@@ -23,6 +26,9 @@ public class ItemBase : SpriteTossable {
     protected override void Awake() {
         base.Awake();
         so = GetComponent<SpriteOutline>();
+
+        items = AssetDatabase.LoadAssetAtPath<ItemBaseSet>("Assets/_ManOverboard/Variables/Sets/ItemBaseSet.asset");
+        items.Add(this);
     }
 
     protected override void Start() {
@@ -33,8 +39,10 @@ public class ItemBase : SpriteTossable {
     }
 
     public override void Toss(Vector2 vel) {
-        if (heldBy != null)
-            heldBy.LoseItem(this);
+        items.Remove(this);
+
+        if (CharHeldBy != null)
+            CharHeldBy.LoseItem(this);
 
         base.Toss(vel);
     }
