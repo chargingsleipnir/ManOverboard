@@ -6,18 +6,16 @@ using ZeroProgress.Common;
 public class CharActionable : CharBase {
 
     protected DelPassItemType DelSetItemType;
-    protected DelPassWaterRemoveData DelStartWaterRemove;
-    protected DelPassWaterRemoveCo DelStopWaterRemove;
+    protected DelPassInt DelRemoveWater;
     protected DelVoid FadeLevel;
     protected DelVoid UnFadeLevel;
-
-    protected Coroutine activeCo;
 
     protected ItemBase activeItem;
 
     protected int strength;
 
-    
+    [SerializeField]
+    protected ProgressBar timerBar;
 
     [SerializeField]
     protected GameObject actionBtnObj;
@@ -55,9 +53,15 @@ public class CharActionable : CharBase {
     [SerializeField]
     protected Transform trans_ItemUseHand;
 
+    protected float activityCounter;
+    protected float activityInterval;
+
     protected override void Awake() {
         base.Awake();
+        timerBar.Fill = 0;
         strength = 50;
+        activityCounter = 0.0f;
+        activityInterval = 0.0f;
         actBtnSR = actionBtnObj.GetComponent<SpriteRenderer>();
     }
 
@@ -82,8 +86,10 @@ public class CharActionable : CharBase {
 
         if (state == Consts.CharState.Default)
             IsActionBtnActive = true;
-        else
+        else {
             IsCancelBtnActive = true;
+            timerBar.IsActive = false;
+        }
 
         OnMouseDownCB(gameObject);
     }
@@ -95,16 +101,18 @@ public class CharActionable : CharBase {
 
         if (state == Consts.CharState.Default)
             IsActionBtnActive = false;
-        else
+        else {
             IsCancelBtnActive = false;
+            if (state == Consts.CharState.Scooping)
+                timerBar.IsActive = true;
+        }
 
         OnMouseUpCB();
     }
 
-    public override void SetCallbacks(DelPassItemType setTypeCB, DelPassWaterRemoveData startCoCB, DelPassWaterRemoveCo stopCoCB, DelVoid fadeLevelCB, DelVoid unfadeLevelCB) {
+    public override void SetCallbacks(DelPassItemType setTypeCB, DelPassInt RemoveWaterCB, DelVoid fadeLevelCB, DelVoid unfadeLevelCB) {
         DelSetItemType = setTypeCB;
-        DelStartWaterRemove = startCoCB;
-        DelStopWaterRemove = stopCoCB;
+        DelRemoveWater = RemoveWaterCB;
         FadeLevel = fadeLevelCB;
         UnFadeLevel = unfadeLevelCB;
     }
@@ -122,14 +130,33 @@ public class CharActionable : CharBase {
     public virtual void CheckCommandViability() {}
 
     public void OpenCommandPanel() {
+        held = false;
         IsCommandPanelOpen = true;
         IsActionBtnActive = false;
         CheckCommandViability();
         FadeLevel();
     }
 
+    public override void CancelAction() {
+        if (activeItem != null) {
+            activeItem.Deselect();
 
-    public virtual void CancelAction() {
+            if (activeItem.RetPosLocal == null) {
+                // Place item at feet of character just to their left.
+                // TODO: Alter this to account for not every item having a refShape component? Shouldn't really come up though.
+                float posX = RefShape.XMin - (activeItem.RefShape.Width * 0.5f) - Consts.ITEM_DROP_X_BUFF;
+                float posY = RefShape.YMin + (activeItem.RefShape.Height * 0.5f);
+                activeItem.transform.position = new Vector3(posX, posY, activeItem.transform.position.z);
+            }
+
+            if (heldItems.Contains(activeItem)) {
+                heldItems.Remove(activeItem);
+                heldItemWeight -= activeItem.Weight;
+            }
+        }
+
+        activityCounter = activityInterval = 0;
+        timerBar.IsActive = false;
         IsCancelBtnActive = false;
         state = Consts.CharState.Default;
         UnFadeLevel();

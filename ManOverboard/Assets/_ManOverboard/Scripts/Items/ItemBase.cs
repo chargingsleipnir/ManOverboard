@@ -14,14 +14,11 @@ public class ItemBase : SpriteTossable {
 
     protected SpriteOutline so;
     protected bool selectable;
-    protected bool selected;
+    protected bool inUse;
 
     private ItemBaseSet items;
 
-    public bool Selected {
-        get { return selected; }
-        set { selected = value; }
-    }
+    public Vector3? RetPosLocal { get; set; }
 
     protected override void Awake() {
         base.Awake();
@@ -35,7 +32,7 @@ public class ItemBase : SpriteTossable {
         base.Start();
 
         selectable = false;
-        selected = false;
+        inUse = false;
     }
 
     public override void Toss(Vector2 vel) {
@@ -48,7 +45,7 @@ public class ItemBase : SpriteTossable {
     }
 
     public void HighlightToClick() {
-        if (so.enabled)
+        if (inUse || so.enabled)
             return;
 
         ChangeMouseUpToDownLinks(false);
@@ -65,7 +62,6 @@ public class ItemBase : SpriteTossable {
         SortCompFullReset();
         so.enabled = false;
         selectable = false;
-        selected = false;
     }
 
     public override void MouseDownCB() {
@@ -76,8 +72,11 @@ public class ItemBase : SpriteTossable {
     }
 
     public override void MouseUpCB() {
+        if (inUse)
+            return;
+
         if (selectable) {
-            selected = true;
+            inUse = true;
             OnItemSelect(this);
         }
         else {
@@ -87,7 +86,11 @@ public class ItemBase : SpriteTossable {
 
     public void Deselect() {
         SortCompFullReset();
+        EnableMouseTracking(true);
         OnItemDeselect(this);
+        inUse = false;
+        if (RetPosLocal != null)
+            transform.localPosition = (Vector3)RetPosLocal;
     }
 
     public void SetItemSelectionCallback(DelPassItemBase OnItemSelect, DelPassItemBase OnItemDeselect) {

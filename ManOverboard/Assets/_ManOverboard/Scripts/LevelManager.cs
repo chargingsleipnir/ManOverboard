@@ -22,7 +22,6 @@ public class LevelManager : MonoBehaviour {
     private bool levelActive;
     private bool levelPaused;
     private Coroutine shipSinkCoroutine;
-    private List<Coroutine> removeWaterCoroutines;
 
     public Boat boat;
 
@@ -74,7 +73,6 @@ public class LevelManager : MonoBehaviour {
 
     private void Start () {
         shipSinkCoroutine = null;
-        removeWaterCoroutines = new List<Coroutine>();
 
         boat.AddNumLeaksCallback(NumLeaks);
 
@@ -112,7 +110,6 @@ public class LevelManager : MonoBehaviour {
                 itemsCanScoop.Add(item as ItemCanScoop);
             else if(item is LifeJacket) {
                 LifeJacket jacket = item as LifeJacket;
-                Debug.Log(jacket.size);
                 if (jacket.size == Consts.FitSizes.adult)
                     lifeJacketsAdult.Add(jacket);
                 else
@@ -159,13 +156,22 @@ public class LevelManager : MonoBehaviour {
 
     private void PauseLevel() {
         levelPaused = true;
-        // Pause animations of all characters except the one being held.
+
+        foreach (CharBase character in characterSet) {
+            if (character != heldCharActionable)
+                character.Paused = true;
+        }
     }
     private void UnPauseLevel() {
         if (!levelActive)
             return;
 
         levelPaused = false;
+
+        foreach (CharBase character in characterSet) {
+            if (character != heldCharActionable)
+                character.Paused = false;
+        }
     }
 
     public void OnTossableSpriteMouseDown(GameObject spriteObj) {
@@ -180,7 +186,7 @@ public class LevelManager : MonoBehaviour {
         heldSpriteTossable = spriteObj.GetComponent<SpriteTossable>();
         if(heldSpriteTossable is CharActionable) {
             heldCharActionable = spriteObj.GetComponent<CharActionable>();
-            heldCharActionable.SetCallbacks(HighlightToSelectCB, StartRemoveWaterCB, StopRemoveWaterCB, FadeLevelCB, UnfadeLevelCB);
+            heldCharActionable.SetCallbacks(HighlightToSelectCB, RemoveWaterCB, FadeLevelCB, UnfadeLevelCB);
         }
         else
             heldCharActionable = null;
@@ -243,9 +249,7 @@ public class LevelManager : MonoBehaviour {
             heldCharActionable.UseItem(item);
     }
     public void OnItemDeselectionCB(ItemBase item) {
-        if(item is ItemCanScoop) {
-            // TODO: Fill out as needed
-        }
+        // TODO: Fill out as needed
     }
 
     // TODO: need to find a better way to dynamically select item types. Passing raw ints in the inspector is insufficient
@@ -298,14 +302,11 @@ public class LevelManager : MonoBehaviour {
                 itemCS.HighlightToClick();
         }
     }
-    public Coroutine StartRemoveWaterCB(int waterWeight, float removalRate) {
-        Coroutine retCo = StartCoroutine(RemoveWaterInterval(waterWeight, removalRate));
-        removeWaterCoroutines.Add(retCo);
-        return retCo;
-    }
-    public void StopRemoveWaterCB(Coroutine co) {
-        StopCoroutine(co);
-        removeWaterCoroutines.Remove(co);
+    public void RemoveWaterCB(int waterWeight) {
+        if (!levelActive)
+            return;
+
+        boat.RemoveWater(waterWeight);
     }
 
     IEnumerator SinkShipInterval() {
@@ -313,14 +314,6 @@ public class LevelManager : MonoBehaviour {
             if(!levelPaused)
                 boat.AddWater();
             yield return new WaitForSeconds(Consts.SINK_STEP_SECS);
-        }
-    }
-
-    IEnumerator RemoveWaterInterval(int waterWeight, float removalRate) {
-        while (levelActive) {
-            if (!levelPaused)
-                boat.RemoveWater(waterWeight);
-            yield return new WaitForSeconds(removalRate);
         }
     }
 
