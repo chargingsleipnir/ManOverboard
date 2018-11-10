@@ -98,11 +98,11 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
     }
 
     [SerializeField]
-    protected GameObject commandPanel;
+    protected CommandPanel commandPanel;
     public bool IsCommandPanelOpen {
-        get { return commandPanel.activeSelf; }
+        get { return commandPanel.gameObject.activeSelf; }
         set {
-            commandPanel.SetActive(value);
+            commandPanel.gameObject.SetActive(value);
             if (value == true)
                 state = Consts.CharState.MenuOpen;
             else if (state == Consts.CharState.MenuOpen)

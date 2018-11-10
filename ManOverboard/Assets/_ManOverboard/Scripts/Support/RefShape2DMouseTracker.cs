@@ -176,6 +176,10 @@ public class RefShape2DMouseTracker : MonoBehaviour {
         }
     }
 
+    public void AddMouseUpListener(UnityAction eventCB) {
+        mouseUpEvent.AddListener(eventCB);
+    }
+
     private void ResetEnteredSet() {
         mouseTrackerEnteredSet.Clear();
         for (int i = 0; i < mouseTrackerFullSet.Count; i++) {

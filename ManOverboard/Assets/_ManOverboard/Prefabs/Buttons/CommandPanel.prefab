@@ -21,7 +21,7 @@ GameObject:
   - component: {fileID: 4085106017994754}
   - component: {fileID: 212711067932692782}
   - component: {fileID: 210295063042011266}
-  - component: {fileID: 114598247871425624}
+  - component: {fileID: 114408226371487602}
   m_Layer: 0
   m_Name: CommandPanel
   m_TagString: Untagged
@@ -36,13 +36,13 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1767077936171878}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.65, y: 0.28, z: 0}
+  m_LocalPosition: {x: -0.65, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &114598247871425624
+--- !u!114 &114408226371487602
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
@@ -50,9 +50,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 1767077936171878}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5fe4bb0beba36834ea62409cac090eba, type: 3}
+  m_Script: {fileID: 11500000, guid: fece3b7e35d317547a367c2e7d73d985, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  scoopBtnPrefab: {fileID: 114562794414301636, guid: 74fe8b0f2b352724cbb1b0caef6cce8e,
+    type: 2}
+  donJacketPrefab: {fileID: 114364169233136344, guid: 80d8a0cd751089d47a8002f4568cde78,
+    type: 2}
 --- !u!210 &210295063042011266
 SortingGroup:
   m_ObjectHideFlags: 1
@@ -102,7 +106,7 @@ SpriteRenderer:
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
-  m_DrawMode: 0
+  m_DrawMode: 1
   m_Size: {x: 0.64, y: 0.64}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0

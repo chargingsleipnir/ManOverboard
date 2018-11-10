@@ -13,6 +13,9 @@ public class CharChild : CharBase {
     public override void CheckCanAct(bool childrenDonLifeJacket, bool adultDonLifeJacket, bool canScoop) {
         if(childrenDonLifeJacket) {
             canAct = true;
+
+            // TODO: Add functions to buttons
+            commandPanel.SetDonLifeJacketBtn();
         }
     }
 }

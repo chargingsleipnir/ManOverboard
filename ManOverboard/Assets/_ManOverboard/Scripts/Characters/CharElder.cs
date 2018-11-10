@@ -4,9 +4,6 @@ using UnityEngine;
 
 public class CharElder : CharChild {
 
-    [SerializeField]
-    protected SpriteBase scoopBtnSprite;
-
     protected bool blockScooping = true;
 
     protected override void Start() {
@@ -18,13 +15,17 @@ public class CharElder : CharChild {
     public override void CheckCanAct(bool childrenDonLifeJacket, bool adultDonLifeJacket, bool canScoop) {
         if (childrenDonLifeJacket) {
             canAct = true;
+            commandPanel.SetDonLifeJacketBtn();
         }
         if(adultDonLifeJacket) {
             canAct = true;
+            commandPanel.SetDonLifeJacketBtn();
         }
         if(canScoop) {
             canAct = true;
             blockScooping = false;
+
+            commandPanel.SetScoopBtn(PrepScoop);
 
             // TODO: The actions that can be taken will build up from nothing (buttons not existing), however, as abilities are lost (items used, chars tossed),
             // The buttons will not disappear, but rather be greyed out.
