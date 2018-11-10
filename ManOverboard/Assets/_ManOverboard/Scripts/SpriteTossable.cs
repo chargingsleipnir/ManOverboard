@@ -37,7 +37,11 @@ public class SpriteTossable : SpriteBase, IMouseDownDetector, IMouseUpDetector {
     }
 
     protected override void Start() {
-        base.Start();
+        Reset();
+    }
+
+    protected override void Reset() {
+        base.Reset();
 
         // Rigidbody is essentially inactive until being flung/thrown by user.
         // (Could use posiiton constraints instead)
@@ -74,8 +78,16 @@ public class SpriteTossable : SpriteBase, IMouseDownDetector, IMouseUpDetector {
         this.OnMouseUpCB = OnMouseUpCB;
     }
 
-    public virtual void ApplyTransformToContArea(GameObject contAreaObj) {
+    public virtual void ApplyTransformToContArea(GameObject contAreaObj, bool prioritizeRefShape) {
         contAreaObj.transform.position = new Vector3(transform.position.x, transform.position.y, (float)Consts.ZLayers.FrontOfWater);
+
+        if(prioritizeRefShape) {
+            RefShape shape = GetComponent<RefShape>();
+            if (shape != null) {
+                contAreaObj.transform.localScale = new Vector3(shape.Width + Consts.CONT_AREA_BUFFER, shape.Height + Consts.CONT_AREA_BUFFER, 1);
+                return;
+            }
+        }
         contAreaObj.transform.localScale = new Vector3(srRef.comp.sprite.bounds.size.x + Consts.CONT_AREA_BUFFER, srRef.comp.sprite.bounds.size.y + Consts.CONT_AREA_BUFFER, 1);
     }
 

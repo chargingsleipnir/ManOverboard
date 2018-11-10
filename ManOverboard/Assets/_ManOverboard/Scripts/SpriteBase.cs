@@ -338,6 +338,10 @@ public class SpriteBase : MonoBehaviour {
     }
 
     protected virtual void Start() {
+        Reset();
+    }
+
+    protected virtual void Reset() {
         EstablishPlacement();
     }
 

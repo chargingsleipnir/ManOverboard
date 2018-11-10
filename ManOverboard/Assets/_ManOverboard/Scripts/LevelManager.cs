@@ -29,6 +29,8 @@ public class LevelManager : MonoBehaviour {
 
     private List<CharBase> characterSet;
     private int charSetStartCount;
+    private int numChildren = 0;
+    private int numElders = 0;
 
     private ItemBaseSet items;
     private List<ItemCanScoop> itemsCanScoop;
@@ -37,7 +39,7 @@ public class LevelManager : MonoBehaviour {
 
     private GameObject heldObj;
     private SpriteTossable heldSpriteTossable;
-    private CharActionable heldCharActionable;
+    private CharBase heldChar;
 
     private GameObject itemObj;
 
@@ -79,8 +81,13 @@ public class LevelManager : MonoBehaviour {
         characterSet = new List<CharBase>();
         for (int i = 0; i < spriteTossableSet.Count; i++) {
             spriteTossableSet[i].SetMouseRespCallbacks(OnTossableSpriteMouseDown, OnTossableSpriteMouseUp);
-            if (spriteTossableSet[i] is CharBase)
+            if (spriteTossableSet[i] is CharBase) {
                 characterSet.Add(spriteTossableSet[i] as CharBase);
+                if (spriteTossableSet[i] is CharElder)
+                    numElders++;
+                else if (spriteTossableSet[i] is CharChild)
+                    numChildren++;
+            }
             else if (spriteTossableSet[i] is ItemBase) {
                 (spriteTossableSet[i] as ItemBase).SetItemSelectionCallback(OnItemSelectionCB, OnItemDeselectionCB);
             }
@@ -115,6 +122,14 @@ public class LevelManager : MonoBehaviour {
                 else
                     lifeJacketsChild.Add(jacket);
             }
+        }
+
+        foreach(CharBase character in characterSet) {
+            character.CheckCanAct(
+                lifeJacketsChild.Count > 0 && numChildren > 0,
+                lifeJacketsAdult.Count > 0 && numElders > 0,
+                itemsCanScoop.Count > 0 && numElders > 0
+            );
         }
 
         levelActive = true;
@@ -158,7 +173,7 @@ public class LevelManager : MonoBehaviour {
         levelPaused = true;
 
         foreach (CharBase character in characterSet) {
-            if (character != heldCharActionable)
+            if (character != heldChar)
                 character.Paused = true;
         }
     }
@@ -169,7 +184,7 @@ public class LevelManager : MonoBehaviour {
         levelPaused = false;
 
         foreach (CharBase character in characterSet) {
-            if (character != heldCharActionable)
+            if (character != heldChar)
                 character.Paused = false;
         }
     }
@@ -184,12 +199,12 @@ public class LevelManager : MonoBehaviour {
 
         heldObj = spriteObj;
         heldSpriteTossable = spriteObj.GetComponent<SpriteTossable>();
-        if(heldSpriteTossable is CharActionable) {
-            heldCharActionable = spriteObj.GetComponent<CharActionable>();
-            heldCharActionable.SetCallbacks(HighlightToSelectCB, RemoveWaterCB, FadeLevelCB, UnfadeLevelCB);
+        if(heldSpriteTossable is CharBase) {
+            heldChar = spriteObj.GetComponent<CharBase>();
+            heldChar.SetCallbacks(HighlightToSelectCB, RemoveWaterCB, FadeLevelCB, UnfadeLevelCB);
         }
         else
-            heldCharActionable = null;
+            heldChar = null;
 
         // Bring character to focus, in front of everything.
         heldSpriteTossable.SortCompLayerChange(Consts.DrawLayers.FrontOfLevel3, null);
@@ -198,7 +213,7 @@ public class LevelManager : MonoBehaviour {
         grabPos = spriteObj.transform.position;
 
         charContAreaScpt.gameObject.SetActive(true);
-        heldSpriteTossable.ApplyTransformToContArea(charContAreaScpt.gameObject);
+        heldSpriteTossable.ApplyTransformToContArea(charContAreaScpt.gameObject, true);
         charContAreaScpt.MouseEnterCB();
 
         holdWeight.Value = heldSpriteTossable.Weight;
@@ -229,7 +244,7 @@ public class LevelManager : MonoBehaviour {
             // Change weight in boat
             boat.RemoveLoad(holdWeight.Value);
 
-            heldCharActionable = null;
+            heldChar = null;
             heldSpriteTossable = null;
         }
         else
@@ -245,8 +260,8 @@ public class LevelManager : MonoBehaviour {
 
     public void OnItemSelectionCB(ItemBase item) {
         ReturnToNeutral();
-        if (heldCharActionable != null)
-            heldCharActionable.UseItem(item);
+        if (heldChar != null)
+            heldChar.UseItem(item);
     }
     public void OnItemDeselectionCB(ItemBase item) {
         // TODO: Fill out as needed
@@ -318,11 +333,11 @@ public class LevelManager : MonoBehaviour {
     }
 
     public void ReturnToNeutral() {
-        if (heldCharActionable != null) {
-            heldCharActionable.IsActionBtnActive = false;
-            heldCharActionable.IsCancelBtnActive = false;
-            heldCharActionable.IsCommandPanelOpen = false;
-            heldCharActionable.ChangeMouseUpToDownLinks(true);
+        if (heldChar != null) {
+            heldChar.IsActionBtnActive = false;
+            heldChar.IsCancelBtnActive = false;
+            heldChar.IsCommandPanelOpen = false;
+            heldChar.ChangeMouseUpToDownLinks(true);
         }
 
         if(heldSpriteTossable != null)

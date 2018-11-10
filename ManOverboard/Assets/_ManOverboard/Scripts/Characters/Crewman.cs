@@ -1,31 +1,27 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEditor;
+
 using ZeroProgress.Common.Collections;
 
-public class Crewman : CharActionable {
+public class Crewman : CharAdult {
 
     [SerializeField]
     protected ItemBase sailorHat;
-
-    private ItemBaseSet items;
-    [SerializeField]
-    protected SpriteBase scoopBtnSprite;
-
-    private bool blockScooping;
 
     int capWeight;
 
     protected override void Awake() {
         base.Awake();
-        strength = 125;
+        
         capWeight = 0;
         sailorHat.RetPosLocal = sailorHat.transform.localPosition;
-        items = AssetDatabase.LoadAssetAtPath<ItemBaseSet>("Assets/_ManOverboard/Variables/Sets/ItemBaseSet.asset");
     }
     protected override void Start() {
-        base.Start();
+        strength = 125;
+        speed = 125;
+        Reset();
+
         sailorHat.CharHeldBy = this;
         heldItems.Add(sailorHat);
         heldItemWeight += sailorHat.Weight;
@@ -58,20 +54,7 @@ public class Crewman : CharActionable {
             trackers[i].clickThrough = clickThrough;
     }
 
-    public override void CheckCommandViability() {
-        if (items.Count > 0) {
-            blockScooping = false;
-            scoopBtnSprite.ChangeColour(null, null, null, 1.0f);
-        }
-        else {
-            blockScooping = true;
-            scoopBtnSprite.ChangeColour(null, null, null, Consts.BTN_DISABLE_FADE);
-        }
-
-        // TODO: Follow up with any other command buttons.
-    }
-
-    public void PrepScoop() {
+    public override void PrepScoop() {
         if (blockScooping)
             return;
 
