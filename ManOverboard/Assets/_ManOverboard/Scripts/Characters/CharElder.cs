@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class CharElder : CharChild {
 
-    protected bool blockScooping = true;
+    protected bool canDonLifeJacketChild = false;
+    protected bool canScoop = false;
 
     protected override void Start() {
         strength = 50;
@@ -12,34 +13,43 @@ public class CharElder : CharChild {
         Reset();
     }
 
-    public override void CheckCanAct(bool childrenDonLifeJacket, bool adultDonLifeJacket, bool canScoop) {
+    public override void CheckCanAct(bool childrenDonLifeJacket, bool adultDonLifeJacket, bool scoopWater) {
+
+        // TODO: Need to consider that a single button should apply to both, jacketting a child or self
         if (childrenDonLifeJacket) {
             canAct = true;
-            commandPanel.SetDonLifeJacketBtn();
+            canDonLifeJacketChild = true;
+            commandPanel.PrepDonLifeJacketBtn(PrepDonLifeJacketChild);
         }
         if(adultDonLifeJacket) {
             canAct = true;
-            commandPanel.SetDonLifeJacketBtn();
+            canDonLifeJacketSelf = true;
+            commandPanel.PrepDonLifeJacketBtn(PrepDonLifeJacketSelf);
         }
-        if(canScoop) {
+        if(scoopWater) {
             canAct = true;
-            blockScooping = false;
+            canScoop = true;
 
-            commandPanel.SetScoopBtn(PrepScoop);
+            commandPanel.PrepScoopBtn(PrepScoop);
 
             // TODO: The actions that can be taken will build up from nothing (buttons not existing), however, as abilities are lost (items used, chars tossed),
             // The buttons will not disappear, but rather be greyed out.
             //scoopBtnSprite.ChangeColour(null, null, null, 1.0f);
             //scoopBtnSprite.ChangeColour(null, null, null, Consts.BTN_DISABLE_FADE);
         }
+
+        commandPanel.SetBtns();
+    }
+
+    protected void PrepDonLifeJacketChild() {
+
     }
 
     public virtual void PrepScoop() {
-        if (blockScooping)
+        if (canScoop)
             return;
 
         IsCommandPanelOpen = false;
         DelSetItemType(Consts.ItemType.Scooping);
     }
-
 }

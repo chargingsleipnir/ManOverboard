@@ -6,41 +6,46 @@ using UnityEngine.Events;
 public class CommandPanel : SpriteBase {
 
     [SerializeField]
-    private SpriteBase scoopBtnPrefab;
+    private GameObject scoopBtnPrefab;
 
     [SerializeField]
-    private SpriteBase donJacketPrefab;
+    private GameObject donJacketPrefab;
 
-    private int numBtns;
-    private float startHeight;
+    private List<GameObject> initBtns;
+
+    private float singleBtnHeight;
 
     protected override void Awake() {
         base.Awake();
-        startHeight = srRef.comp.size.y;
+        singleBtnHeight = srRef.comp.size.y;
+        initBtns = new List<GameObject>();
         gameObject.SetActive(false);
-        // or is it srRef.comp.sprite.bounds.size.y, though it's listed as "Height" in the inspector
     }
 
-    public void SetDonLifeJacketBtn() {
-        Debug.Log("Added don jacket button");
-        numBtns++;
-        AddBtnToPanel();        
+    public void PrepDonLifeJacketBtn(UnityAction mouseUpCB) {  
+        InstantiateBtnCommon(donJacketPrefab, mouseUpCB);
     }
 
-    public void SetScoopBtn(UnityAction eventCB) {
-        Debug.Log("Added scoop water button");
-        numBtns++;
-        AddBtnToPanel();
-        // TODO
-        // Instantiate button
-        // place appropriately
-        // Get MouseTracker Component
-        // Add eventCB to tracker - AddMouseUpListener(UnityAction eventCB)    
+    public void PrepScoopBtn(UnityAction mouseUpCB) {
+        InstantiateBtnCommon(scoopBtnPrefab, mouseUpCB);
     }
 
-    private void AddBtnToPanel() {
-        srRef.comp.size = new Vector2(srRef.comp.size.x, startHeight * numBtns);
-        Debug.Log(srRef.comp.size.y);
+    private void InstantiateBtnCommon(GameObject prefab, UnityAction mouseUpCB) {
+        GameObject btn = Instantiate(prefab, transform);
+        initBtns.Add(btn);
+
+        RefShape2DMouseTracker tracker = btn.GetComponent<RefShape2DMouseTracker>();
+        tracker.AddMouseUpListener(mouseUpCB);
+    }
+
+    public void SetBtns() {
+        srRef.comp.size = new Vector2(srRef.comp.size.x, singleBtnHeight * initBtns.Count);
+        float firstBtnYLocalPos = (srRef.comp.size.y * 0.5f) - (singleBtnHeight * 0.5f);
+
+        for(int i = 0; i < initBtns.Count; i++) {
+            initBtns[i].transform.localScale = new Vector3(0.75f, 0.75f, 1.0f);
+            initBtns[i].transform.localPosition = new Vector3(0.0f, firstBtnYLocalPos - (i * singleBtnHeight), -0.1f);
+        }
     }
 
     private void DeactivateBtn() {

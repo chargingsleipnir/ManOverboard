@@ -26,7 +26,7 @@ public class Crewman : CharAdult {
         heldItems.Add(sailorHat);
         heldItemWeight += sailorHat.Weight;
 
-        blockScooping = false;
+        canScoop = true;
     }
 
     protected override void Update() {
@@ -55,7 +55,7 @@ public class Crewman : CharAdult {
     }
 
     public override void PrepScoop() {
-        if (blockScooping)
+        if (!canScoop)
             return;
 
         ClickThroughHat(false);
