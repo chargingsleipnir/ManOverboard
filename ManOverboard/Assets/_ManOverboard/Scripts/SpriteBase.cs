@@ -345,6 +345,18 @@ public class SpriteBase : MonoBehaviour {
         EstablishPlacement();
     }
 
+    // TODO: Cache trackers if I start using them more than this.
+    public void ChangeMouseUpToDownLinks(bool linkEvents) {
+        RefShape2DMouseTracker[] trackers = GetComponents<RefShape2DMouseTracker>();
+        for (int i = 0; i < trackers.Length; i++)
+            trackers[i].LinkMouseUpToDown = linkEvents;
+    }
+    public void ResetMouseUpToDownLinks() {
+        RefShape2DMouseTracker[] trackers = GetComponents<RefShape2DMouseTracker>();
+        for (int i = 0; i < trackers.Length; i++)
+            trackers[i].SetOrigLinkState();
+    }
+
     public void ChangeColour(float? r, float? g, float? b, float? a) {
         srRef.comp.color = new Color(r ?? srRef.comp.color.r, g ?? srRef.comp.color.g, b ?? srRef.comp.color.b, a ?? srRef.comp.color.a);
     }

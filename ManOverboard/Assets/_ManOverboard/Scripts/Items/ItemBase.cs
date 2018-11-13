@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEditor;
 using ZeroProgress.Common;
 
+// TODO: Make this into ItemTossable if I start using items that are not tossable, which is likely
 public class ItemBase : SpriteTossable {
 
     public delegate void DelPassItemBase(ItemBase item);
@@ -12,8 +13,6 @@ public class ItemBase : SpriteTossable {
 
     public CharBase CharHeldBy { get; set; }
 
-    protected SpriteOutline so;
-    protected bool selectable;
     protected bool inUse;
 
     private ItemBaseSet items;
@@ -22,7 +21,6 @@ public class ItemBase : SpriteTossable {
 
     protected override void Awake() {
         base.Awake();
-        so = GetComponent<SpriteOutline>();
 
         items = AssetDatabase.LoadAssetAtPath<ItemBaseSet>("Assets/_ManOverboard/Variables/Sets/ItemBaseSet.asset");
         items.Add(this);
@@ -31,7 +29,6 @@ public class ItemBase : SpriteTossable {
     protected override void Start() {
         base.Start();
 
-        selectable = false;
         inUse = false;
     }
 
@@ -42,26 +39,6 @@ public class ItemBase : SpriteTossable {
             CharHeldBy.LoseItem(this);
 
         base.Toss(vel);
-    }
-
-    public void HighlightToClick() {
-        if (inUse || so.enabled)
-            return;
-
-        ChangeMouseUpToDownLinks(false);
-        SortCompLayerChange(Consts.DrawLayers.FrontOfLevel4, null);
-        so.enabled = true;
-        selectable = true;
-    }
-
-    public void UnHighlight() {
-        if (!so.enabled)
-            return;
-
-        ChangeMouseUpToDownLinks(true);
-        SortCompFullReset();
-        so.enabled = false;
-        selectable = false;
     }
 
     public override void MouseDownCB() {
@@ -84,6 +61,13 @@ public class ItemBase : SpriteTossable {
         }
     }
 
+    public override void HighlightToClick() {
+        if (inUse)
+            return;
+
+        base.HighlightToClick();
+    }
+
     public void Deselect() {
         SortCompFullReset();
         EnableMouseTracking(true);
@@ -93,8 +77,8 @@ public class ItemBase : SpriteTossable {
             transform.localPosition = (Vector3)RetPosLocal;
     }
 
-    public void SetItemSelectionCallback(DelPassItemBase OnItemSelect, DelPassItemBase OnItemDeselect) {
-        this.OnItemSelect = OnItemSelect;
-        this.OnItemDeselect = OnItemDeselect;
+    public void SetItemSelectionCallback(DelPassItemBase ItemSelectCB, DelPassItemBase ItemDeselectCB) {
+        OnItemSelect = ItemSelectCB;
+        OnItemDeselect = ItemDeselectCB;
     }
 }

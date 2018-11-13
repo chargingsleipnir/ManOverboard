@@ -258,6 +258,7 @@ public class LevelManager : MonoBehaviour {
         UnPauseLevel();
     }
 
+    // TODO: Once I get character highlighting figured out, perhaps this needs to be made more generic to encompass anything that's highlighted?
     public void OnItemSelectionCB(ItemBase item) {
         ReturnToNeutral();
         if (heldChar != null)

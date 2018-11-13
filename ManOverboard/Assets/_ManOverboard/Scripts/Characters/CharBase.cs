@@ -33,7 +33,7 @@ Instead of masking, make is more general, and design the entire boat to be trans
 [RequireComponent(typeof(SpriteRenderer), typeof(Rigidbody2D), typeof(BoxCollider2D))]
 public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
 
-    protected Consts.CharState state;
+    protected Consts.CharState charState;
     protected bool canAct;
 
     public delegate void DelPassItemType(Consts.ItemType type);
@@ -63,9 +63,8 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
         }
         set {
             saved = value;
-            if (value) {
+            if (value)
                 CancelAction();
-            }
         }
     }
 
@@ -104,9 +103,9 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
         set {
             commandPanel.gameObject.SetActive(value);
             if (value == true)
-                state = Consts.CharState.MenuOpen;
-            else if (state == Consts.CharState.MenuOpen)
-                state = Consts.CharState.Default;
+                charState = Consts.CharState.InMenu;
+            else if (charState == Consts.CharState.InMenu)
+                charState = Consts.CharState.Default;
         }
     }
 
@@ -126,7 +125,7 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
     protected override void Reset() {
         base.Reset();
 
-        state = Consts.CharState.Default;
+        charState = Consts.CharState.Default;
         heldItems = new List<ItemBase>();
 
         heldItemWeight = 0;
@@ -138,35 +137,47 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
     }
 
     public override void MouseDownCB() {
-        if (IsCommandPanelOpen || saved || tossed)
+        if (CheckImmClickExit())
             return;
 
-        held = true;
-
-        if (state == Consts.CharState.Default)
+        if (charState == Consts.CharState.Default) {
             IsActionBtnActive = true;
-        else {
+            tossableState = Consts.SpriteTossableState.Held;
+            OnMouseDownCB(gameObject);
+        }
+        else if (charState == Consts.CharState.InAction) {
             IsCancelBtnActive = true;
             timerBar.IsActive = false;
+            tossableState = Consts.SpriteTossableState.Held;
+            OnMouseDownCB(gameObject);
         }
-
-        OnMouseDownCB(gameObject);
+        // If in menu
+        // If paused
+        // If selectable?
     }
     public override void MouseUpCB() {
-        if (IsCommandPanelOpen || saved || tossed || held == false)
+        if (CheckImmClickExit())
             return;
 
-        held = false;
-
-        if (state == Consts.CharState.Default)
-            IsActionBtnActive = false;
-        else {
-            IsCancelBtnActive = false;
-            if (state == Consts.CharState.Scooping)
+        if (tossableState == Consts.SpriteTossableState.Held) {
+            if (charState == Consts.CharState.Default) {
+                IsActionBtnActive = false;
+                tossableState = Consts.SpriteTossableState.Default;
+                OnMouseUpCB();
+            }
+            else if (charState == Consts.CharState.InAction) {
+                IsCancelBtnActive = false;
                 timerBar.IsActive = true;
+                tossableState = Consts.SpriteTossableState.Default;
+                OnMouseUpCB();
+            }
         }
-
-        OnMouseUpCB();
+        // If in menu
+        // If paused
+        // If selectable?
+    }
+    protected override bool CheckImmClickExit() {
+        return base.CheckImmClickExit() || charState == Consts.CharState.Saved;
     }
 
     public void LoseItem(ItemBase item) {
@@ -209,7 +220,7 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
     }
 
     public override void OverheadButtonActive(bool isActive) {
-        if (state == Consts.CharState.Default)
+        if (charState == Consts.CharState.Default)
             IsActionBtnActive = isActive;
         else
             IsCancelBtnActive = isActive;
@@ -221,7 +232,7 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
     public virtual void CheckCanAct(bool childrenDonLifeJacket, bool adultDonLifeJacket, bool canScoop) {}
 
     public void OpenCommandPanel() {
-        held = false;
+        tossableState = Consts.SpriteTossableState.Default;
         IsCommandPanelOpen = true;
         IsActionBtnActive = false;
 
@@ -252,7 +263,7 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
         activityCounter = activityInterval = 0;
         timerBar.IsActive = false;
         IsCancelBtnActive = false;
-        state = Consts.CharState.Default;
+        charState = Consts.CharState.Default;
         UnFadeLevel();
     }
 }

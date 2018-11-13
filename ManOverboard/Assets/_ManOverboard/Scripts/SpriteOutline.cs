@@ -31,4 +31,8 @@ public class SpriteOutline : MonoBehaviour {
         mpb.SetFloat("_OutlineSize", outlineSize);
         spriteRenderer.SetPropertyBlock(mpb);
     }
+
+    public void ChangeColour(float? r, float? g, float? b, float? a) {
+        color = new Color(r ?? color.r, g ?? color.g, b ?? color.b, a ?? color.a);
+    }
 }

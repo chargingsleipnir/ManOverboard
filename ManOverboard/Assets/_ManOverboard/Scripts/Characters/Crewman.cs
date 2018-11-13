@@ -33,8 +33,8 @@ public class Crewman : CharAdult {
         if (Paused)
             return;
 
-        if (!held) {
-            if (state == Consts.CharState.Scooping) {
+        if (tossableState == Consts.SpriteTossableState.Default) {
+            if (charState == Consts.CharState.InAction) {
                 activityCounter -= Time.deltaTime;
                 float counterPct = 1.0f - (activityCounter / activityInterval);
                 timerBar.Fill = counterPct;
@@ -76,7 +76,7 @@ public class Crewman : CharAdult {
         }
 
         if (item is ItemCanScoop) {
-            state = Consts.CharState.Scooping;
+            charState = Consts.CharState.InAction;
 
             // Logic for scooping wth item
             item.transform.position = trans_ItemUseHand.position;

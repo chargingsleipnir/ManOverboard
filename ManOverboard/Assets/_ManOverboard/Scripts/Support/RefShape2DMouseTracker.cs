@@ -35,6 +35,8 @@ public class RefShape2DMouseTracker : MonoBehaviour {
         get { return linkMouseUpToDown; }
         set { linkMouseUpToDown = value; }
     }
+    private bool origLinkState;
+
     private bool mouseDownWithinBounds;
 
     [SerializeField]
@@ -53,6 +55,8 @@ public class RefShape2DMouseTracker : MonoBehaviour {
 
     private void Awake() {
         SB = GetComponent<SpriteBase>();
+        origLinkState = linkMouseUpToDown;
+
         lateStartLaunched = false;
 
         if (refShape == null)
@@ -98,6 +102,10 @@ public class RefShape2DMouseTracker : MonoBehaviour {
 
         // TODO: Need to consider children/range of items
         RemoveFromSet();
+    }
+
+    public void SetOrigLinkState() {
+        LinkMouseUpToDown = origLinkState;
     }
 
     private void AddToSet() {

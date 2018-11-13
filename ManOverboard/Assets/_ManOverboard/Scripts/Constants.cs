@@ -55,8 +55,15 @@ public static class Consts {
     public enum FitSizes { adult, child }
     public enum CharState {
         Default,
-        MenuOpen,
-        Scooping
+        InMenu,
+        Paused,
+        InAction,
+        Saved
+    }
+    public enum SpriteTossableState {
+        Default,
+        Held,
+        Tossed
     }
     public enum LevelState {
         Default,

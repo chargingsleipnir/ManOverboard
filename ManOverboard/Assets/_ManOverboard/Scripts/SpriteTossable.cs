@@ -2,7 +2,7 @@
 using UnityEditor;
 using ZeroProgress.Common;
 
-public class SpriteTossable : SpriteBase, IMouseDownDetector, IMouseUpDetector {
+public class SpriteTossable : SpriteSelectable, IMouseDownDetector, IMouseUpDetector {
 
     public delegate void DelPassGO(GameObject obj);
     protected DelPassGO OnMouseDownCB;
@@ -13,8 +13,7 @@ public class SpriteTossable : SpriteBase, IMouseDownDetector, IMouseUpDetector {
     private SpriteTossableSet set;
     protected ScriptableVector2 mousePos;
 
-    protected bool held;
-    protected bool tossed;
+    protected Consts.SpriteTossableState tossableState;
 
     protected Rigidbody2D rb;
     protected BoxCollider2D bc;
@@ -48,29 +47,26 @@ public class SpriteTossable : SpriteBase, IMouseDownDetector, IMouseUpDetector {
         rb.isKinematic = true;
         bc.enabled = false;
 
-        held = false;
-        tossed = false;
-    }
-
-    public void ChangeMouseUpToDownLinks(bool linkEvents) {
-        RefShape2DMouseTracker[] trackers = GetComponents<RefShape2DMouseTracker>();
-        for (int i = 0; i < trackers.Length; i++)
-            trackers[i].LinkMouseUpToDown = linkEvents;
+        tossableState = Consts.SpriteTossableState.Default;
     }
 
     public virtual void MouseDownCB() {
-        if (tossed)
+        if (CheckImmClickExit())
             return;
 
-        held = true;
+        tossableState = Consts.SpriteTossableState.Held;
         OnMouseDownCB(gameObject);
     }
+    
     public virtual void MouseUpCB() {
-        if (tossed || held == false)
+        if (CheckImmClickExit())
             return;
 
-        held = false;
+        tossableState = Consts.SpriteTossableState.Default;
         OnMouseUpCB();
+    }
+    protected virtual bool CheckImmClickExit() {
+        return tossableState == Consts.SpriteTossableState.Tossed;
     }
 
     public void SetMouseRespCallbacks(DelPassGO OnMouseDownCB, DelVoid OnMouseUpCB) {
@@ -102,7 +98,7 @@ public class SpriteTossable : SpriteBase, IMouseDownDetector, IMouseUpDetector {
 
         // Move in front of all other non-water objects
         SortCompLayerChange(Consts.DrawLayers.BehindWater, null);
-        tossed = true;
+        tossableState = Consts.SpriteTossableState.Tossed;
         rb.isKinematic = false;
         rb.velocity = vel;
         bc.enabled = true;
