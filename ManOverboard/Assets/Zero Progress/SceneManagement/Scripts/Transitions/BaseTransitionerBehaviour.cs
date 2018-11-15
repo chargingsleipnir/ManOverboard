@@ -34,7 +34,7 @@ namespace ZeroProgress.SceneManagementUtility
         public abstract bool Transition(SceneManagerController sceneManager, 
             SceneModel current, SceneModel desired);
 
-        protected IEnumerator LoadSceneAsync(SceneModel desired, float progressModifier = 1f)
+        protected IEnumerator LoadAdditiveSceneAsync(SceneModel desired, float progressModifier = 1f)
         {
             AsyncOperation loadOp = SceneManager.LoadSceneAsync(desired.SceneName, LoadSceneMode.Additive);
 
@@ -57,7 +57,7 @@ namespace ZeroProgress.SceneManagementUtility
                 yield return null;
             }
             
-            Debug.Log("Loaded new scene");
+            Debug.Log("Loaded new scene: " + desired.SceneName);
         }
 
         protected IEnumerator UnloadSceneAsync(SceneModel target, float progressModifier = 1f)
@@ -77,7 +77,7 @@ namespace ZeroProgress.SceneManagementUtility
                 yield return null;
             }
 
-            Debug.Log("Unloaded old scene");
+            Debug.Log("Unloaded old scene: " + target.SceneName);
         }
     }
 }

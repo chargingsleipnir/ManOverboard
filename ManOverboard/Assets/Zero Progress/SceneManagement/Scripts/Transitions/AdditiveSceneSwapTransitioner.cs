@@ -1,14 +1,13 @@
 ﻿using System.Collections;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using ZeroProgress.Common;
 
 namespace ZeroProgress.SceneManagementUtility
 {
-    public class SceneSwapTransitioner : BaseTransitionerBehaviour
+    public class AdditiveSceneSwapTransitioner : BaseTransitionerBehaviour
     {
         protected Coroutine swapperCoroutine = null;
-
+        
         public override bool Transition(SceneManagerController sceneManager,
             SceneModel current, SceneModel desired)
         {
@@ -25,7 +24,12 @@ namespace ZeroProgress.SceneManagementUtility
         protected virtual IEnumerator SwapScenes(SceneManagerController sceneManager,
             SceneModel current, SceneModel desired)
         {
-            yield return SceneManager.LoadSceneAsync(desired.SceneName, LoadSceneMode.Single);
+            float progressModifier = current == null ? 1f : 0.5f;
+
+            yield return LoadAdditiveSceneAsync(desired, progressModifier);
+
+            if (current != null)
+                yield return UnloadSceneAsync(current, 2f);
 
             OnTransitionCompleted.SafeInvoke(
                 new SceneTransitionEventArgs(sceneManager, current, desired));

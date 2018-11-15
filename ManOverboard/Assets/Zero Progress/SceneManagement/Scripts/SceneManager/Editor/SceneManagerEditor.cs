@@ -461,8 +461,9 @@ namespace ZeroProgress.SceneManagementUtility.Editors
             SerializedSceneManager.SceneNodesObject.Update();
 
             Initialize();
-
-            sceneFileDragReceiver.ReceiverBox = position;
+            
+            sceneFileDragReceiver.ReceiverBox = NodeEditor.NodeEditor.NodeEditorRect.
+                WithPosition(GUIUtility.GUIToScreenPoint(NodeEditor.NodeEditor.NodeEditorRect.position));
 
             sceneFileDragReceiver.Update();
 

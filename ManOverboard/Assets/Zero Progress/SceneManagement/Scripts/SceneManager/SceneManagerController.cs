@@ -135,7 +135,7 @@ namespace ZeroProgress.SceneManagementUtility
             return scenes.Find((x) => x.SceneName.Equals(sceneName, comparer));
         }
 
-        public IEnumerator<SceneModel> GetIterableScenes()
+        public IEnumerable<SceneModel> GetIterableScenes()
         {
             foreach (SceneModel scene in scenes)
             {

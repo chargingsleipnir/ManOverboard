@@ -193,10 +193,13 @@ namespace ZeroProgress.SceneManagementUtility.Editors
                 {
                     DestroyImmediate(conditionsEditor);
                     conditionsEditor = null;
-                    selectedTransitionProp = null;
                 }
+
+                selectedTransitionProp = null;
                 return;
             }
+
+            selectedTransitionProp = serializedScene.GetTransitionAtIndex(selected).TransitionProperty;
 
             if (conditionsEditor == null)
                 conditionsEditor = CreateInstance<ConditionsListEditor>();
