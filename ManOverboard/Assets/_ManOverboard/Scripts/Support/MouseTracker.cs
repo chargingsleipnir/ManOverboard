@@ -21,7 +21,7 @@ public class MouseTracker : MonoBehaviour {
 
     private void Awake() {
         mousePos = AssetDatabase.LoadAssetAtPath<ScriptableVector2>("Assets/_ManOverboard/Variables/v2_mouseWorldPos.asset");
-
+        
         Vector3 mouseCalcPos = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0.0f));
         prevPos = mousePos.CurrentValue = new Vector2(mouseCalcPos.x, mouseCalcPos.y);
 

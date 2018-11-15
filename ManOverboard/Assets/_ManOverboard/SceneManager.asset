@@ -1,0 +1,329 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c38ed0acb3cc40143bf053b300dedd06, type: 3}
+  m_Name: SceneManager
+  m_EditorClassIdentifier: 
+  sceneVariables: {fileID: 114730361166807146}
+  scenes:
+  - sceneId: 4
+    includeInIteration: 0
+    sceneName: Level Overview
+    sceneAssetPath: Assets/_ManOverboard/Scenes/Dev/OdinSceneFlowTest/Level Overview.unity
+    useAnySceneTransitions: 0
+    transitions:
+    - destinationSceneId: 6
+      transitionLabel: 
+      conditions:
+      - {fileID: 114049999551487362}
+      isMuted: 0
+    lockConditions: []
+  - sceneId: 5
+    includeInIteration: 0
+    sceneName: PreGame
+    sceneAssetPath: Assets/_ManOverboard/Scenes/Dev/OdinSceneFlowTest/PreGame.unity
+    useAnySceneTransitions: 0
+    transitions:
+    - destinationSceneId: 6
+      transitionLabel: 
+      conditions: []
+      isMuted: 0
+    lockConditions: []
+  - sceneId: 6
+    includeInIteration: 0
+    sceneName: Title Screen
+    sceneAssetPath: Assets/_ManOverboard/Scenes/Dev/OdinSceneFlowTest/Title Screen.unity
+    useAnySceneTransitions: 0
+    transitions:
+    - destinationSceneId: 4
+      transitionLabel: 
+      conditions:
+      - {fileID: 114735286296969846}
+      isMuted: 0
+    lockConditions: []
+  - sceneId: 1
+    includeInIteration: 1
+    sceneName: Level 1
+    sceneAssetPath: Assets/_ManOverboard/Scenes/Dev/OdinSceneFlowTest/Level 1.unity
+    useAnySceneTransitions: 1
+    transitions: []
+    lockConditions: []
+  - sceneId: 2
+    includeInIteration: 1
+    sceneName: Level 2
+    sceneAssetPath: Assets/_ManOverboard/Scenes/Dev/OdinSceneFlowTest/Level 2.unity
+    useAnySceneTransitions: 1
+    transitions: []
+    lockConditions: []
+  - sceneId: 3
+    includeInIteration: 1
+    sceneName: Level 3 crewman test
+    sceneAssetPath: Assets/_ManOverboard/Scenes/Dev/OdinSceneFlowTest/Level 3 crewman
+      test.unity
+    useAnySceneTransitions: 1
+    transitions: []
+    lockConditions: []
+  anyScene:
+    sceneId: -1
+    includeInIteration: 1
+    sceneName: Any Scene
+    sceneAssetPath: Any Scene
+    useAnySceneTransitions: 1
+    transitions:
+    - destinationSceneId: 4
+      transitionLabel: 
+      conditions:
+      - {fileID: 114819328048194586}
+      isMuted: 0
+    - destinationSceneId: -1
+      transitionLabel: 
+      conditions:
+      - {fileID: 114153445605093170}
+      isMuted: 0
+    lockConditions: []
+  entrySceneId: 5
+--- !u!114 &114049999551487362
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d8fa38a39a00b646b6478e6d6c6d058, type: 3}
+  m_Name: BoolSceneCondition_4
+  m_EditorClassIdentifier: 
+  VariableName: QuitPressed
+  DesiredValue: 1
+--- !u!114 &114153445605093170
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d8fa38a39a00b646b6478e6d6c6d058, type: 3}
+  m_Name: BoolSceneCondition_2
+  m_EditorClassIdentifier: 
+  VariableName: RetryPressed
+  DesiredValue: 1
+--- !u!114 &114187019189058320
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33f3948f1bd1ca345a7a01eb8cdf17a2, type: 3}
+  m_Name: RetryPressed
+  m_EditorClassIdentifier: 
+  Description: 
+  DefaultValue: 0
+  currentValue: 0
+--- !u!114 &114534715307002542
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8a9248255280ae40bf893ea3bcefd8c, type: 3}
+  m_Name: SceneHunter
+  m_EditorClassIdentifier: 
+  Sorting: 1
+--- !u!114 &114548138746594482
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33f3948f1bd1ca345a7a01eb8cdf17a2, type: 3}
+  m_Name: LevelSelectPressed
+  m_EditorClassIdentifier: 
+  Description: 
+  DefaultValue: 0
+  currentValue: 0
+--- !u!114 &114661789267626832
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 437b107767f6d7c4cbe36f348972df8f, type: 3}
+  m_Name: SceneNodes
+  m_EditorClassIdentifier: 
+  sceneNodes:
+  - IsSelectable: 1
+    NodeRect:
+      serializedVersion: 2
+      x: -10.573196
+      y: 598.16797
+      width: 250
+      height: 200
+    isSelected: 0
+    SceneId: -1
+  - IsSelectable: 1
+    NodeRect:
+      serializedVersion: 2
+      x: 63.84552
+      y: 902.0894
+      width: 250
+      height: 200
+    isSelected: 0
+    SceneId: 1
+  - IsSelectable: 1
+    NodeRect:
+      serializedVersion: 2
+      x: 383.54196
+      y: 901.8281
+      width: 250
+      height: 200
+    isSelected: 0
+    SceneId: 2
+  - IsSelectable: 1
+    NodeRect:
+      serializedVersion: 2
+      x: 709.71747
+      y: 895.40204
+      width: 250
+      height: 200
+    isSelected: 0
+    SceneId: 3
+  - IsSelectable: 1
+    NodeRect:
+      serializedVersion: 2
+      x: 379.52365
+      y: 607.84143
+      width: 250
+      height: 200
+    isSelected: 0
+    SceneId: 4
+  - IsSelectable: 1
+    NodeRect:
+      serializedVersion: 2
+      x: 377.6385
+      y: 168.60004
+      width: 250
+      height: 200
+    isSelected: 0
+    SceneId: 5
+  - IsSelectable: 1
+    NodeRect:
+      serializedVersion: 2
+      x: 379.62326
+      y: 377.9729
+      width: 250
+      height: 200
+    isSelected: 0
+    SceneId: 6
+  PanOffset: {x: -20.388863, y: -246.37994}
+  SceneManager: {fileID: 11400000}
+--- !u!114 &114690836214546684
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56640827292c0454a814d7af811bca7c, type: 3}
+  m_Name: SceneFilter
+  m_EditorClassIdentifier: 
+  FoldersToExclude: []
+  FilesToExclude: []
+  FoldersToInclude:
+  - Assets/_ManOverboard/Scenes
+  FilesToInclude: []
+  IncludeIfNoMatch: 0
+--- !u!114 &114730361166807146
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aaa5f66bbe8ebbe49939352b00e06e84, type: 3}
+  m_Name: ManagerVariables
+  m_EditorClassIdentifier: 
+  sceneVariables:
+  - Name: QuitPressed
+    ResetOnTransition: 1
+    value: {fileID: 114843594474569432}
+  - Name: PlayPressed
+    ResetOnTransition: 1
+    value: {fileID: 114811770846358978}
+  - Name: RetryPressed
+    ResetOnTransition: 1
+    value: {fileID: 114187019189058320}
+  - Name: LevelSelectPressed
+    ResetOnTransition: 1
+    value: {fileID: 114548138746594482}
+--- !u!114 &114735286296969846
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d8fa38a39a00b646b6478e6d6c6d058, type: 3}
+  m_Name: BoolSceneCondition_1
+  m_EditorClassIdentifier: 
+  VariableName: PlayPressed
+  DesiredValue: 1
+--- !u!114 &114811770846358978
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33f3948f1bd1ca345a7a01eb8cdf17a2, type: 3}
+  m_Name: PlayPressed
+  m_EditorClassIdentifier: 
+  Description: 
+  DefaultValue: 0
+  currentValue: 0
+--- !u!114 &114819328048194586
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d8fa38a39a00b646b6478e6d6c6d058, type: 3}
+  m_Name: BoolSceneCondition
+  m_EditorClassIdentifier: 
+  VariableName: LevelSelectPressed
+  DesiredValue: 1
+--- !u!114 &114843594474569432
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33f3948f1bd1ca345a7a01eb8cdf17a2, type: 3}
+  m_Name: QuitPressed
+  m_EditorClassIdentifier: 
+  Description: 
+  DefaultValue: 0
+  currentValue: 0
