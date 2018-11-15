@@ -110,7 +110,6 @@ namespace ZeroProgress.Common.Editors
 
             selectedFolder = EditorGUILayout.TextField("Folder Path:", selectedFolder, folderTextboxStyle);
             
-            Rect folderRect = GUILayoutUtility.GetLastRect();
             folderDrag.Update();
 
             EditorGUILayout.BeginHorizontal();

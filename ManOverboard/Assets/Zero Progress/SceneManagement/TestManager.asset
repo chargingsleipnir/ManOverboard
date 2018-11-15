@@ -1,0 +1,493 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c38ed0acb3cc40143bf053b300dedd06, type: 3}
+  m_Name: TestManager
+  m_EditorClassIdentifier: 
+  sceneVariables: {fileID: 114590090886218376}
+  scenes:
+  - sceneId: 1
+    includeInIteration: 1
+    sceneName: 1-1
+    sceneAssetPath: Assets/Zero Progress/SceneManagement/_Demo Scenes/LinearProgressionDemo/Levels/1-1.unity
+    useAnySceneTransitions: 1
+    transitions: []
+    lockConditions: []
+  - sceneId: 2
+    includeInIteration: 1
+    sceneName: 1-2
+    sceneAssetPath: Assets/Zero Progress/SceneManagement/_Demo Scenes/LinearProgressionDemo/Levels/1-2.unity
+    useAnySceneTransitions: 1
+    transitions: []
+    lockConditions: []
+  - sceneId: 3
+    includeInIteration: 1
+    sceneName: 1-3
+    sceneAssetPath: Assets/Zero Progress/SceneManagement/_Demo Scenes/LinearProgressionDemo/Levels/1-3.unity
+    useAnySceneTransitions: 1
+    transitions: []
+    lockConditions: []
+  - sceneId: 4
+    includeInIteration: 1
+    sceneName: 2-1
+    sceneAssetPath: Assets/Zero Progress/SceneManagement/_Demo Scenes/LinearProgressionDemo/Levels/2-1.unity
+    useAnySceneTransitions: 1
+    transitions: []
+    lockConditions: []
+  - sceneId: 5
+    includeInIteration: 1
+    sceneName: MainScene
+    sceneAssetPath: Assets/Zero Progress/SceneManagement/_Demo Scenes/LinearProgressionDemo/MainScene.unity
+    useAnySceneTransitions: 1
+    transitions:
+    - destinationSceneId: 6
+      transitionLabel: 
+      conditions: []
+      isMuted: 0
+    lockConditions:
+    - {fileID: 114433489399729400}
+    - {fileID: 114041677531494928}
+  - sceneId: 6
+    includeInIteration: 1
+    sceneName: MenuScene
+    sceneAssetPath: Assets/Zero Progress/SceneManagement/_Demo Scenes/LinearProgressionDemo/MenuScene.unity
+    useAnySceneTransitions: 1
+    transitions:
+    - destinationSceneId: 7
+      transitionLabel: 
+      conditions: []
+      isMuted: 1
+    - destinationSceneId: 5
+      transitionLabel: 
+      conditions: []
+      isMuted: 1
+    - destinationSceneId: 7
+      transitionLabel: 
+      conditions: []
+      isMuted: 0
+    lockConditions: []
+  - sceneId: 7
+    includeInIteration: 1
+    sceneName: AnimationEventTest
+    sceneAssetPath: Assets/Zero Progress/Testing/Scenes/AnimEventTest/AnimationEventTest.unity
+    useAnySceneTransitions: 1
+    transitions: []
+    lockConditions: []
+  - sceneId: 8
+    includeInIteration: 1
+    sceneName: CollisionEventTest
+    sceneAssetPath: Assets/Zero Progress/Testing/Scenes/CollisionEventTests/CollisionEventTest.unity
+    useAnySceneTransitions: 1
+    transitions: []
+    lockConditions: []
+  - sceneId: 9
+    includeInIteration: 1
+    sceneName: FilterTesting
+    sceneAssetPath: Assets/Zero Progress/Testing/Scenes/FilterTesting/FilterTesting.unity
+    useAnySceneTransitions: 1
+    transitions: []
+    lockConditions: []
+  - sceneId: 10
+    includeInIteration: 1
+    sceneName: GameEventTesting
+    sceneAssetPath: Assets/Zero Progress/Testing/Scenes/GameEventTesting/GameEventTesting.unity
+    useAnySceneTransitions: 1
+    transitions: []
+    lockConditions: []
+  - sceneId: 11
+    includeInIteration: 1
+    sceneName: InterfaceWrapper
+    sceneAssetPath: Assets/Zero Progress/Testing/Scenes/InterfaceWrapperTesting/InterfaceWrapper.unity
+    useAnySceneTransitions: 1
+    transitions: []
+    lockConditions: []
+  - sceneId: 12
+    includeInIteration: 1
+    sceneName: PrimitiveTesting
+    sceneAssetPath: Assets/Zero Progress/Testing/Scenes/PrimitivesTesting/PrimitiveTesting.unity
+    useAnySceneTransitions: 1
+    transitions: []
+    lockConditions: []
+  - sceneId: 13
+    includeInIteration: 1
+    sceneName: RuntimeSets
+    sceneAssetPath: Assets/Zero Progress/Testing/Scenes/RuntimeSets/RuntimeSets.unity
+    useAnySceneTransitions: 1
+    transitions: []
+    lockConditions: []
+  - sceneId: 14
+    includeInIteration: 1
+    sceneName: ScriptTesting
+    sceneAssetPath: Assets/Zero Progress/Testing/Scenes/ScriptTests/ScriptTesting.unity
+    useAnySceneTransitions: 1
+    transitions: []
+    lockConditions: []
+  - sceneId: 15
+    includeInIteration: 0
+    sceneName: TimerTesting
+    sceneAssetPath: Assets/Zero Progress/Testing/Scenes/TimerTesting.unity
+    useAnySceneTransitions: 0
+    transitions: []
+    lockConditions: []
+  - sceneId: 16
+    includeInIteration: 1
+    sceneName: ToggleTesting
+    sceneAssetPath: Assets/Zero Progress/Testing/Scenes/ToggleTesting.unity
+    useAnySceneTransitions: 1
+    transitions: []
+    lockConditions: []
+  anyScene:
+    sceneId: -1
+    includeInIteration: 1
+    sceneName: Any Scene
+    sceneAssetPath: Any Scene
+    useAnySceneTransitions: 1
+    transitions: []
+    lockConditions: []
+  entrySceneId: 1
+--- !u!114 &114036247226630980
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d8fa38a39a00b646b6478e6d6c6d058, type: 3}
+  m_Name: BoolSceneCondition
+  m_EditorClassIdentifier: 
+  VariableName: 
+  DesiredValue: 1
+--- !u!114 &114041677531494928
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf3810c094797344c8d95fbff46379ea, type: 3}
+  m_Name: IntSceneCondition_1
+  m_EditorClassIdentifier: 
+  VariableName: test
+  DesiredValue: 0
+  CompareMode: 2
+--- !u!114 &114117468393772618
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca431e6cbec9af941bcf02a26ed37a5e, type: 3}
+  m_Name: FloatSceneCondition
+  m_EditorClassIdentifier: 
+  VariableName: 
+  DesiredValue: 0
+  CompareMode: 6
+--- !u!114 &114142502556367116
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8a9248255280ae40bf893ea3bcefd8c, type: 3}
+  m_Name: SceneHunter
+  m_EditorClassIdentifier: 
+  Sorting: 1
+--- !u!114 &114181023882350144
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fac6dc2f148fd46458d4a1a5813bf942, type: 3}
+  m_Name: test
+  m_EditorClassIdentifier: 
+  Description: 
+  DefaultValue: 0
+  currentValue: 0
+--- !u!114 &114182232207688928
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33f3948f1bd1ca345a7a01eb8cdf17a2, type: 3}
+  m_Name: boo
+  m_EditorClassIdentifier: 
+  Description: 
+  DefaultValue: 0
+  currentValue: 0
+--- !u!114 &114300526238214730
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf3810c094797344c8d95fbff46379ea, type: 3}
+  m_Name: IntSceneCondition
+  m_EditorClassIdentifier: 
+  VariableName: 
+  DesiredValue: 0
+  CompareMode: 6
+--- !u!114 &114433489399729400
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d8fa38a39a00b646b6478e6d6c6d058, type: 3}
+  m_Name: BoolSceneCondition_2
+  m_EditorClassIdentifier: 
+  VariableName: boo
+  DesiredValue: 1
+--- !u!114 &114476851829783006
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 437b107767f6d7c4cbe36f348972df8f, type: 3}
+  m_Name: SceneNodes
+  m_EditorClassIdentifier: 
+  sceneNodes:
+  - IsSelectable: 1
+    NodeRect:
+      serializedVersion: 2
+      x: 20
+      y: 100
+      width: 250
+      height: 200
+    isSelected: 0
+    SceneId: -1
+  - IsSelectable: 1
+    NodeRect:
+      serializedVersion: 2
+      x: 300
+      y: 0
+      width: 250
+      height: 200
+    isSelected: 0
+    SceneId: 1
+  - IsSelectable: 1
+    NodeRect:
+      serializedVersion: 2
+      x: 300
+      y: 200
+      width: 250
+      height: 200
+    isSelected: 0
+    SceneId: 2
+  - IsSelectable: 1
+    NodeRect:
+      serializedVersion: 2
+      x: 300
+      y: 400
+      width: 250
+      height: 200
+    isSelected: 0
+    SceneId: 3
+  - IsSelectable: 1
+    NodeRect:
+      serializedVersion: 2
+      x: 300
+      y: 600
+      width: 250
+      height: 200
+    isSelected: 0
+    SceneId: 4
+  - IsSelectable: 1
+    NodeRect:
+      serializedVersion: 2
+      x: 300
+      y: 800
+      width: 250
+      height: 150
+    isSelected: 0
+    SceneId: 5
+  - IsSelectable: 1
+    NodeRect:
+      serializedVersion: 2
+      x: 300
+      y: 1001
+      width: 250
+      height: 200
+    isSelected: 0
+    SceneId: 6
+  - IsSelectable: 1
+    NodeRect:
+      serializedVersion: 2
+      x: 300
+      y: 1200
+      width: 250
+      height: 200
+    isSelected: 0
+    SceneId: 7
+  - IsSelectable: 1
+    NodeRect:
+      serializedVersion: 2
+      x: 300
+      y: 1400
+      width: 250
+      height: 200
+    isSelected: 0
+    SceneId: 8
+  - IsSelectable: 1
+    NodeRect:
+      serializedVersion: 2
+      x: 300
+      y: 1600
+      width: 250
+      height: 200
+    isSelected: 0
+    SceneId: 9
+  - IsSelectable: 1
+    NodeRect:
+      serializedVersion: 2
+      x: 300
+      y: 1800
+      width: 250
+      height: 200
+    isSelected: 0
+    SceneId: 10
+  - IsSelectable: 1
+    NodeRect:
+      serializedVersion: 2
+      x: 300
+      y: 2000
+      width: 250
+      height: 200
+    isSelected: 0
+    SceneId: 11
+  - IsSelectable: 1
+    NodeRect:
+      serializedVersion: 2
+      x: 300
+      y: 2200
+      width: 250
+      height: 200
+    isSelected: 0
+    SceneId: 12
+  - IsSelectable: 1
+    NodeRect:
+      serializedVersion: 2
+      x: 300
+      y: 2400
+      width: 250
+      height: 200
+    isSelected: 0
+    SceneId: 13
+  - IsSelectable: 1
+    NodeRect:
+      serializedVersion: 2
+      x: 300
+      y: 2600
+      width: 250
+      height: 200
+    isSelected: 0
+    SceneId: 14
+  - IsSelectable: 1
+    NodeRect:
+      serializedVersion: 2
+      x: 300
+      y: 2800
+      width: 250
+      height: 200
+    isSelected: 0
+    SceneId: 15
+  - IsSelectable: 1
+    NodeRect:
+      serializedVersion: 2
+      x: 300
+      y: 3000
+      width: 250
+      height: 200
+    isSelected: 0
+    SceneId: 16
+  PanOffset: {x: -69.010284, y: -543.59326}
+  SceneManager: {fileID: 11400000}
+--- !u!114 &114484272176538288
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 765256d2d378f984fb5659fb79d4d1a1, type: 3}
+  m_Name: a
+  m_EditorClassIdentifier: 
+  Description: 
+  DefaultValue: 
+  currentValue: 
+--- !u!114 &114529993332324652
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56640827292c0454a814d7af811bca7c, type: 3}
+  m_Name: SceneFilter
+  m_EditorClassIdentifier: 
+  FoldersToExclude: []
+  FilesToExclude: []
+  FoldersToInclude: []
+  FilesToInclude: []
+  IncludeIfNoMatch: 1
+--- !u!114 &114590090886218376
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aaa5f66bbe8ebbe49939352b00e06e84, type: 3}
+  m_Name: ManagerVariables
+  m_EditorClassIdentifier: 
+  sceneVariables:
+  - Name: test
+    ResetOnTransition: 1
+    value: {fileID: 114181023882350144}
+  - Name: a
+    ResetOnTransition: 0
+    value: {fileID: 114484272176538288}
+  - Name: boo
+    ResetOnTransition: 0
+    value: {fileID: 114182232207688928}
+--- !u!114 &114960444594326094
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d8fa38a39a00b646b6478e6d6c6d058, type: 3}
+  m_Name: BoolSceneCondition_1
+  m_EditorClassIdentifier: 
+  VariableName: 
+  DesiredValue: 1

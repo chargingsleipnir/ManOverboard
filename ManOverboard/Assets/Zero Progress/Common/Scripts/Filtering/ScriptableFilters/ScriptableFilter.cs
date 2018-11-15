@@ -22,7 +22,7 @@ namespace ZeroProgress.Common
         /// <summary>
         /// Resets the filter value to the specified default value
         /// </summary>
-        public override void ResetValue()
+        public override void Reset()
         {
             CurrentValue = DefaultValue.DeepCopy();
         }

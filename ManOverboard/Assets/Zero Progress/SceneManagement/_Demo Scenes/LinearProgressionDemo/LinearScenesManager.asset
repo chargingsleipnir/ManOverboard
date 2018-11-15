@@ -1,0 +1,307 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c38ed0acb3cc40143bf053b300dedd06, type: 3}
+  m_Name: LinearScenesManager
+  m_EditorClassIdentifier: 
+  sceneVariables: {fileID: 114525083755459216}
+  scenes:
+  - sceneId: 1
+    includeInIteration: 0
+    sceneName: 1-1
+    sceneAssetPath: Assets/Zero Progress/SceneManagement/_Demo Scenes/LinearProgressionDemo/Levels/1-1.unity
+    useAnySceneTransitions: 1
+    transitions: []
+    lockConditions: []
+  - sceneId: 2
+    includeInIteration: 0
+    sceneName: 1-2
+    sceneAssetPath: Assets/Zero Progress/SceneManagement/_Demo Scenes/LinearProgressionDemo/Levels/1-2.unity
+    useAnySceneTransitions: 1
+    transitions: []
+    lockConditions:
+    - {fileID: 114681559109547574}
+  - sceneId: 3
+    includeInIteration: 0
+    sceneName: 1-3
+    sceneAssetPath: Assets/Zero Progress/SceneManagement/_Demo Scenes/LinearProgressionDemo/Levels/1-3.unity
+    useAnySceneTransitions: 1
+    transitions: []
+    lockConditions: []
+  - sceneId: 4
+    includeInIteration: 0
+    sceneName: 2-1
+    sceneAssetPath: Assets/Zero Progress/SceneManagement/_Demo Scenes/LinearProgressionDemo/Levels/2-1.unity
+    useAnySceneTransitions: 0
+    transitions: []
+    lockConditions: []
+  - sceneId: 5
+    includeInIteration: 0
+    sceneName: MainScene
+    sceneAssetPath: Assets/Zero Progress/SceneManagement/_Demo Scenes/LinearProgressionDemo/MainScene.unity
+    useAnySceneTransitions: 0
+    transitions:
+    - destinationSceneId: 6
+      transitionLabel: 
+      conditions: []
+      isMuted: 0
+    lockConditions: []
+  - sceneId: 6
+    includeInIteration: 0
+    sceneName: MenuScene
+    sceneAssetPath: Assets/Zero Progress/SceneManagement/_Demo Scenes/LinearProgressionDemo/MenuScene.unity
+    useAnySceneTransitions: 0
+    transitions: []
+    lockConditions: []
+  anyScene:
+    sceneId: -1
+    includeInIteration: 1
+    sceneName: Any Scene
+    sceneAssetPath: Any Scene
+    useAnySceneTransitions: 0
+    transitions:
+    - destinationSceneId: 6
+      transitionLabel: 
+      conditions:
+      - {fileID: 114214664585644942}
+      isMuted: 0
+    - destinationSceneId: -1
+      transitionLabel: 
+      conditions:
+      - {fileID: 114011571203278230}
+      isMuted: 0
+    lockConditions: []
+  entrySceneId: 5
+--- !u!114 &114011571203278230
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d8fa38a39a00b646b6478e6d6c6d058, type: 3}
+  m_Name: BoolSceneCondition_1
+  m_EditorClassIdentifier: 
+  VariableName: PlayerDead
+  DesiredValue: 1
+--- !u!114 &114214664585644942
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d8fa38a39a00b646b6478e6d6c6d058, type: 3}
+  m_Name: BoolSceneCondition
+  m_EditorClassIdentifier: 
+  VariableName: Quit
+  DesiredValue: 1
+--- !u!114 &114407279391437134
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 437b107767f6d7c4cbe36f348972df8f, type: 3}
+  m_Name: SceneNodes
+  m_EditorClassIdentifier: 
+  sceneNodes:
+  - IsSelectable: 1
+    NodeRect:
+      serializedVersion: 2
+      x: -98.08676
+      y: 8.520366
+      width: 250
+      height: 200
+    isSelected: 0
+    SceneId: -1
+  - IsSelectable: 1
+    NodeRect:
+      serializedVersion: 2
+      x: -52.04067
+      y: 182.65292
+      width: 250
+      height: 200
+    isSelected: 0
+    SceneId: 1
+  - IsSelectable: 1
+    NodeRect:
+      serializedVersion: 2
+      x: 293.8778
+      y: 183.26538
+      width: 250
+      height: 150
+    isSelected: 0
+    SceneId: 2
+  - IsSelectable: 1
+    NodeRect:
+      serializedVersion: 2
+      x: 585.8354
+      y: 157.83667
+      width: 250
+      height: 200
+    isSelected: 0
+    SceneId: 3
+  - IsSelectable: 1
+    NodeRect:
+      serializedVersion: 2
+      x: 295.32678
+      y: 518.6732
+      width: 250
+      height: 200
+    isSelected: 0
+    SceneId: 4
+  - IsSelectable: 1
+    NodeRect:
+      serializedVersion: 2
+      x: 145.10938
+      y: -153.58618
+      width: 250
+      height: 200
+    isSelected: 0
+    SceneId: 5
+  - IsSelectable: 1
+    NodeRect:
+      serializedVersion: 2
+      x: 290.81625
+      y: 9.183617
+      width: 250
+      height: 200
+    isSelected: 0
+    SceneId: 6
+  PanOffset: {x: 376.67358, y: 629.4437}
+  SceneManager: {fileID: 11400000}
+--- !u!114 &114474073880591760
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56640827292c0454a814d7af811bca7c, type: 3}
+  m_Name: SceneFilter
+  m_EditorClassIdentifier: 
+  FoldersToExclude: []
+  FilesToExclude: []
+  FoldersToInclude:
+  - Assets/Zero Progress/SceneManagement/_Demo Scenes/LinearProgressionDemo
+  FilesToInclude: []
+  IncludeIfNoMatch: 0
+--- !u!114 &114483274518064338
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8a9248255280ae40bf893ea3bcefd8c, type: 3}
+  m_Name: SceneHunter
+  m_EditorClassIdentifier: 
+  Sorting: 1
+--- !u!114 &114525083755459216
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aaa5f66bbe8ebbe49939352b00e06e84, type: 3}
+  m_Name: ManagerVariables
+  m_EditorClassIdentifier: 
+  sceneVariables:
+  - Name: SelectedLevel
+    ResetOnTransition: 1
+    value: {fileID: 114942380724251978}
+  - Name: OrbsCollected
+    ResetOnTransition: 0
+    value: {fileID: 114776303985201364}
+  - Name: Quit
+    ResetOnTransition: 1
+    value: {fileID: 114858496316385136}
+  - Name: PlayerDead
+    ResetOnTransition: 1
+    value: {fileID: 114992028442639402}
+--- !u!114 &114681559109547574
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf3810c094797344c8d95fbff46379ea, type: 3}
+  m_Name: IntSceneCondition
+  m_EditorClassIdentifier: 
+  VariableName: OrbsCollected
+  DesiredValue: 3
+  CompareMode: 6
+--- !u!114 &114776303985201364
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fac6dc2f148fd46458d4a1a5813bf942, type: 3}
+  m_Name: OrbsCollected
+  m_EditorClassIdentifier: 
+  Description: 
+  DefaultValue: 0
+  currentValue: 0
+--- !u!114 &114858496316385136
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33f3948f1bd1ca345a7a01eb8cdf17a2, type: 3}
+  m_Name: Quit
+  m_EditorClassIdentifier: 
+  Description: 
+  DefaultValue: 0
+  currentValue: 0
+--- !u!114 &114942380724251978
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 765256d2d378f984fb5659fb79d4d1a1, type: 3}
+  m_Name: SelectedLevel
+  m_EditorClassIdentifier: 
+  Description: 
+  DefaultValue: 
+  currentValue: 
+--- !u!114 &114992028442639402
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33f3948f1bd1ca345a7a01eb8cdf17a2, type: 3}
+  m_Name: PlayerDead
+  m_EditorClassIdentifier: 
+  Description: 
+  DefaultValue: 0
+  currentValue: 0

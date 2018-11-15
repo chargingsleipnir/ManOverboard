@@ -1,12 +1,10 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEditor.Animations;
 using UnityEngine;
 
 namespace ZeroProgress.Common.Editors
 {
-    public class AnimatorParamExport
+    public static class AnimatorParamExport
     {
         /// <summary>
         /// The menu item that activates to generate the parameters

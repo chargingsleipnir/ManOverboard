@@ -57,5 +57,39 @@ namespace ZeroProgress.Common.Editors
             return folderValue;
         }
         
+        /// <summary>
+        /// Draws a label for the provided string-valued Serialized Property. If the
+        /// label is clicked, becomes a textboox
+        /// </summary>
+        /// <param name="property">The string property to edit</param>
+        /// <param name="editMode">True if editing, false if not</param>
+        /// <param name="options">Any options to apply to the label/text</param>
+        /// <returns>Current edit mode value</returns>
+        public static bool EditableLabel(SerializedProperty property, bool editMode, params GUILayoutOption[] options)
+        {
+            if (editMode)
+            {
+                EditorGUILayout.DelayedTextField(property, GUIContent.none, options);
+
+                Rect rect = GUILayoutUtility.GetLastRect();
+
+                if (Event.current.rawType == EventType.MouseDown && 
+                    !rect.Contains(Event.current.mousePosition))
+                    return false;
+            }
+            else
+            {
+                EditorGUILayout.LabelField(property.stringValue, options);
+
+                Rect rect = GUILayoutUtility.GetLastRect();
+
+                if (Event.current.type == EventType.MouseDown &&
+                    rect.Contains(Event.current.mousePosition))
+                    return true;
+            }
+            
+            return editMode;
+        }
+
     }
 }

@@ -6,7 +6,7 @@ namespace ZeroProgress.Common
     /// <summary>
     /// An event designed as an asset to act as a kind of 'singleton' event
     /// </summary>
-    [CreateAssetMenu(fileName = "New Game Event", menuName = ScriptableObjectPaths.ZERO_PROGRESS_EVENTS_PATH + "Game Event")]
+    [CreateAssetMenu(fileName = "New Game Event", menuName = ScriptableObjectPaths.ZERO_PROGRESS_EVENTS_PATH + "Game Event", order = (int)ScriptableEventsMenuIndexing.VoidEvent)]
     public class GameEvent : ScriptableObject
     {
         [SerializeField, Tooltip("Identifies this event so a single listener can properly handle multiple types of events")]
