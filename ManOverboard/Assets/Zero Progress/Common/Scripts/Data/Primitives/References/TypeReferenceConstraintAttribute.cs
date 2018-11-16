@@ -2,6 +2,7 @@
 // Licensed under the MIT license. See LICENSE file in the project root.
 
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace ZeroProgress.Common
@@ -30,6 +31,10 @@ namespace ZeroProgress.Common
         /// grouping method must only be used for <see cref="MonoBehaviour"/> types.
         /// </summary>
         ByAddComponentMenu,
+        /// <summary>
+        /// Group classes using custom logic
+        /// </summary>
+        Custom
     }
 
     /// <summary>
@@ -38,11 +43,23 @@ namespace ZeroProgress.Common
     /// </summary>
     public abstract class ClassTypeConstraintAttribute : PropertyAttribute
     {
+        public delegate bool FilterTypeDelegate(System.Type type);
+        public delegate string CustomGroupDelegate(System.Type type);
 
         private ClassGrouping _grouping = ClassGrouping.ByNamespaceFlat;
+        private CustomGroupDelegate _customGroupingLogic = null;
+
         private bool _allowAbstract = false;
         private bool _allowStructs = false;
+        private bool _allowGenerics = true;
 
+        private bool _removeNamespaceFromSelected = false;
+        private bool _showNoneOption = true;
+        private FilterTypeDelegate _additionalFiltering = null;
+
+        private bool _removeIfCustomDisplay = true;
+        private Dictionary<Type, string> _customTypeDisplays = new Dictionary<Type, string>();
+        
         /// <summary>
         /// Gets or sets grouping of selectable classes. Defaults to <see cref="ClassGrouping.ByNamespaceFlat"/>
         /// unless explicitly specified.
@@ -51,6 +68,17 @@ namespace ZeroProgress.Common
         {
             get { return _grouping; }
             set { _grouping = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the custom grouping of selectable classes. 
+        /// Defaults to null unless explicitly specified. Only used if
+        /// <see cref="Grouping"/> is set to <see cref="ClassGrouping"/> is set to custom
+        /// </summary>
+        public CustomGroupDelegate CustomGroupingLogic
+        {
+            get { return _customGroupingLogic; }
+            set { _customGroupingLogic = value; }
         }
 
         /// <summary>
@@ -74,6 +102,69 @@ namespace ZeroProgress.Common
         }
 
         /// <summary>
+        /// Gets or sets whether generic classes can be selected from drop-down.
+        /// Defaults to a value of <c>true</c> unless explicitly specified.
+        /// </summary>
+        public bool AllowGenerics
+        {
+            get { return _allowGenerics; }
+            set { _allowGenerics = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets whether the selected item is displayed only
+        /// as the class name, or if it includes the full namespace as well
+        /// Defaults to a value of <c>false</c>
+        /// </summary>
+        public bool RemoveNamespaceFromSelected
+        {
+            get { return _removeNamespaceFromSelected; }
+            set { _removeNamespaceFromSelected = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets whether an option for NONE exists.
+        /// Don't use this if a selected type can be null
+        /// 
+        /// Defaults to a value of <c>true</c>
+        /// </summary>
+        public bool ShowNoneOption
+        {
+            get { return _showNoneOption; }
+            set { _showNoneOption = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets additional filtering logic
+        /// 
+        /// Defaults to a value of <c>null</c>
+        /// </summary>
+        public FilterTypeDelegate AdditionalFiltering
+        {
+            get { return _additionalFiltering; }
+            set { _additionalFiltering = value; }
+        }
+
+        /// <summary>
+        /// Gets the dictionary to allow mapping a type to a custom display name
+        /// </summary>
+        public Dictionary<Type, string> CustomDisplays
+        {
+            get { return _customTypeDisplays; }
+            private set { _customTypeDisplays = value; }
+        }
+        
+        /// <summary>
+        /// Remove the original type display if there is a custom
+        /// display for it
+        /// </summary>
+        public bool RemoveIfHasCustomDisplay
+        {
+            get { return _removeIfCustomDisplay; }
+            set { _removeIfCustomDisplay = value; }
+        }
+        
+        /// <summary>
         /// Determines whether the specified <see cref="Type"/> satisfies filter constraint.
         /// </summary>
         /// <param name="type">Type to test.</param>
@@ -83,7 +174,22 @@ namespace ZeroProgress.Common
         /// </returns>
         public virtual bool IsConstraintSatisfied(Type type)
         {
-            return AllowAbstract || !type.IsAbstract;
+            if (!AllowAbstract && type.IsAbstract)
+                return false;
+
+            if (!AllowStructs && !type.IsClass)
+                return false;
+
+            if (!AllowGenerics && type.IsGenericTypeDefinition)
+                return false;
+
+            if (RemoveIfHasCustomDisplay && CustomDisplays.ContainsKey(type))
+                return false;
+
+            if (AdditionalFiltering != null && !AdditionalFiltering(type))
+                return false;
+
+            return true;
         }
 
     }

@@ -179,6 +179,7 @@ GameObject:
   - component: {fileID: 222847516818437062}
   - component: {fileID: 114345113863980796}
   - component: {fileID: 114425618253881766}
+  - component: {fileID: 114825171665832928}
   m_Layer: 5
   m_Name: btn_Retry
   m_TagString: Untagged
@@ -215,6 +216,7 @@ GameObject:
   - component: {fileID: 222727921398861632}
   - component: {fileID: 114157923383466514}
   - component: {fileID: 114773786042488322}
+  - component: {fileID: 114302273749811892}
   m_Layer: 5
   m_Name: btn_ToLevelOverview
   m_TagString: Untagged
@@ -438,6 +440,19 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
+--- !u!114 &114302273749811892
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1858634211716272}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2de5212f538bb6342b7eca81e3ef96ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SceneController: {fileID: 11400000, guid: fb377260c3a2f9945a038eff12ff2c94, type: 2}
+  VariableName: LevelSelectPressed
 --- !u!114 &114321299619895140
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -618,17 +633,16 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 114446832514159312, guid: 36bfc96ef999cc14f8d0bb0637927c73,
-          type: 2}
-        m_MethodName: RestartCurrent
-        m_Mode: 1
+      - m_Target: {fileID: 114825171665832928}
+        m_MethodName: SetVariable
+        m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
-          m_BoolArgument: 0
+          m_BoolArgument: 1
         m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
@@ -949,6 +963,19 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: Load weight
+--- !u!114 &114825171665832928
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1641206579938848}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2de5212f538bb6342b7eca81e3ef96ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SceneController: {fileID: 11400000, guid: fb377260c3a2f9945a038eff12ff2c94, type: 2}
+  VariableName: RetryPressed
 --- !u!222 &222124092906495720
 CanvasRenderer:
   m_ObjectHideFlags: 1

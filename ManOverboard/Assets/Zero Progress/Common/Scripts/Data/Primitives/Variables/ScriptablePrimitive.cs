@@ -8,7 +8,7 @@ namespace ZeroProgress.Common
     /// </summary>
     /// <typeparam name="T">The type to make a scriptable asset from</typeparam>
     [Serializable]
-    public class ScriptablePrimitive<T>: ScriptableObject
+    public class ScriptablePrimitive<T>: ScriptableObject, IVariable<T>, IResetable
     {
 #if UNITY_EDITOR
         [TextArea]
@@ -34,16 +34,66 @@ namespace ZeroProgress.Common
         
         protected virtual void OnEnable()
         {
-            ResetValue();
+            Reset();
         }
 
         /// <summary>
         /// Sets the current value to the default/starting value
         /// </summary>
-        public virtual void ResetValue()
+        public virtual void Reset()
         {
             CurrentValue = DefaultValue;
         }
+
+        /// <summary>
+        /// Determines if this primitive is resetable
+        /// </summary>
+        /// <returns>True</returns>
+        public virtual bool CanReset()
+        {
+            return true;
+        }
+
+        #region IVariable Interface Implementation
+
+        /// <summary>
+        /// Get the value of the variable
+        /// </summary>
+        /// <returns>The current value</returns>
+        public T GetTypedValue()
+        {
+            return CurrentValue;
+        }
+
+        /// <summary>
+        /// Sets the value of the variable
+        /// </summary>
+        /// <param name="newValue">The new value</param>
+        public void SetValue(T newValue)
+        {
+            CurrentValue = newValue;
+        }
+
+        /// <summary>
+        /// Get the value of the variable
+        /// </summary>
+        /// <returns>The current value</returns>
+        public object GetValue()
+        {
+            return CurrentValue;
+        }
+
+        /// <summary>
+        /// Sets the value of the variable
+        /// </summary>
+        /// <param name="newValue">The new value</param>
+        public void SetValue(object newValue)
+        {
+            if (newValue is T)
+                SetValue((T)newValue);
+        }
+        
+        #endregion
 
         /// <summary>
         /// Implicitly cast to the contained value type

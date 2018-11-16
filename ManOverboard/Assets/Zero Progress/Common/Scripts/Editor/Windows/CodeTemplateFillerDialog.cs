@@ -15,9 +15,7 @@ namespace ZeroProgress.Common.Editors
     public class CodeTemplateFillerDialog : EditorWindow
     {
         private ScriptableCodeTemplate activeTemplate;
-
-        private SerializedObject templateSerialized;
-
+        
         private string outputPath;
         private DragReceiver folderDrag;
 
@@ -62,7 +60,7 @@ namespace ZeroProgress.Common.Editors
 
             activeTemplate = template;
             parameterValues.Clear();
-            templateSerialized = null;
+
             replacedString = string.Empty;
             allParametersValid = false;
 
@@ -70,9 +68,7 @@ namespace ZeroProgress.Common.Editors
 
             if (template == null)
                 return;
-
-            templateSerialized = new SerializedObject(activeTemplate);
-
+            
             codeParamList = ReflectionUtilities.GetFieldByName
                 <IEnumerable<CodeGenerationParameter>>(activeTemplate,
                 "parameters", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -234,7 +230,7 @@ namespace ZeroProgress.Common.Editors
 
         private void RenderPreviewWindow(string text)
         {
-            EditorGUILayout.BeginScrollView(codePreviewScrollPos);
+            codePreviewScrollPos = EditorGUILayout.BeginScrollView(codePreviewScrollPos);
 
             EditorGUI.BeginDisabledGroup(true);
                         

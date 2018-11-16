@@ -2,11 +2,11 @@
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace ZeroProgress.Common {
-    /// <summary>
-    /// Instance of a UnityEvent that takes a single Vector2 parameter
-    /// </summary>
+namespace ZeroProgress.Common
+{
     [Serializable]
-    public class UnityVector2Event : UnityEvent<Vector2> {
+    public class UnityVector2Event : UnityEvent<Vector2>
+    {
+        
     }
 }

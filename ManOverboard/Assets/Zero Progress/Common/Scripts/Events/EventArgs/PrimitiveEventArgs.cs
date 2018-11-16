@@ -12,5 +12,22 @@ namespace ZeroProgress.Common
         /// The event value
         /// </summary>
         public T Value;
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        public EventArgs()
+        {
+
+        }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="value">The value to assign to the args</param>
+        public EventArgs(T value)
+        {
+            Value = value;
+        }
     }
 }
