@@ -75,6 +75,7 @@ GameObject:
   - component: {fileID: 50624840740970256}
   - component: {fileID: 61594741337033016}
   - component: {fileID: 114216619960263760}
+  - component: {fileID: 114506890501518584}
   - component: {fileID: 114762912406962708}
   - component: {fileID: 114347521468116586}
   m_Layer: 0
@@ -486,6 +487,19 @@ MonoBehaviour:
     type: 2}
   donJacketPrefab: {fileID: 1251050269509320, guid: 80d8a0cd751089d47a8002f4568cde78,
     type: 2}
+--- !u!114 &114506890501518584
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1147052724391996}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 39ed267f79c3600448faf9c1bf70173a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  color: {r: 1, g: 1, b: 1, a: 1}
+  outlineSize: 1
 --- !u!114 &114684971244318200
 MonoBehaviour:
   m_ObjectHideFlags: 1
