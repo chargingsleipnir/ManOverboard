@@ -126,6 +126,7 @@ namespace ZeroProgress.SceneManagementUtility.Editors
                 if (transitionListEditor == null)
                 {
                     transitionListEditor = CreateInstance<TransitionListEditor>();
+                    transitionListEditor.OnRequestRepaint += TransitionListEditor_OnRequestRepaint;
                     transitionListEditor.Initialize(serializedManager, serializedScene);
                 }
 
@@ -149,6 +150,11 @@ namespace ZeroProgress.SceneManagementUtility.Editors
 
                 transitionListEditor.SetSelectedTransition(endNode.SceneId);
             }
+        }
+
+        private void TransitionListEditor_OnRequestRepaint(object sender, EventArgs e)
+        {
+            RefreshManager();
         }
 
         private void SetSelectedNode(SceneNode selectedNode)

@@ -1,8 +1,10 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
+using ZeroProgress.Common;
 using ZeroProgress.Common.Editors;
 
 namespace ZeroProgress.SceneManagementUtility.Editors
@@ -16,6 +18,8 @@ namespace ZeroProgress.SceneManagementUtility.Editors
 
         SerializedSceneModel serializedScene;
 
+        public event EventHandler OnRequestRepaint;
+
         private SerializedProperty selectedTransitionProp;
 
         private ReorderableList transitionListDisplay;
@@ -26,7 +30,13 @@ namespace ZeroProgress.SceneManagementUtility.Editors
         {
             SerializedSceneManager = serializedManager;
             this.serializedScene = serializedScene;
-            
+            selectedTransitionProp = null;
+
+            // Need this to reset transition prop because for some reason Redo isn't
+            // resulting in this being called properly when the SceneManagerEditor reinitializes
+            Undo.undoRedoPerformed -= OnUndoRedo;
+            Undo.undoRedoPerformed += OnUndoRedo;
+
             transitionListDisplay = new ReorderableList(serializedScene.SerializedObject,
                 serializedScene.TransitionsProp, true, true, false, true);
 
@@ -35,6 +45,8 @@ namespace ZeroProgress.SceneManagementUtility.Editors
             transitionListDisplay.onSelectCallback = OnSelected;
             transitionListDisplay.onRemoveCallback = OnRemoved;
 
+            transitionListDisplay.index = -1;
+
             if (serializedScene.TransitionsProp.arraySize > 0)
             {
                 transitionListDisplay.index = 0;
@@ -42,10 +54,15 @@ namespace ZeroProgress.SceneManagementUtility.Editors
             }
         }
 
+        private void OnUndoRedo()
+        {
+            selectedTransitionProp = null;
+        }
+
         public override void OnInspectorGUI()
         {
             transitionListDisplay.DoLayoutList();
-
+            
             if (selectedTransitionProp != null)
                 RenderSelectedTransition();
         }
@@ -59,6 +76,7 @@ namespace ZeroProgress.SceneManagementUtility.Editors
                 if (serializedTrans.DestSceneIdProp.intValue == destId)
                 {
                     transitionListDisplay.index = i;
+                    selectedTransitionProp = serializedTrans.TransitionProperty;
                     break;
                 }
             }
@@ -187,7 +205,7 @@ namespace ZeroProgress.SceneManagementUtility.Editors
         {
             int selected = reorderableList.index;
 
-            if (selected < 0)
+            if (selected < 0 || reorderableList.serializedProperty.arraySize == 0)
             {
                 if (conditionsEditor != null)
                 {
@@ -218,11 +236,12 @@ namespace ZeroProgress.SceneManagementUtility.Editors
             if (reorderableList.index < 0)
                 return;
 
-            serializedScene.TransitionsProp.DeleteArrayElementAtIndex(reorderableList.index);
-            serializedScene.SerializedObject.ApplyModifiedProperties();
+            serializedScene.DeleteTransitionAtIndex(reorderableList.index);
 
             reorderableList.index--;
             OnSelected(reorderableList);
+
+            OnRequestRepaint.SafeInvoke(this, EventArgs.Empty);
 
             GUIUtility.ExitGUI();
         }

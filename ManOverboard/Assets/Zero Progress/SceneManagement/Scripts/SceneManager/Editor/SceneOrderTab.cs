@@ -1,5 +1,7 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
@@ -36,7 +38,45 @@ namespace ZeroProgress.SceneManagementUtility.Editors
 
         public override void OnInspectorGUI()
         {
+            EditorGUI.BeginChangeCheck();
+
+            EditorGUILayout.PropertyField(serializedManager.UseOnPlayProp);
+
+            DrawSceneDropdown();
+
+            if (EditorGUI.EndChangeCheck())
+                serializedManager.SerializedManager.ApplyModifiedProperties();
+
+            EditorGUILayout.Space();
+
             sceneOrderList.DoLayoutList();
+        }
+
+        private void DrawSceneDropdown()
+        {
+            string[] allSceneNames = new string[]
+            {
+                "None",
+            }.Union(serializedManager.TargetManager.scenes.Select((x) => x.SceneName)).ToArray();
+
+            int selectedIndex = Array.IndexOf(allSceneNames, serializedManager.GoToOnPlay.stringValue);
+
+            if (selectedIndex < 0)
+                selectedIndex = 0;
+
+            int oldIndex = selectedIndex;
+
+            selectedIndex = EditorGUILayout.Popup(selectedIndex, allSceneNames);
+
+            if (oldIndex != selectedIndex)
+            {
+                string selectedName = null;
+
+                if (selectedIndex > 0)
+                    selectedName = allSceneNames[selectedIndex];
+
+                serializedManager.GoToOnPlay.stringValue = selectedName;
+            }
         }
 
         #region Reorderable List Callbacks

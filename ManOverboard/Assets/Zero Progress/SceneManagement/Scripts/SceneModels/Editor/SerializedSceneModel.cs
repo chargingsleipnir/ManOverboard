@@ -106,13 +106,44 @@ namespace ZeroProgress.SceneManagementUtility.Editors
 
         public void DeleteTransitionsInvolving(int sceneId)
         {
+            Undo.SetCurrentGroupName("Delete Transitions");
+            int currentGroup = Undo.GetCurrentGroup();
+
             for (int t = TransitionsProp.arraySize - 1; t >= 0; t--)
             {
                 SerializedTransition currentTrans = GetTransitionAtIndex(t);
 
-                if (currentTrans.DestSceneIdProp.intValue == sceneId)
-                    TransitionsProp.DeleteArrayElementAtIndex(t);
+                if (currentTrans.DestSceneIdProp.intValue == sceneId ||
+                        SceneIdProp.intValue == sceneId)
+                    DeleteTransitionAtIndex(t);
             }
+
+            Undo.CollapseUndoOperations(currentGroup);
+        }
+
+        public void DeleteTransitionAtIndex(int index)
+        {
+            if (index < 0 || index >= TransitionsProp.arraySize)
+                return;
+
+            SerializedTransition currentTrans = GetTransitionAtIndex(index);
+
+            Undo.SetCurrentGroupName("Delete Transition");
+            int currentGroup = Undo.GetCurrentGroup();
+
+            Undo.RegisterCompleteObjectUndo(SerializedObject.targetObject, "Scene Data");
+
+            for (int i = 0; i < currentTrans.ConditionsProp.arraySize; i++)
+            {
+                SerializedProperty currentCond = currentTrans.ConditionsProp.GetArrayElementAtIndex(i);
+                Undo.DestroyObjectImmediate(currentCond.objectReferenceValue);
+            }
+
+            TransitionsProp.DeleteArrayElementAtIndex(index);
+            Undo.CollapseUndoOperations(currentGroup);
+
+            SerializedObject.ApplyModifiedProperties();
+            AssetDatabase.ImportAsset(AssetDatabase.GetAssetPath(SerializedObject.targetObject));
         }
     }
 }

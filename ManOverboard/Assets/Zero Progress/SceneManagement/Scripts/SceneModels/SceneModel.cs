@@ -183,6 +183,9 @@ namespace ZeroProgress.SceneManagementUtility
         {
             foreach (SceneTransition transition in Transitions)
             {
+                if (transition.IsMuted)
+                    continue;
+
                 SceneModel destScene = sceneManager.GetSceneById(transition.DestinationSceneId);
 
                 if (destScene == null)

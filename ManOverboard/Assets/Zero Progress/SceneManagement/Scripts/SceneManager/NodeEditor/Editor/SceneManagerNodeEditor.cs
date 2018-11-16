@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using ZeroProgress.Common;
 using ZeroProgress.NodeEditor;
 
@@ -294,6 +297,12 @@ namespace ZeroProgress.SceneManagementUtility.Editors
                 nodeContextMenu.AddMenuItem(string.Empty, "Load Scene", LoadScene);
                 nodeContextMenu.AddSeparator();
             }
+            else
+            {
+                nodeContextMenu.AddMenuItem(string.Empty, "Load Scene", LoadSceneInEditor, OpenSceneMode.Single);
+                nodeContextMenu.AddMenuItem(string.Empty, "Load Scene Additive", LoadSceneInEditor, OpenSceneMode.Additive);
+                nodeContextMenu.AddSeparator();
+            }
 
             nodeContextMenu.AddMenuItem(string.Empty,
                 "Make Transition", nodeConnector.Activate);
@@ -317,6 +326,40 @@ namespace ZeroProgress.SceneManagementUtility.Editors
                 return;
 
             SerializedManager.TargetManager.TransitionToScene(node.SceneInfo);
+        }
+
+        private void LoadSceneInEditor(GUIMenuItemParamEventArgs args)
+        {
+            SceneNode node = args.MenuContext as SceneNode;
+            OpenSceneMode argsParam = (OpenSceneMode)args.ParamValue;
+
+            if (node == null)
+                return;
+
+            if (node.SceneId == SceneManagerController.ANY_SCENE_ID)
+                return;
+
+            List<Scene> modifiedScenes = EditorSceneManagerExtensions.GetModifiedScenes().ToList();
+
+            if (modifiedScenes.Count > 0)
+            {
+                string scenePaths = string.Join(System.Environment.NewLine, 
+                    modifiedScenes.Select((x) => x.path).ToArray());
+
+                int result = EditorUtility.DisplayDialogComplex("Scene(s) Have Been Modified", 
+                    "Do you want to save the changes you made in the scenes:" + 
+                        System.Environment.NewLine + scenePaths, "Save", "Cancel", "Don't Save");
+                
+                // if cancel
+                if (result == 1)
+                    return;
+
+                // if save
+                if (result == 0)
+                    EditorSceneManager.SaveOpenScenes();
+            }
+            
+            EditorSceneManager.OpenScene(node.SceneInfo.SceneAssetPath, argsParam);
         }
 
         private void SetAsEntryNode(GUIMenuItemEventArgs args)

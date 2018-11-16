@@ -153,7 +153,37 @@ namespace ZeroProgress.Common.Editors
 
             return deletedCount;
         }
-                
+            
+        /// <summary>
+        /// Gets all assets of the provided type
+        /// </summary>
+        /// <typeparam name="T">The type to get</typeparam>
+        /// <returns>Collection of the assets that match the desired type</returns>
+        public static IEnumerable<T> GetAssetsOfType<T>() where T: UnityEngine.Object
+        {
+            return GetAssetsOfType(typeof(T)).Cast<T>();
+        }
+
+        /// <summary>
+        /// Retrieves all assets of the provided type
+        /// </summary>
+        /// <param name="assetType">The type of asset to retrieve. Must inherit from UnityEngine.Object</param>
+        /// <returns>Collection of the assets that match the desired type</returns>
+        public static IEnumerable<UnityEngine.Object> GetAssetsOfType(Type assetType)
+        {
+            string[] guids = AssetDatabase.FindAssets("t:" + assetType.Name);
+
+            UnityEngine.Object[] assets = new UnityEngine.Object[guids.Length];
+
+            for (int i = 0; i < guids.Length; i++)
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guids[i]);
+                assets[i] = AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(path);
+            }
+
+            return assets;
+        }
+
         /// <summary>
         /// Retrieves all of the subassets of the provided object that match the provided type
         /// </summary>

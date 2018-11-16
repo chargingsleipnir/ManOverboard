@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -12,7 +13,9 @@ namespace ZeroProgress.SceneManagementUtility
     public class SceneManagerController : ScriptableObject
     {
         public static int ANY_SCENE_ID = -1;
-        
+
+        public event EventHandler OnTransitionerChanged;
+
         [SerializeField]
         private SceneVariableContainer sceneVariables;
 
@@ -79,11 +82,26 @@ namespace ZeroProgress.SceneManagementUtility
                     transitioner.OnTransitionCompleted.AddListener(Transitioner_OnSceneChanged);
                     transitioner.OnTransitionCompleted.AddListener(sceneVariables.OnTransitionCompleted);
                 }
+
+                OnTransitionerChanged.SafeInvoke(this, EventArgs.Empty);
             }
         }
 
         private bool isBulkUpdateEnabled = false;
-        
+
+#if UNITY_EDITOR
+
+        [SerializeField, Tooltip("True to use this Controller when the Play button is pressed. Use in conjunction with goToOnPlay if " +
+            "you want to force a specific transition")]
+        private bool useOnPlay = false;
+
+        [SerializeField, Tooltip("If UseOnPlay is true, this will direct the controller to load this specific scene. If this is null then " +
+            "the controller will evaluate scenes as normal")]
+        private string goToOnPlay = null;
+
+        private bool ignoreEntryCall = false;
+#endif
+
         private void OnEnable()
         {
             activeScene = null;
@@ -256,6 +274,10 @@ namespace ZeroProgress.SceneManagementUtility
 
         public void TransitionToEntry()
         {
+#if UNITY_EDITOR
+            if (ignoreEntryCall)
+                return;
+#endif
             // If no entry scene has been set, just try to find the current scene
             if (EntryScene == null)
             {
@@ -266,10 +288,9 @@ namespace ZeroProgress.SceneManagementUtility
                 Evaluate();
                 return;
             }
-
+            
             // Check if the scene is already active
-            if (UnityEngine.SceneManagement.SceneManager.GetActiveScene().path
-                    .Equals(EntryScene.SceneAssetPath, StringComparison.OrdinalIgnoreCase))
+            if (SceneManagerExtensions.IsSceneLoadedByPath(EntryScene.SceneAssetPath))
             {
                 ActiveScene = EntryScene;
                 // it's already active, so do the starting evaluation
@@ -404,5 +425,79 @@ namespace ZeroProgress.SceneManagementUtility
         {
             Transitioner.Transition(this, ActiveScene, desiredScene);
         }
+
+#if UNITY_EDITOR
+        private static SceneManagerController playModeController = null;
+
+        private static bool wasEntryOpened = false;
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+        private static void LoadEntrySceneOnPlayMode()
+        {
+            IEnumerable<SceneManagerController> controllers =
+                Common.Editors.AssetDatabaseExtensions.GetAssetsOfType<SceneManagerController>();
+
+            playModeController = null;
+            wasEntryOpened = false;
+
+            SceneManagerController controllerToUse = controllers.FirstOrDefault((x) => x.useOnPlay);
+
+            if (controllerToUse == null || controllerToUse.EntryScene == null)
+                return;
+            
+            playModeController = controllerToUse;
+            
+            playModeController.ignoreEntryCall = true;
+            SceneManager.sceneLoaded -= SceneManager_sceneLoaded;
+            SceneManager.sceneLoaded += SceneManager_sceneLoaded;
+            
+            if (!SceneManagerExtensions.IsSceneLoadedByPath(controllerToUse.EntryScene.SceneAssetPath))
+                SceneManager.LoadScene(controllerToUse.EntryScene.SceneName);            
+        }
+
+        private static void SceneManager_sceneLoaded(Scene arg0, LoadSceneMode arg1)
+        {
+            if (playModeController == null || string.IsNullOrEmpty(playModeController.goToOnPlay))
+                return;
+
+            if (!wasEntryOpened)
+            {
+                if (arg0.path == playModeController.EntryScene.SceneAssetPath)
+                    wasEntryOpened = true;
+
+                if (!wasEntryOpened)
+                    return;
+            }
+
+            if (arg0.path == playModeController.GetSceneByName(playModeController.goToOnPlay).SceneAssetPath)
+            {
+                playModeController.ignoreEntryCall = false;
+                playModeController = null;
+            }
+            else
+            {
+                if (playModeController.Transitioner == null)
+                    playModeController.OnTransitionerChanged += PlayModeController_OnTransitionerChanged;
+                else
+                    playModeController.TransitionToScene(playModeController.goToOnPlay);
+            }
+
+            SceneManager.sceneLoaded -= SceneManager_sceneLoaded;
+        }
+
+        private static void PlayModeController_OnTransitionerChanged(object sender, EventArgs e)
+        {
+            if (playModeController == null || string.IsNullOrEmpty(playModeController.goToOnPlay))
+                return;
+
+            if (playModeController.Transitioner == null)
+                return;
+
+            playModeController.OnTransitionerChanged -= PlayModeController_OnTransitionerChanged;
+            playModeController.TransitionToScene(playModeController.goToOnPlay);
+
+            playModeController = null;
+        }
+#endif
     }
 }

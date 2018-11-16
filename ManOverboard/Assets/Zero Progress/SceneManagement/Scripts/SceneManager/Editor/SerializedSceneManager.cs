@@ -54,7 +54,17 @@ namespace ZeroProgress.SceneManagementUtility.Editors
         /// SceneNodeCollection.sceneNodes
         /// </summary>
         public SerializedProperty SceneNodesProp { get; private set; }
-        
+
+        /// <summary>
+        /// SceneManager.useOnPlay
+        /// </summary>
+        public SerializedProperty UseOnPlayProp { get; private set; }
+
+        /// <summary>
+        /// SceneManager.goToOnPlay
+        /// </summary>
+        public SerializedProperty GoToOnPlay { get; private set; }
+
         #endregion
 
         public string SceneManagerAssetPath { get; set; }
@@ -110,7 +120,10 @@ namespace ZeroProgress.SceneManagementUtility.Editors
             ScenesProp = SerializedManager.FindProperty("scenes");
             EntrySceneIdProp = SerializedManager.FindProperty("entrySceneId");
             AnyScenesProp = SerializedManager.FindProperty("anyScene");
-            
+
+            UseOnPlayProp = SerializedManager.FindProperty("useOnPlay");
+            GoToOnPlay = SerializedManager.FindProperty("goToOnPlay");
+
             SerializedVariables = new SerializedSceneVariableCollection(TargetManager.SceneVariables);
         }
 

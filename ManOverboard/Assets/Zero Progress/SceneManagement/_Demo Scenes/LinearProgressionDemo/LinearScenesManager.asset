@@ -14,14 +14,14 @@ MonoBehaviour:
   sceneVariables: {fileID: 114525083755459216}
   scenes:
   - sceneId: 1
-    includeInIteration: 0
+    includeInIteration: 1
     sceneName: 1-1
     sceneAssetPath: Assets/Zero Progress/SceneManagement/_Demo Scenes/LinearProgressionDemo/Levels/1-1.unity
     useAnySceneTransitions: 1
     transitions: []
     lockConditions: []
   - sceneId: 2
-    includeInIteration: 0
+    includeInIteration: 1
     sceneName: 1-2
     sceneAssetPath: Assets/Zero Progress/SceneManagement/_Demo Scenes/LinearProgressionDemo/Levels/1-2.unity
     useAnySceneTransitions: 1
@@ -29,14 +29,14 @@ MonoBehaviour:
     lockConditions:
     - {fileID: 114681559109547574}
   - sceneId: 3
-    includeInIteration: 0
+    includeInIteration: 1
     sceneName: 1-3
     sceneAssetPath: Assets/Zero Progress/SceneManagement/_Demo Scenes/LinearProgressionDemo/Levels/1-3.unity
     useAnySceneTransitions: 1
     transitions: []
     lockConditions: []
   - sceneId: 4
-    includeInIteration: 0
+    includeInIteration: 1
     sceneName: 2-1
     sceneAssetPath: Assets/Zero Progress/SceneManagement/_Demo Scenes/LinearProgressionDemo/Levels/2-1.unity
     useAnySceneTransitions: 0
@@ -71,14 +71,16 @@ MonoBehaviour:
       transitionLabel: 
       conditions:
       - {fileID: 114214664585644942}
-      isMuted: 0
+      isMuted: 1
     - destinationSceneId: -1
       transitionLabel: 
       conditions:
       - {fileID: 114011571203278230}
-      isMuted: 0
+      isMuted: 1
     lockConditions: []
   entrySceneId: 5
+  useOnPlay: 1
+  goToOnPlay: 1-1
 --- !u!114 &114011571203278230
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -180,7 +182,7 @@ MonoBehaviour:
       height: 200
     isSelected: 0
     SceneId: 6
-  PanOffset: {x: 376.67358, y: 629.4437}
+  PanOffset: {x: 235.18423, y: 287.9541}
   SceneManager: {fileID: 11400000}
 --- !u!114 &114474073880591760
 MonoBehaviour:

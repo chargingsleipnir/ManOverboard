@@ -3,7 +3,9 @@ using System.Linq;
 using System.Reflection;
 using UnityEditor;
 using UnityEditor.Callbacks;
+using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using ZeroProgress.Common;
 using ZeroProgress.Common.Editors;
 using ZeroProgress.Common.Reflection;
@@ -165,6 +167,9 @@ namespace ZeroProgress.SceneManagementUtility.Editors
             Undo.undoRedoPerformed -= OnUndoRedo;
             Undo.undoRedoPerformed += OnUndoRedo;
 
+            EditorSceneManager.sceneOpened -= EditorSceneManager_sceneOpened;
+            EditorSceneManager.sceneOpened += EditorSceneManager_sceneOpened;
+
             if (sceneManager == null)
                 return;
 
@@ -176,6 +181,9 @@ namespace ZeroProgress.SceneManagementUtility.Editors
                 sceneManager.Transitioner.OnTransitionStarted.RemoveListener(OnTransitionStarted);
                 sceneManager.Transitioner.OnTransitionStarted.AddListener(OnTransitionStarted);
             }
+
+            sceneManager.SceneVariables.OnVariableChanged -= SceneVariables_OnVariableChanged;
+            sceneManager.SceneVariables.OnVariableChanged += SceneVariables_OnVariableChanged;
 
             SerializedSceneManager = new SerializedSceneManager(sceneManager);
             serializedSceneManager.SetActiveScene();
@@ -190,6 +198,16 @@ namespace ZeroProgress.SceneManagementUtility.Editors
             OnRefresh.SafeInvoke(this, System.EventArgs.Empty);
 
             Repaint();
+        }
+
+        private void SceneVariables_OnVariableChanged(object sender, EventArgs<string> e)
+        {
+            Repaint();
+        }
+
+        private void EditorSceneManager_sceneOpened(Scene scene, OpenSceneMode mode)
+        {
+            FlagRefresh();
         }
 
         private void OnTransitioned(SceneTransitionEventArgs e)

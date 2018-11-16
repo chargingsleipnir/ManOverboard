@@ -89,6 +89,8 @@ MonoBehaviour:
       isMuted: 0
     lockConditions: []
   entrySceneId: 5
+  useOnPlay: 1
+  goToOnPlay: Level 2
 --- !u!114 &114049999551487362
 MonoBehaviour:
   m_ObjectHideFlags: 0

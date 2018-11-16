@@ -60,10 +60,6 @@ MonoBehaviour:
     sceneAssetPath: Assets/Zero Progress/SceneManagement/_Demo Scenes/LinearProgressionDemo/MenuScene.unity
     useAnySceneTransitions: 1
     transitions:
-    - destinationSceneId: 7
-      transitionLabel: 
-      conditions: []
-      isMuted: 1
     - destinationSceneId: 5
       transitionLabel: 
       conditions: []
@@ -71,6 +67,12 @@ MonoBehaviour:
     - destinationSceneId: 7
       transitionLabel: 
       conditions: []
+      isMuted: 0
+    - destinationSceneId: 7
+      transitionLabel: 
+      conditions:
+      - {fileID: 114352136175813794}
+      - {fileID: 114739859151262820}
       isMuted: 0
     lockConditions: []
   - sceneId: 7
@@ -247,6 +249,20 @@ MonoBehaviour:
   VariableName: 
   DesiredValue: 0
   CompareMode: 6
+--- !u!114 &114352136175813794
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a420b1a728d7d1744aefd3d22837c62d, type: 3}
+  m_Name: StringSceneCondition
+  m_EditorClassIdentifier: 
+  VariableName: 
+  DesiredValue: 
+  CompareMode: 5
 --- !u!114 &114433489399729400
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -330,7 +346,7 @@ MonoBehaviour:
     NodeRect:
       serializedVersion: 2
       x: 300
-      y: 1001
+      y: 1002
       width: 250
       height: 200
     isSelected: 0
@@ -425,7 +441,7 @@ MonoBehaviour:
       height: 200
     isSelected: 0
     SceneId: 16
-  PanOffset: {x: -69.010284, y: -543.59326}
+  PanOffset: {x: -104.43959, y: -653.02637}
   SceneManager: {fileID: 11400000}
 --- !u!114 &114484272176538288
 MonoBehaviour:
@@ -478,6 +494,20 @@ MonoBehaviour:
   - Name: boo
     ResetOnTransition: 0
     value: {fileID: 114182232207688928}
+--- !u!114 &114739859151262820
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a420b1a728d7d1744aefd3d22837c62d, type: 3}
+  m_Name: StringSceneCondition_1
+  m_EditorClassIdentifier: 
+  VariableName: 
+  DesiredValue: 
+  CompareMode: 5
 --- !u!114 &114960444594326094
 MonoBehaviour:
   m_ObjectHideFlags: 0
