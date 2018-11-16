@@ -60,33 +60,28 @@ namespace ZeroProgress.Common
         private static List<Type> GetFilteredTypes(ClassTypeConstraintAttribute filter)
         {
             var types = new List<Type>();
-
-            var excludedTypes = (ExcludedTypeCollectionGetter != null ? ExcludedTypeCollectionGetter() : null);
-
+            
             var assembly = Assembly.GetExecutingAssembly();
-            FilterTypes(assembly, filter, excludedTypes, types);
+            FilterTypes(assembly, filter, types);
 
             foreach (var referencedAssembly in assembly.GetReferencedAssemblies())
-                FilterTypes(Assembly.Load(referencedAssembly), filter, excludedTypes, types);
+                FilterTypes(Assembly.Load(referencedAssembly), filter, types);
 
             types.Sort((a, b) => a.FullName.CompareTo(b.FullName));
 
             return types;
         }
 
-        private static void FilterTypes(Assembly assembly, ClassTypeConstraintAttribute filter, ICollection<Type> excludedTypes, List<Type> output)
+        private static void FilterTypes(Assembly assembly, ClassTypeConstraintAttribute filter, List<Type> output)
         {
             foreach (var type in assembly.GetTypes())
             {
-                if (!type.IsVisible || (!filter.AllowStructs && !type.IsClass))
+                if (!type.IsVisible)
                     continue;
 
                 if (filter != null && !filter.IsConstraintSatisfied(type))
                     continue;
-
-                if (excludedTypes != null && excludedTypes.Contains(type))
-                    continue;
-
+                
                 output.Add(type);
             }
         }
@@ -168,6 +163,25 @@ namespace ZeroProgress.Common
                     var classRefParts = classRef.Split(',');
 
                     s_TempContent.text = classRefParts[0].Trim();
+
+                    if(filter.RemoveNamespaceFromSelected)
+                    {
+                        int lastPeriod = s_TempContent.text.LastIndexOf('.');
+
+                        if (lastPeriod >= 0)
+                            s_TempContent.text = s_TempContent.text.Substring(lastPeriod + 1);
+                    }
+
+                    Type selectedType = Type.GetType(classRef);
+
+                    if (selectedType != null)
+                    {
+                        string customDisplay;
+
+                        if (filter.CustomDisplays.TryGetValue(selectedType, out customDisplay))
+                            s_TempContent.text = customDisplay;
+                    }
+
                     if (s_TempContent.text == "")
                         s_TempContent.text = "(None)";
                     else if (ResolveType(classRef) == null)
@@ -183,7 +197,7 @@ namespace ZeroProgress.Common
                 s_SelectedClassRef = classRef;
 
                 var filteredTypes = GetFilteredTypes(filter);
-                DisplayDropDown(position, filteredTypes, ResolveType(classRef), filter == null ? ClassGrouping.ByNamespace : filter.Grouping);
+                DisplayDropDown(position, filteredTypes, ResolveType(classRef), filter);
             }
 
             return classRef;
@@ -206,18 +220,36 @@ namespace ZeroProgress.Common
             }
         }
 
-        private static void DisplayDropDown(Rect position, List<Type> types, Type selectedType, ClassGrouping grouping)
+        private static void DisplayDropDown(Rect position, List<Type> types, Type selectedType, ClassTypeConstraintAttribute filter)
         {
             var menu = new GenericMenu();
 
-            menu.AddItem(new GUIContent("(None)"), selectedType == null, s_OnSelectedTypeName, null);
-            menu.AddSeparator("");
+            if (filter == null || filter.ShowNoneOption)
+            {
+                menu.AddItem(new GUIContent("(None)"), selectedType == null, s_OnSelectedTypeName, null);
+                menu.AddSeparator("");
+            }
+
+            if(filter != null)
+                foreach (KeyValuePair<Type, string> customDisplay in filter.CustomDisplays)
+                {
+                    menu.AddItem(new GUIContent(customDisplay.Value), selectedType == customDisplay.Key, 
+                        s_OnSelectedTypeName, customDisplay.Key );
+                }
+
+            ClassGrouping grouping = ClassGrouping.ByNamespace;
+
+            if (filter != null)
+                grouping = filter.Grouping;
 
             for (int i = 0; i < types.Count; ++i)
             {
                 var type = types[i];
 
-                string menuLabel = FormatGroupedTypeName(type, grouping);
+                var customLogic = filter == null ? null : filter.CustomGroupingLogic;
+
+                string menuLabel = FormatGroupedTypeName(type, grouping, customLogic);
+
                 if (string.IsNullOrEmpty(menuLabel))
                     continue;
 
@@ -228,33 +260,56 @@ namespace ZeroProgress.Common
             menu.DropDown(position);
         }
 
-        private static string FormatGroupedTypeName(Type type, ClassGrouping grouping)
+        private static string FormatGroupedTypeName(Type type, ClassGrouping grouping, 
+            ClassTypeConstraintAttribute.CustomGroupDelegate customGroupingLogic = null)
         {
-            string name = type.FullName;
-
             switch (grouping)
             {
                 default:
                 case ClassGrouping.None:
-                    return name;
+                    return type.FullName;
 
                 case ClassGrouping.ByNamespace:
-                    return name.Replace('.', '/');
+                    return FormatByNamespace(type);
 
                 case ClassGrouping.ByNamespaceFlat:
-                    int lastPeriodIndex = name.LastIndexOf('.');
-                    if (lastPeriodIndex != -1)
-                        name = name.Substring(0, lastPeriodIndex) + "/" + name.Substring(lastPeriodIndex + 1);
-
-                    return name;
+                    return FormatByNamespaceFlat(type);
 
                 case ClassGrouping.ByAddComponentMenu:
-                    var addComponentMenuAttributes = type.GetCustomAttributes(typeof(AddComponentMenu), false);
-                    if (addComponentMenuAttributes.Length == 1)
-                        return ((AddComponentMenu)addComponentMenuAttributes[0]).componentMenu;
+                    return FormatByAddComponentMenu(type);
 
-                    return "Scripts/" + type.FullName.Replace('.', '/');
+                case ClassGrouping.Custom:
+
+                    if (customGroupingLogic == null)
+                        return FormatGroupedTypeName(type, ClassGrouping.ByNamespace);
+                    else
+                        return customGroupingLogic(type);
             }
+        }
+
+        public static string FormatByNamespace(Type type)
+        {
+            return type.FullName.Replace('.', '/');
+        }
+
+        public static string FormatByNamespaceFlat(Type type)
+        {
+            string name = type.FullName;
+
+            int lastPeriodIndex = name.LastIndexOf('.');
+            if (lastPeriodIndex != -1)
+                name = name.Substring(0, lastPeriodIndex) + "/" + name.Substring(lastPeriodIndex + 1);
+
+            return name;
+        }
+
+        public static string FormatByAddComponentMenu(Type type)
+        {
+            var addComponentMenuAttributes = type.GetCustomAttributes(typeof(AddComponentMenu), false);
+            if (addComponentMenuAttributes.Length == 1)
+                return ((AddComponentMenu)addComponentMenuAttributes[0]).componentMenu;
+
+            return "Scripts/" + type.FullName.Replace('.', '/');
         }
 
         private static int s_SelectionControlID;

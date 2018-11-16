@@ -149,6 +149,28 @@ namespace ZeroProgress.Common.Editors
         }
 
         /// <summary>
+        /// Removes from the array
+        /// </summary>
+        /// <param name="thisProperty">The property</param>
+        /// <param name="index">The index to remove at</param>
+        /// <returns>True if removed, false if not</returns>
+        public static bool RemoveFromArray(this SerializedProperty thisProperty, int index)
+        {
+            SerializedProperty prop = thisProperty.GetArrayElementAtIndex(index);
+
+            if (prop == null)
+                return false;
+            
+            if (prop.objectReferenceValue != null)
+                prop.DeleteArrayElementAtIndex(index);
+
+            // when deleting, if the value isn't null it's set to null.
+            // if it is null, it's removed
+            prop.DeleteArrayElementAtIndex(index);
+            return true;
+        }
+
+        /// <summary>
         /// Removes the item from the array
         /// </summary>
         /// <param name="ThisProperty">The property that is expected to be an array</param>
@@ -190,7 +212,7 @@ namespace ZeroProgress.Common.Editors
             SerializedProperty arrayIterator = ThisProperty.GetArrayIterator(out arrayLength);
 
             if (arrayIterator == null)
-                return null;
+                return new T[0];
             
             List<System.Object> values = new List<System.Object>();
 
@@ -509,6 +531,33 @@ namespace ZeroProgress.Common.Editors
             object instanceItem = thisProperty.GetPropertyInstanceObject();
 
             return (T)instanceItem;
+        }
+
+        /// <summary>
+        /// Helper to iterate over each element in an array represented
+        /// by the serialized property
+        /// </summary>
+        /// <param name="thisProperty">The property to iterate</param>
+        /// <param name="eachCallback">The action to be taken for each element</param>
+        /// <exception cref="ArgumentException">Thrown if the serialized property
+        /// is not an array</exception>
+        public static void ForEach(this SerializedProperty thisProperty, 
+            Action<SerializedProperty> eachCallback)
+        {
+            if (!thisProperty.isArray)
+                throw new ArgumentException("Serialized property isn't an array, cannot iterate");
+
+            int count = thisProperty.arraySize;
+
+            if (count == 0)
+                return;
+
+            for (int i = 0; i < count; i++)
+            {
+                SerializedProperty elementProperty = thisProperty.GetArrayElementAtIndex(i);
+
+                eachCallback(elementProperty);
+            }
         }
     }
 }

@@ -7,7 +7,7 @@ namespace ZeroProgress.Common
     /// </summary>
     /// <typeparam name="T">The type of value</typeparam>
     [Serializable]
-    public class ValueChangedEventArgs<T>
+    public class ValueChangedEventArgs<T> : EventArgs
     {
         /// <summary>
         /// The value that was previously set

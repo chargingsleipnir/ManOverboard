@@ -7,8 +7,11 @@ public class PreGame : MonoBehaviour {
     [SerializeField]
     private GameCtrl gameCtrl;
 
+    private void Awake()
+    {
+        DontDestroyOnLoad(this);
+    }
     void Start() {
         gameCtrl.Init();
-        gameCtrl.GoToTitle();
     }
 }
