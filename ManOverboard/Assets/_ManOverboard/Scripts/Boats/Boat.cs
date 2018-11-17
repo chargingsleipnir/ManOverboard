@@ -55,6 +55,7 @@ public class Boat : SpriteBase {
     private List<Hole> holesSubm;
     private List<Hole> holesSurf;
 
+    [ReferenceDropdown]
     public IntReference buoyancy;
     public IntReference weightWater;
     public IntReference weightLoad; // Weight of people and items, things that can be tossed off by the player directly.
