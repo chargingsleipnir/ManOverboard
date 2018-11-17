@@ -457,7 +457,7 @@ namespace ZeroProgress.SceneManagementUtility
 
         private static void SceneManager_sceneLoaded(Scene arg0, LoadSceneMode arg1)
         {
-            if (playModeController == null || string.IsNullOrEmpty(playModeController.goToOnPlay))
+            if (playModeController == null)
                 return;
 
             if (!wasEntryOpened)
@@ -467,6 +467,13 @@ namespace ZeroProgress.SceneManagementUtility
 
                 if (!wasEntryOpened)
                     return;
+            }
+
+            if (string.IsNullOrEmpty(playModeController.goToOnPlay))
+            {
+                playModeController.ignoreEntryCall = false;
+                playModeController = null;
+                return;
             }
 
             if (arg0.path == playModeController.GetSceneByName(playModeController.goToOnPlay).SceneAssetPath)
