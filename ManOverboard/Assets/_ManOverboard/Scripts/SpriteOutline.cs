@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 
+// NOTE: This will only work if the SpriteOutline material is applied to the SpriteRenderer through the inspector.
+
 [ExecuteInEditMode]
 public class SpriteOutline : MonoBehaviour {
     public Color color = Color.white;
@@ -9,9 +11,12 @@ public class SpriteOutline : MonoBehaviour {
 
     private SpriteRenderer spriteRenderer;
 
-    void OnEnable() {
+    private void Awake() {
         spriteRenderer = GetComponent<SpriteRenderer>();
+        spriteRenderer.material = Resources.Load<Material>("Materials/SpriteOutline");
+    }
 
+    void OnEnable() {
         UpdateOutline(true);
     }
 

@@ -20,17 +20,17 @@ public class MouseTracker : MonoBehaviour {
     private Vector2 prevPos;
 
     private void Awake() {
-        mousePos = AssetDatabase.LoadAssetAtPath<ScriptableVector2>("Assets/_ManOverboard/Variables/v2_mouseWorldPos.asset");
-        
+
+        mouseTrackerFullSet = Resources.Load<RefShape2DMouseTrackerSet>("ScriptableObjects/MouseTrackerSets/MouseTrackerSetFull");
+        mouseTrackerEnteredSet = Resources.Load<RefShape2DMouseTrackerSet>("ScriptableObjects/MouseTrackerSets/MouseTrackerSetEntered");
+        mouseTrackerLinkedSet = Resources.Load<RefShape2DMouseTrackerSet>("ScriptableObjects/MouseTrackerSets/MouseTrackerSetLinked");
+
         Vector3 mouseCalcPos = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0.0f));
+        mousePos = Resources.Load<ScriptableVector2>("ScriptableObjects/v2_mouseWorldPos");
         prevPos = mousePos.CurrentValue = new Vector2(mouseCalcPos.x, mouseCalcPos.y);
 
-        mouseTrackerFullSet = AssetDatabase.LoadAssetAtPath<RefShape2DMouseTrackerSet>("Assets/_ManOverboard/Variables/Sets/MouseTrackerSetFull.asset");
         mouseTrackerFullSet.OnItemAdded += OnItemAdded;
         mouseTrackerFullSet.OnItemRemoved += OnItemRemoved;
-
-        mouseTrackerEnteredSet = AssetDatabase.LoadAssetAtPath<RefShape2DMouseTrackerSet>("Assets/_ManOverboard/Variables/Sets/MouseTrackerSetEntered.asset");
-        mouseTrackerLinkedSet = AssetDatabase.LoadAssetAtPath<RefShape2DMouseTrackerSet>("Assets/_ManOverboard/Variables/Sets/MouseTrackerSetLinked.asset");
     }
 
     private void OnItemAdded(object sender, SetModifiedEventArgs<RefShape2DMouseTracker> e) {

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using ZeroProgress.Common;
 using ZeroProgress.Common.Collections;
-using UnityEditor;
 
 public class LevelManager : MonoBehaviour {
 
@@ -12,7 +11,6 @@ public class LevelManager : MonoBehaviour {
 
     Consts.LevelState levelState;
 
-    // TODO: Adjust sink rate based on number of holes
     [SerializeField]
     private GameObject waterObj;
     [SerializeField]
@@ -43,14 +41,13 @@ public class LevelManager : MonoBehaviour {
 
     private GameObject itemObj;
 
-    public IntReference holdWeight;
+    private ScriptableInt holdWeight;
 
     public GameObject charContAreaPrefab;
     private CharContArea charContAreaScpt;
 
     // Mouse tracking
-    [SerializeField]
-    private Vector2Reference mousePos;
+    private ScriptableVector2 mousePos;
     private Vector2 mouseLastPos = Vector2.zero;
     private Vector2 mouseDelta = Vector2.zero;
 
@@ -67,10 +64,13 @@ public class LevelManager : MonoBehaviour {
     private void Awake() {
         // ! gameCtrl.Init is just here while building levels, so we don't need to go through PreGame during testing.
         // Once game is ready to ship, delete it.
-        gameCtrl.Init();
+        items = Resources.Load<ItemBaseSet>("ScriptableObjects/SpriteSets/ItemBaseSet");
+        spriteTossableSet = Resources.Load<SpriteTossableSet>("ScriptableObjects/SpriteSets/SpriteTossableSet");
 
-        spriteTossableSet = AssetDatabase.LoadAssetAtPath<SpriteTossableSet>("Assets/_ManOverboard/Variables/Sets/SpriteTossableSet.asset");
-        items = AssetDatabase.LoadAssetAtPath<ItemBaseSet>("Assets/_ManOverboard/Variables/Sets/ItemBaseSet.asset");
+        holdWeight = Resources.Load<ScriptableInt>("ScriptableObjects/weightHeldObj");
+        mousePos = Resources.Load<ScriptableVector2>("ScriptableObjects/v2_mouseWorldPos");
+
+        gameCtrl.Init();
     }
 
     private void Start () {
@@ -95,7 +95,7 @@ public class LevelManager : MonoBehaviour {
         charSetStartCount = characterSet.Count;
 
         levelState = Consts.LevelState.Default;
-        holdWeight.Value = 0;
+        holdWeight.CurrentValue = 0;
         uiUpdate.RaiseEvent();
 
         GameObject charContArea = Instantiate(charContAreaPrefab) as GameObject;
@@ -143,8 +143,8 @@ public class LevelManager : MonoBehaviour {
     private void Update() {
         if (levelState == Consts.LevelState.CharHeldToToss) {
             heldSpriteTossable.MoveRigidbody();
-            mouseDelta = mousePos.Value - mouseLastPos;
-            mouseLastPos = mousePos.Value;
+            mouseDelta = mousePos.CurrentValue - mouseLastPos;
+            mouseLastPos = mousePos.CurrentValue;
         }        
     }
 
@@ -216,7 +216,7 @@ public class LevelManager : MonoBehaviour {
         heldSpriteTossable.ApplyTransformToContArea(charContAreaScpt.gameObject, true);
         charContAreaScpt.MouseEnterCB();
 
-        holdWeight.Value = heldSpriteTossable.Weight;
+        holdWeight.CurrentValue = heldSpriteTossable.Weight;
         uiUpdate.RaiseEvent();
 
         PauseLevel();
@@ -242,7 +242,7 @@ public class LevelManager : MonoBehaviour {
             heldObj.layer = 9; // tossed objects
 
             // Change weight in boat
-            boat.RemoveLoad(holdWeight.Value);
+            boat.RemoveLoad(holdWeight.CurrentValue);
 
             heldChar = null;
             heldSpriteTossable = null;
@@ -252,7 +252,7 @@ public class LevelManager : MonoBehaviour {
 
         levelState = Consts.LevelState.Default;
 
-        holdWeight.Value = 0;
+        holdWeight.CurrentValue = 0;
         uiUpdate.RaiseEvent();
 
         UnPauseLevel();
@@ -317,6 +317,14 @@ public class LevelManager : MonoBehaviour {
             foreach (ItemCanScoop itemCS in itemsCanScoop)
                 itemCS.HighlightToClick();
         }
+        else if (itemType == Consts.ItemType.LifeJacket) {
+            foreach (LifeJacket itemLJ in lifeJacketsChild)
+                itemLJ.HighlightToClick();
+            if (!(heldChar is CharChild)) {
+                foreach (LifeJacket itemLJ in lifeJacketsAdult)
+                    itemLJ.HighlightToClick();
+            }
+        }
     }
     public void RemoveWaterCB(int waterWeight) {
         if (!levelActive)
@@ -345,7 +353,7 @@ public class LevelManager : MonoBehaviour {
             heldSpriteTossable.ReturnToBoat();
 
         rearMenuFieldObj.SetActive(false);
-        holdWeight.Value = 0;
+        holdWeight.CurrentValue = 0;
         uiUpdate.RaiseEvent();
 
         foreach (ItemBase item in items)

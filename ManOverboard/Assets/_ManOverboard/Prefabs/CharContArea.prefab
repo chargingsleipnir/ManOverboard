@@ -66,7 +66,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   refShape: {fileID: 114896518306707468}
-  trackThrough: 0
+  clickThrough: 0
+  mouseTrackerFullSet: {fileID: 11400000, guid: e7c503aa697f34c4d971acd3d0eb303d,
+    type: 2}
+  mouseTrackerEnteredSet: {fileID: 11400000, guid: d54ec56afbef5984085d8c7f9092bb7c,
+    type: 2}
+  mouseTrackerLinkedSet: {fileID: 11400000, guid: 42d9c6e253c7f54479d1a9034b8053b3,
+    type: 2}
+  containsMousePoint: 0
   linkMouseUpToDown: 0
   mouseDownEvent:
     m_PersistentCalls:

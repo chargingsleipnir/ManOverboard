@@ -50,7 +50,8 @@ public static class Consts {
     }
 
     public enum ItemType {
-        Scooping = 0
+        Scooping = 0,
+        LifeJacket = 1
     }
     public enum FitSizes { adult, child }
     public enum CharState {

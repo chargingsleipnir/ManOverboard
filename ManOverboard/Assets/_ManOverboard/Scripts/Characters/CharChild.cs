@@ -23,7 +23,32 @@ public class CharChild : CharBase {
         commandPanel.SetBtns();
     }
 
-    protected void PrepDonLifeJacketSelf() {
+    public override void UseItem(ItemBase item) {
+        activeItem = item;
+        activeItem.EnableMouseTracking(false);
 
+        timerBar.IsActive = true;
+
+        if (!heldItems.Contains(item)) {
+            heldItems.Add(item);
+            heldItemWeight += item.Weight;
+        }
+
+        if (item is LifeJacket) {
+            charState = Consts.CharState.InAction;
+
+            // TODO: Just set in center of self for now, will need proper location around center of torso later
+            item.transform.position = transform.position;
+            item.transform.parent = transform;
+
+            // TODO: Of course this isn't meaningful right now, need to formulate exactly how this will work.
+            float donRate = speed;
+            activityCounter = activityInterval = donRate;
+        }
+    }
+
+    protected void PrepDonLifeJacketSelf() {
+        IsCommandPanelOpen = false;
+        DelSetItemType(Consts.ItemType.LifeJacket);
     }
 }

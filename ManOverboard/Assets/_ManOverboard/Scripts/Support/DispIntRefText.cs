@@ -10,17 +10,17 @@ public class DispIntRefText : MonoBehaviour {
     [SerializeField]
     private string introMsg;
     [SerializeField]
-    private IntReference intRef;
+    private ScriptableInt intRef;
 
     private void Awake() {
         textComp = GetComponent<Text>();
     }
 
     private void Start() {
-        textComp.text = introMsg + intRef.Value.ToString();
+        textComp.text = introMsg + intRef.CurrentValue.ToString();
     }
 
     public void UpdateText() {
-        textComp.text = introMsg + intRef.Value.ToString();
+        textComp.text = introMsg + intRef.CurrentValue.ToString();
     }
 }

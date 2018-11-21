@@ -96,7 +96,7 @@ MonoBehaviour:
       isMuted: 0
     lockConditions: []
   entrySceneId: 5
-  useOnPlay: 1
+  useOnPlay: 0
   goToOnPlay: 
 --- !u!114 &114049999551487362
 MonoBehaviour:
@@ -237,7 +237,7 @@ MonoBehaviour:
       y: 377.9729
       width: 250
       height: 200
-    isSelected: 1
+    isSelected: 0
     SceneId: 6
   - IsSelectable: 1
     NodeRect:
@@ -248,7 +248,7 @@ MonoBehaviour:
       height: 200
     isSelected: 0
     SceneId: 7
-  PanOffset: {x: 182.36122, y: -58.550594}
+  PanOffset: {x: 204.86122, y: 48.949333}
   SceneManager: {fileID: 11400000}
 --- !u!114 &114690836214546684
 MonoBehaviour:

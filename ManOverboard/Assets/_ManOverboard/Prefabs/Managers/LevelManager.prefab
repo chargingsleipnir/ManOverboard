@@ -52,6 +52,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 52652c96890963349a6f02065b1df71c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mouseTrackerFullSet: {fileID: 11400000, guid: e7c503aa697f34c4d971acd3d0eb303d,
+    type: 2}
+  mouseTrackerEnteredSet: {fileID: 11400000, guid: d54ec56afbef5984085d8c7f9092bb7c,
+    type: 2}
+  mouseTrackerLinkedSet: {fileID: 11400000, guid: 42d9c6e253c7f54479d1a9034b8053b3,
+    type: 2}
+  mousePos: {fileID: 11400000, guid: 4662ec67a56c16a4eb5641f4edc16bd0, type: 2}
 --- !u!114 &114991861146813028
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -68,6 +75,8 @@ MonoBehaviour:
   rearMenuFieldPrefab: {fileID: 1365011474752516, guid: 88dd4ad1446449a469d5b5e78384ded6,
     type: 2}
   boat: {fileID: 0}
+  spriteTossableSet: {fileID: 11400000, guid: 5c6f14e4001067144bb604bf0f39e7ff, type: 2}
+  items: {fileID: 11400000, guid: 7e5097f77349a0a4489279a4c54b7a02, type: 2}
   holdWeight:
     UseStraightValue: 0
     StraightValue: 0

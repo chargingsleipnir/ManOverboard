@@ -385,7 +385,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 196c6671cde0ba046b5345128485c7a6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  set: {fileID: 11400000, guid: 5c6f14e4001067144bb604bf0f39e7ff, type: 2}
+  mousePos: {fileID: 11400000, guid: 4662ec67a56c16a4eb5641f4edc16bd0, type: 2}
   weight: 70
+  levelItems: {fileID: 11400000, guid: 7e5097f77349a0a4489279a4c54b7a02, type: 2}
   timerBar: {fileID: 114189139139404296}
   trans_ItemUseHand: {fileID: 4403791739230998}
   actionBtnObj: {fileID: 1390199423076028}
@@ -404,6 +407,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   refShape: {fileID: 114762912406962708}
   clickThrough: 0
+  mouseTrackerFullSet: {fileID: 11400000, guid: e7c503aa697f34c4d971acd3d0eb303d,
+    type: 2}
+  mouseTrackerEnteredSet: {fileID: 11400000, guid: d54ec56afbef5984085d8c7f9092bb7c,
+    type: 2}
+  mouseTrackerLinkedSet: {fileID: 11400000, guid: 42d9c6e253c7f54479d1a9034b8053b3,
+    type: 2}
   containsMousePoint: 0
   linkMouseUpToDown: 1
   mouseDownEvent:
@@ -439,6 +448,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   refShape: {fileID: 114684971244318200}
   clickThrough: 0
+  mouseTrackerFullSet: {fileID: 11400000, guid: e7c503aa697f34c4d971acd3d0eb303d,
+    type: 2}
+  mouseTrackerEnteredSet: {fileID: 11400000, guid: d54ec56afbef5984085d8c7f9092bb7c,
+    type: 2}
+  mouseTrackerLinkedSet: {fileID: 11400000, guid: 42d9c6e253c7f54479d1a9034b8053b3,
+    type: 2}
   containsMousePoint: 0
   linkMouseUpToDown: 0
   mouseDownEvent:
@@ -493,13 +508,15 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1147052724391996}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 39ed267f79c3600448faf9c1bf70173a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   color: {r: 1, g: 1, b: 1, a: 1}
   outlineSize: 1
+  spriteOutlineMaterial: {fileID: 2100000, guid: fb7ee0d72a90eb5428b0935f09aae8df,
+    type: 2}
 --- !u!114 &114684971244318200
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -527,6 +544,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   refShape: {fileID: 114767242466018360}
   clickThrough: 0
+  mouseTrackerFullSet: {fileID: 11400000, guid: e7c503aa697f34c4d971acd3d0eb303d,
+    type: 2}
+  mouseTrackerEnteredSet: {fileID: 11400000, guid: d54ec56afbef5984085d8c7f9092bb7c,
+    type: 2}
+  mouseTrackerLinkedSet: {fileID: 11400000, guid: 42d9c6e253c7f54479d1a9034b8053b3,
+    type: 2}
   containsMousePoint: 0
   linkMouseUpToDown: 0
   mouseDownEvent:

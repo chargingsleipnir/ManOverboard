@@ -47,9 +47,9 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
     protected int strength;
     protected int speed;
 
-    protected ItemBase activeItem;
-    protected List<ItemBase> heldItems;
     protected ItemBaseSet levelItems;
+    protected ItemBase activeItem;
+    protected List<ItemBase> heldItems;    
 
     protected int heldItemWeight;
     public override int Weight {
@@ -112,8 +112,8 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
     protected override void Awake() {
         base.Awake();
         
+        levelItems = Resources.Load<ItemBaseSet>("ScriptableObjects/SpriteSets/ItemBaseSet");
         actBtnSR = actionBtnObj.GetComponent<SpriteRenderer>();
-        levelItems = AssetDatabase.LoadAssetAtPath<ItemBaseSet>("Assets/_ManOverboard/Variables/Sets/ItemBaseSet.asset");
     }
 
     protected override void Start () {

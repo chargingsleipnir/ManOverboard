@@ -2,7 +2,7 @@
 using UnityEditor;
 using ZeroProgress.Common;
 
-public class SpriteTossable : SpriteSelectable, IMouseDownDetector, IMouseUpDetector {
+public class SpriteTossable : SpriteHighlightable, IMouseDownDetector, IMouseUpDetector {
 
     public delegate void DelPassGO(GameObject obj);
     protected DelPassGO OnMouseDownCB;
@@ -29,9 +29,8 @@ public class SpriteTossable : SpriteSelectable, IMouseDownDetector, IMouseUpDete
         rb = GetComponent<Rigidbody2D>();
         bc = GetComponent<BoxCollider2D>();
 
-        set = AssetDatabase.LoadAssetAtPath<SpriteTossableSet>("Assets/_ManOverboard/Variables/Sets/SpriteTossableSet.asset");
-        mousePos = AssetDatabase.LoadAssetAtPath<ScriptableVector2>("Assets/_ManOverboard/Variables/v2_mouseWorldPos.asset");
-
+        mousePos = Resources.Load<ScriptableVector2>("ScriptableObjects/v2_mouseWorldPos");
+        set = Resources.Load<SpriteTossableSet>("ScriptableObjects/SpriteSets/SpriteTossableSet");
         set.Add(this);
     }
 

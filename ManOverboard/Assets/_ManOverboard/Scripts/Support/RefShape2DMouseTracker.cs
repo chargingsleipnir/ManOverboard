@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -16,7 +15,6 @@ public class RefShape2DMouseTracker : MonoBehaviour {
     // Holding reference to SpriteBase for easy access to each object's draw layer
     public SpriteBase SB { get; private set; }
 
-    // TODO: Specify component type - WAY too many conversions happening
     private RefShape2DMouseTrackerSet mouseTrackerFullSet;
     private RefShape2DMouseTrackerSet mouseTrackerEnteredSet;
     private RefShape2DMouseTrackerSet mouseTrackerLinkedSet;
@@ -57,14 +55,14 @@ public class RefShape2DMouseTracker : MonoBehaviour {
         SB = GetComponent<SpriteBase>();
         origLinkState = linkMouseUpToDown;
 
+        mouseTrackerFullSet = Resources.Load<RefShape2DMouseTrackerSet>("ScriptableObjects/MouseTrackerSets/MouseTrackerSetFull");
+        mouseTrackerEnteredSet = Resources.Load<RefShape2DMouseTrackerSet>("ScriptableObjects/MouseTrackerSets/MouseTrackerSetEntered");
+        mouseTrackerLinkedSet = Resources.Load<RefShape2DMouseTrackerSet>("ScriptableObjects/MouseTrackerSets/MouseTrackerSetLinked");
+
         lateStartLaunched = false;
 
         if (refShape == null)
             return;
-
-        mouseTrackerFullSet = AssetDatabase.LoadAssetAtPath<RefShape2DMouseTrackerSet>("Assets/_ManOverboard/Variables/Sets/MouseTrackerSetFull.asset");
-        mouseTrackerEnteredSet = AssetDatabase.LoadAssetAtPath<RefShape2DMouseTrackerSet>("Assets/_ManOverboard/Variables/Sets/MouseTrackerSetEntered.asset");
-        mouseTrackerLinkedSet = AssetDatabase.LoadAssetAtPath<RefShape2DMouseTrackerSet>("Assets/_ManOverboard/Variables/Sets/MouseTrackerSetLinked.asset");
     }
 
     private void OnEnable() {
@@ -278,58 +276,5 @@ public class RefShape2DMouseTracker : MonoBehaviour {
             UseMouseUpDelegate();
             mouseUpEvent.Invoke();
         }
-    }
-}
-
-[CustomEditor(typeof(RefShape2DMouseTracker))]
-[CanEditMultipleObjects]
-public class RefShape2DMouseTrackerEditor : Editor {
-
-    SerializedProperty refShape;
-    SerializedProperty clickThrough;
-    SerializedProperty linkMouseUpToDown;
-
-    SerializedProperty mouseDownEvent;
-    SerializedProperty mouseUpEvent;
-    SerializedProperty mouseEnterEvent;
-    SerializedProperty mouseExitEvent;
-
-    bool useEvents;
-
-    private void OnEnable() {
-        refShape = serializedObject.FindProperty("refShape");
-        clickThrough = serializedObject.FindProperty("clickThrough");
-        linkMouseUpToDown = serializedObject.FindProperty("linkMouseUpToDown");
-
-        mouseDownEvent = serializedObject.FindProperty("mouseDownEvent");
-        mouseUpEvent = serializedObject.FindProperty("mouseUpEvent");
-        mouseEnterEvent = serializedObject.FindProperty("mouseEnterEvent");
-        mouseExitEvent = serializedObject.FindProperty("mouseExitEvent");
-
-        useEvents = false;
-    }
-
-    public override void OnInspectorGUI() {
-        serializedObject.Update();
-
-        GUI.enabled = false;
-        EditorGUILayout.ObjectField("Script:", MonoScript.FromMonoBehaviour((RefShape2DMouseTracker)target), typeof(RefShape2DMouseTracker), false);
-        GUI.enabled = true;
-
-        EditorGUILayout.LabelField("It only take 1 instance of this component to activate all IMouseDetector callbacks on this GameObject");
-
-        EditorGUILayout.PropertyField(refShape);
-        EditorGUILayout.PropertyField(clickThrough);
-        EditorGUILayout.PropertyField(linkMouseUpToDown);
-
-        useEvents = EditorGUILayout.Foldout(useEvents, "Public event responses", true);
-        if (useEvents) {
-            EditorGUILayout.PropertyField(mouseDownEvent);
-            EditorGUILayout.PropertyField(mouseUpEvent);
-            EditorGUILayout.PropertyField(mouseEnterEvent);
-            EditorGUILayout.PropertyField(mouseExitEvent);
-        }
-
-        serializedObject.ApplyModifiedProperties();
     }
 }

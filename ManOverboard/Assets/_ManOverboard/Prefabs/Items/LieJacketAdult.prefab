@@ -104,6 +104,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   refShape: {fileID: 114254423406292886}
   clickThrough: 0
+  mouseTrackerFullSet: {fileID: 11400000, guid: e7c503aa697f34c4d971acd3d0eb303d,
+    type: 2}
+  mouseTrackerEnteredSet: {fileID: 11400000, guid: d54ec56afbef5984085d8c7f9092bb7c,
+    type: 2}
+  mouseTrackerLinkedSet: {fileID: 11400000, guid: 42d9c6e253c7f54479d1a9034b8053b3,
+    type: 2}
   containsMousePoint: 0
   linkMouseUpToDown: 1
   mouseDownEvent:
@@ -154,6 +160,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   color: {r: 0, g: 1, b: 0.18460178, a: 1}
   outlineSize: 1
+  spriteOutlineMaterial: {fileID: 2100000, guid: fb7ee0d72a90eb5428b0935f09aae8df,
+    type: 2}
 --- !u!114 &114731512334250338
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -165,7 +173,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0145360e7889bde4eb7028f342b9787b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  set: {fileID: 11400000, guid: 5c6f14e4001067144bb604bf0f39e7ff, type: 2}
+  mousePos: {fileID: 11400000, guid: 4662ec67a56c16a4eb5641f4edc16bd0, type: 2}
   weight: 8
+  items: {fileID: 11400000, guid: 7e5097f77349a0a4489279a4c54b7a02, type: 2}
   size: 0
 --- !u!212 &212319135206509616
 SpriteRenderer:
@@ -182,7 +193,7 @@ SpriteRenderer:
   m_ReflectionProbeUsage: 1
   m_RenderingLayerMask: 4294967295
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: fb7ee0d72a90eb5428b0935f09aae8df, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

@@ -21,8 +21,7 @@ public class ItemBase : SpriteTossable {
 
     protected override void Awake() {
         base.Awake();
-
-        items = AssetDatabase.LoadAssetAtPath<ItemBaseSet>("Assets/_ManOverboard/Variables/Sets/ItemBaseSet.asset");
+        items = Resources.Load<ItemBaseSet>("ScriptableObjects/SpriteSets/ItemBaseSet");
         items.Add(this);
     }
 

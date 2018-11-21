@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// TODO: Make sure every derived object has a SpriteOutline component
-
 [RequireComponent(typeof(SpriteOutline))]
-public class SpriteSelectable : SpriteBase {
+public class SpriteHighlightable : SpriteBase {
 
     protected SpriteOutline so;
     protected bool selectable;

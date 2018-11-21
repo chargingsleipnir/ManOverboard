@@ -9,8 +9,6 @@ public class Crewman : CharAdult {
     [SerializeField]
     protected ItemBase sailorHat;
 
-    int capWeight;
-
     protected override void Awake() {
         base.Awake();
         
@@ -48,49 +46,18 @@ public class Crewman : CharAdult {
         base.Update();
     }
 
-    private void ClickThroughHat(bool clickThrough) {
-        RefShape2DMouseTracker[] trackers = sailorHat.GetComponents<RefShape2DMouseTracker>();
-        for (int i = 0; i < trackers.Length; i++)
-            trackers[i].clickThrough = clickThrough;
-    }
+    //private void ClickThroughHat(bool clickThrough) {
+    //    RefShape2DMouseTracker[] trackers = sailorHat.GetComponents<RefShape2DMouseTracker>();
+    //    for (int i = 0; i < trackers.Length; i++)
+    //        trackers[i].clickThrough = clickThrough;
+    //}
 
     public override void PrepScoop() {
         if (!canScoop)
             return;
 
-        ClickThroughHat(false);
-
         IsCommandPanelOpen = false;
         DelSetItemType(Consts.ItemType.Scooping);
-    }
-
-    public override void UseItem(ItemBase item) {
-        activeItem = item;
-        activeItem.EnableMouseTracking(false);
-
-        timerBar.IsActive = true;
-
-        if (!heldItems.Contains(item)) {
-            heldItems.Add(item);
-            heldItemWeight += item.Weight;
-        }
-
-        if (item is ItemCanScoop) {
-            charState = Consts.CharState.InAction;
-
-            // Logic for scooping wth item
-            item.transform.position = trans_ItemUseHand.position;
-            item.transform.parent = trans_ItemUseHand.parent;
-            //ClickThroughHat(true);
-
-            capWeight = (item as ItemCanScoop).capacity;
-            float heldWeight = item.Weight + capWeight;
-            float scoopRate = (heldWeight / strength) * heldWeight;
-            if (scoopRate < Consts.MIN_SCOOP_RATE)
-                scoopRate = Consts.MIN_SCOOP_RATE;
-
-            activityCounter = activityInterval = scoopRate;
-        }
     }
 
     public override void CancelAction() {
