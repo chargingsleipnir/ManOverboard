@@ -15,6 +15,30 @@ public class CharElder : CharChild {
         Reset();
     }
 
+    protected override void Update() {
+        if (Paused)
+            return;
+
+        if (tossableState == Consts.SpriteTossableState.Default) {
+            if (charState == Consts.CharState.InAction) {
+                activityCounter -= Time.deltaTime;
+                float counterPct = 1.0f - (activityCounter / activityInterval);
+                timerBar.Fill = counterPct;
+                if (activityCounter <= 0) {
+                    activityCounter = activityInterval;
+                    if (canScoop)
+                        DelRemoveWater(capWeight);
+                    else if(canDonLifeJacketChild) {
+                        // TODO: Code/Action to make it happen
+
+                        // Once the jacket is donned, action is over
+                        charState = Consts.CharState.Default;
+                    }
+                }
+            }
+        }
+    }
+
     public override void CheckCanAct(bool childrenDonLifeJacket, bool adultDonLifeJacket, bool scoopWater) {
 
         // TODO: Need to consider that a single button should apply to both, jacketting a child or self
@@ -69,11 +93,19 @@ public class CharElder : CharChild {
 
             activityCounter = activityInterval = scoopRate;
         }
+        else if(item is LifeJacket) {
+            if((item as LifeJacket).size == Consts.FitSizes.child) {
+
+            }
+            else {
+
+            }
+        }
     }
 
     protected void PrepDonLifeJacketChild() {
         IsCommandPanelOpen = false;
-        DelSetItemType(Consts.ItemType.LifeJacket);
+        DelSetItemType(Consts.HighlightGroupType.LifeJacket);
     }
 
     public virtual void PrepScoop() {
@@ -81,6 +113,6 @@ public class CharElder : CharChild {
             return;
 
         IsCommandPanelOpen = false;
-        DelSetItemType(Consts.ItemType.Scooping);
+        DelSetItemType(Consts.HighlightGroupType.Scooping);
     }
 }

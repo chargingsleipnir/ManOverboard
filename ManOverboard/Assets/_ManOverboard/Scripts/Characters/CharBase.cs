@@ -36,7 +36,7 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
     protected Consts.CharState charState;
     protected bool canAct;
 
-    public delegate void DelPassItemType(Consts.ItemType type);
+    public delegate void DelPassItemType(Consts.HighlightGroupType type);
     public delegate void DelPassInt(int waterWeight);
 
     protected DelPassItemType DelSetItemType;

@@ -49,6 +49,6 @@ public class CharChild : CharBase {
 
     protected void PrepDonLifeJacketSelf() {
         IsCommandPanelOpen = false;
-        DelSetItemType(Consts.ItemType.LifeJacket);
+        DelSetItemType(Consts.HighlightGroupType.LifeJacket);
     }
 }

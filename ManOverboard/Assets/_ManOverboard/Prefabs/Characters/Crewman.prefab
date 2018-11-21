@@ -73,7 +73,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4479983421719264}
   - component: {fileID: 212591011136243578}
-  - component: {fileID: 114695486018184014}
   - component: {fileID: 50069712229058362}
   - component: {fileID: 61508323284199386}
   - component: {fileID: 114392158439203310}
@@ -146,7 +145,6 @@ GameObject:
   - component: {fileID: 50412188638033140}
   - component: {fileID: 61510772390979632}
   - component: {fileID: 114218070511363656}
-  - component: {fileID: 114800905440417116}
   - component: {fileID: 114536581187093234}
   - component: {fileID: 114728929419838626}
   - component: {fileID: 114429788517235706}
@@ -435,12 +433,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   refShape: {fileID: 114974912276248904}
   clickThrough: 0
-  mouseTrackerFullSet: {fileID: 11400000, guid: e7c503aa697f34c4d971acd3d0eb303d,
-    type: 2}
-  mouseTrackerEnteredSet: {fileID: 11400000, guid: d54ec56afbef5984085d8c7f9092bb7c,
-    type: 2}
-  mouseTrackerLinkedSet: {fileID: 11400000, guid: 42d9c6e253c7f54479d1a9034b8053b3,
-    type: 2}
   containsMousePoint: 0
   linkMouseUpToDown: 0
   mouseDownEvent:
@@ -497,10 +489,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: beaaa8c27c2caf644bb78b876c4ff4e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  set: {fileID: 11400000, guid: 5c6f14e4001067144bb604bf0f39e7ff, type: 2}
-  mousePos: {fileID: 11400000, guid: 4662ec67a56c16a4eb5641f4edc16bd0, type: 2}
   weight: 180
-  levelItems: {fileID: 11400000, guid: 7e5097f77349a0a4489279a4c54b7a02, type: 2}
   timerBar: {fileID: 114179706315704172}
   trans_ItemUseHand: {fileID: 4472367107038212}
   actionBtnObj: {fileID: 1283102116081734}
@@ -518,10 +507,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c260b4815bd05c1499c8673b73316ace, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  set: {fileID: 11400000, guid: 5c6f14e4001067144bb604bf0f39e7ff, type: 2}
-  mousePos: {fileID: 11400000, guid: 4662ec67a56c16a4eb5641f4edc16bd0, type: 2}
   weight: 1
-  items: {fileID: 11400000, guid: 7e5097f77349a0a4489279a4c54b7a02, type: 2}
   capacity: 5
 --- !u!114 &114429788517235706
 MonoBehaviour:
@@ -535,9 +521,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   color: {r: 1, g: 1, b: 1, a: 1}
-  outlineSize: 1
-  spriteOutlineMaterial: {fileID: 2100000, guid: fb7ee0d72a90eb5428b0935f09aae8df,
-    type: 2}
 --- !u!114 &114518485953332168
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -551,12 +534,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   refShape: {fileID: 114749449311413966}
   clickThrough: 0
-  mouseTrackerFullSet: {fileID: 11400000, guid: e7c503aa697f34c4d971acd3d0eb303d,
-    type: 2}
-  mouseTrackerEnteredSet: {fileID: 11400000, guid: d54ec56afbef5984085d8c7f9092bb7c,
-    type: 2}
-  mouseTrackerLinkedSet: {fileID: 11400000, guid: 42d9c6e253c7f54479d1a9034b8053b3,
-    type: 2}
   containsMousePoint: 0
   linkMouseUpToDown: 0
   mouseDownEvent:
@@ -653,21 +630,6 @@ MonoBehaviour:
     type: 2}
   donJacketPrefab: {fileID: 1251050269509320, guid: 80d8a0cd751089d47a8002f4568cde78,
     type: 2}
---- !u!114 &114695486018184014
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1489007285230600}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 39ed267f79c3600448faf9c1bf70173a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  color: {r: 0.07075471, g: 1, b: 0.17715201, a: 1}
-  outlineSize: 1
-  spriteOutlineMaterial: {fileID: 2100000, guid: fb7ee0d72a90eb5428b0935f09aae8df,
-    type: 2}
 --- !u!114 &114728929419838626
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -681,12 +643,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   refShape: {fileID: 114536581187093234}
   clickThrough: 0
-  mouseTrackerFullSet: {fileID: 11400000, guid: e7c503aa697f34c4d971acd3d0eb303d,
-    type: 2}
-  mouseTrackerEnteredSet: {fileID: 11400000, guid: d54ec56afbef5984085d8c7f9092bb7c,
-    type: 2}
-  mouseTrackerLinkedSet: {fileID: 11400000, guid: 42d9c6e253c7f54479d1a9034b8053b3,
-    type: 2}
   containsMousePoint: 0
   linkMouseUpToDown: 1
   mouseDownEvent:
@@ -762,12 +718,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   refShape: {fileID: 114755631078815044}
   clickThrough: 0
-  mouseTrackerFullSet: {fileID: 11400000, guid: e7c503aa697f34c4d971acd3d0eb303d,
-    type: 2}
-  mouseTrackerEnteredSet: {fileID: 11400000, guid: d54ec56afbef5984085d8c7f9092bb7c,
-    type: 2}
-  mouseTrackerLinkedSet: {fileID: 11400000, guid: 42d9c6e253c7f54479d1a9034b8053b3,
-    type: 2}
   containsMousePoint: 0
   linkMouseUpToDown: 1
   mouseDownEvent:
@@ -790,20 +740,6 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
---- !u!114 &114800905440417116
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1842180217136250}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 39ed267f79c3600448faf9c1bf70173a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  color: {r: 1, g: 1, b: 1, a: 1}
-  outlineSize: 1
-  spriteOutlineMaterial: {fileID: 0}
 --- !u!114 &114974912276248904
 MonoBehaviour:
   m_ObjectHideFlags: 1

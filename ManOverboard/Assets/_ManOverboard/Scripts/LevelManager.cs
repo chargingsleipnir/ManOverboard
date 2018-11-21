@@ -26,6 +26,7 @@ public class LevelManager : MonoBehaviour {
     private SpriteTossableSet spriteTossableSet;
 
     private List<CharBase> characterSet;
+    private List<CharChild> children;
     private int charSetStartCount;
     private int numChildren = 0;
     private int numElders = 0;
@@ -79,14 +80,17 @@ public class LevelManager : MonoBehaviour {
         boat.AddNumLeaksCallback(NumLeaks);
 
         characterSet = new List<CharBase>();
+        children = new List<CharChild>();
         for (int i = 0; i < spriteTossableSet.Count; i++) {
             spriteTossableSet[i].SetMouseRespCallbacks(OnTossableSpriteMouseDown, OnTossableSpriteMouseUp);
             if (spriteTossableSet[i] is CharBase) {
                 characterSet.Add(spriteTossableSet[i] as CharBase);
                 if (spriteTossableSet[i] is CharElder)
                     numElders++;
-                else if (spriteTossableSet[i] is CharChild)
+                else if (spriteTossableSet[i] is CharChild) {
                     numChildren++;
+                    children.Add(spriteTossableSet[i] as CharChild);
+                }
             }
             else if (spriteTossableSet[i] is ItemBase) {
                 (spriteTossableSet[i] as ItemBase).SetItemSelectionCallback(OnItemSelectionCB, OnItemDeselectionCB);
@@ -109,13 +113,17 @@ public class LevelManager : MonoBehaviour {
 
         rearMenuFieldObj.SetActive(false);
 
+        // Establish every possible action in the level, and do any appropriate setup for it (like adding highlight components to selectable objects).
         itemsCanScoop = new List<ItemCanScoop>();
         lifeJacketsAdult = new List<LifeJacket>();
         lifeJacketsChild = new List<LifeJacket>();
         foreach (ItemBase item in items) {
-            if (item is ItemCanScoop)
+            if (item is ItemCanScoop) {
+                item.AddHighlightComponent();
                 itemsCanScoop.Add(item as ItemCanScoop);
-            else if(item is LifeJacket) {
+            }
+            else if (item is LifeJacket) {
+                item.AddHighlightComponent();
                 LifeJacket jacket = item as LifeJacket;
                 if (jacket.size == Consts.FitSizes.adult)
                     lifeJacketsAdult.Add(jacket);
@@ -124,12 +132,19 @@ public class LevelManager : MonoBehaviour {
             }
         }
 
-        foreach(CharBase character in characterSet) {
+        foreach (CharBase character in characterSet) {
             character.CheckCanAct(
                 lifeJacketsChild.Count > 0 && numChildren > 0,
                 lifeJacketsAdult.Count > 0 && numElders > 0,
                 itemsCanScoop.Count > 0 && numElders > 0
             );
+        }
+
+        // Check if children will be highlightable/selectable
+        if (lifeJacketsChild.Count > 0 && numChildren > 0 && numElders > 0) {
+            foreach (CharChild child in children) {
+                child.AddHighlightComponent();
+            }
         }
 
         levelActive = true;
@@ -258,15 +273,7 @@ public class LevelManager : MonoBehaviour {
         UnPauseLevel();
     }
 
-    // TODO: Once I get character highlighting figured out, perhaps this needs to be made more generic to encompass anything that's highlighted?
-    public void OnItemSelectionCB(ItemBase item) {
-        ReturnToNeutral();
-        if (heldChar != null)
-            heldChar.UseItem(item);
-    }
-    public void OnItemDeselectionCB(ItemBase item) {
-        // TODO: Fill out as needed
-    }
+    
 
     // TODO: need to find a better way to dynamically select item types. Passing raw ints in the inspector is insufficient
     public void ToState(Consts.LevelState state) {
@@ -310,22 +317,37 @@ public class LevelManager : MonoBehaviour {
         rearMenuFieldObj.SetActive(false);
         UnPauseLevel();
     }
-    public void HighlightToSelectCB(Consts.ItemType itemType) {
+
+    // TODO: Once I get character highlighting figured out, perhaps this needs to be made more generic to encompass anything that's highlighted?
+    public void OnItemSelectionCB(ItemBase item) {
+        ReturnToNeutral();
+        if (heldChar != null)
+            heldChar.UseItem(item);
+    }
+    public void OnItemDeselectionCB(ItemBase item) {
+        // TODO: Fill out as needed
+    }
+    public void HighlightToSelectCB(Consts.HighlightGroupType groupType) {
         levelState = Consts.LevelState.ObjectSelection;
 
-        if (itemType == Consts.ItemType.Scooping) {
+        if (groupType == Consts.HighlightGroupType.Scooping) {
             foreach (ItemCanScoop itemCS in itemsCanScoop)
-                itemCS.HighlightToClick();
+                itemCS.HighlightToSelect();
         }
-        else if (itemType == Consts.ItemType.LifeJacket) {
+        else if (groupType == Consts.HighlightGroupType.LifeJacket) {
             foreach (LifeJacket itemLJ in lifeJacketsChild)
-                itemLJ.HighlightToClick();
+                itemLJ.HighlightToSelect();
             if (!(heldChar is CharChild)) {
                 foreach (LifeJacket itemLJ in lifeJacketsAdult)
-                    itemLJ.HighlightToClick();
+                    itemLJ.HighlightToSelect();
             }
         }
+        else if (groupType == Consts.HighlightGroupType.Children) {
+            foreach(CharChild child in children)
+                child.HighlightToSelect();
+        }
     }
+
     public void RemoveWaterCB(int waterWeight) {
         if (!levelActive)
             return;

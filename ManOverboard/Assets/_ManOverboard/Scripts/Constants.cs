@@ -49,9 +49,10 @@ public static class Consts {
         LAYER_COUNT = Enum.GetValues(typeof(DrawLayers)).Length;
     }
 
-    public enum ItemType {
+    public enum HighlightGroupType {
         Scooping = 0,
-        LifeJacket = 1
+        LifeJacket = 1,
+        Children = 2
     }
     public enum FitSizes { adult, child }
     public enum CharState {

@@ -1,19 +1,20 @@
 ﻿using UnityEngine;
 
-// NOTE: This will only work if the SpriteOutline material is applied to the SpriteRenderer through the inspector.
-
 [ExecuteInEditMode]
 public class SpriteOutline : MonoBehaviour {
     public Color color = Color.white;
 
-    [Range(0, 16)]
-    public int outlineSize = 1;
+    //[Range(0, 16)]
+    //public int outlineSize = 1;
+
+    public int OutlineSize { get; set; }
 
     private SpriteRenderer spriteRenderer;
 
     private void Awake() {
         spriteRenderer = GetComponent<SpriteRenderer>();
         spriteRenderer.material = Resources.Load<Material>("Materials/SpriteOutline");
+        OutlineSize = 1;
     }
 
     void OnEnable() {
@@ -33,7 +34,7 @@ public class SpriteOutline : MonoBehaviour {
         spriteRenderer.GetPropertyBlock(mpb);
         mpb.SetFloat("_Outline", outline ? 1f : 0);
         mpb.SetColor("_OutlineColor", color);
-        mpb.SetFloat("_OutlineSize", outlineSize);
+        mpb.SetFloat("_OutlineSize", OutlineSize);
         spriteRenderer.SetPropertyBlock(mpb);
     }
 

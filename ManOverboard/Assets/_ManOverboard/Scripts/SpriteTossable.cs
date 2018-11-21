@@ -2,7 +2,7 @@
 using UnityEditor;
 using ZeroProgress.Common;
 
-public class SpriteTossable : SpriteHighlightable, IMouseDownDetector, IMouseUpDetector {
+public class SpriteTossable : SpriteBase, IMouseDownDetector, IMouseUpDetector {
 
     public delegate void DelPassGO(GameObject obj);
     protected DelPassGO OnMouseDownCB;

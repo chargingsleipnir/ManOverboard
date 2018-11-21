@@ -60,11 +60,11 @@ public class ItemBase : SpriteTossable {
         }
     }
 
-    public override void HighlightToClick() {
+    public override void HighlightToSelect() {
         if (inUse)
             return;
 
-        base.HighlightToClick();
+        base.HighlightToSelect();
     }
 
     public void Deselect() {

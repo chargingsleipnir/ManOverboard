@@ -322,6 +322,9 @@ public class SpriteBase : MonoBehaviour {
 
     private Vector3 origPos;
 
+    private SpriteOutline so;
+    protected bool selectable;
+
     protected virtual void Awake() {
         sgRef = null;
         if (GetComponent<SortingGroup>() != null)
@@ -335,6 +338,8 @@ public class SpriteBase : MonoBehaviour {
         origParent = currParent = transform.parent;
 
         origPos = transform.position;
+
+        selectable = false;
     }
 
     protected virtual void Start() {
@@ -436,6 +441,48 @@ public class SpriteBase : MonoBehaviour {
         RefShape2DMouseTracker[] trackers = GetComponents<RefShape2DMouseTracker>();
         for (int i = 0; i < trackers.Length; i++)
             trackers[i].enabled = isEnabled;
+    }
+
+    public void AddHighlightComponent(bool enableComponent = false) {
+        so = GetComponent<SpriteOutline>();
+        if (so == null) {
+            so = gameObject.AddComponent<SpriteOutline>();
+            so.enabled = false;
+        }
+
+        so.ChangeColour(0, 1.0f, 0.18f, 1.0f);
+        if (enableComponent)
+            HighlightToSelect();
+    }
+    protected void RemoveHighlightComponent() {
+        if (so != null)
+            Destroy(so);
+    }
+    public virtual void HighlightToSelect() {
+        if (so == null)
+            return;
+
+        if (so.enabled)
+            return;
+
+        ChangeMouseUpToDownLinks(false);
+        SortCompLayerChange(Consts.DrawLayers.FrontOfLevel4, null);
+        so.enabled = true;
+        selectable = true;
+    }
+
+    public void UnHighlight() {
+        if (so == null)
+            return;
+
+        if (!so.enabled)
+            return;
+
+        // If sprite tossable overrides UnHighlight(), use ChangeMouseUpToDownLinks(true); instead of ResetMouseUpToDownLinks();
+        ResetMouseUpToDownLinks();
+        SortCompFullReset();
+        so.enabled = false;
+        selectable = false;
     }
 
     private void OnDestroy() {
