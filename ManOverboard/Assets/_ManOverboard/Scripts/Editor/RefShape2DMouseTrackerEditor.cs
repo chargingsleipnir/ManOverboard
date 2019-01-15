@@ -37,7 +37,7 @@ public class RefShape2DMouseTrackerEditor : Editor {
         EditorGUILayout.ObjectField("Script:", MonoScript.FromMonoBehaviour((RefShape2DMouseTracker)target), typeof(RefShape2DMouseTracker), false);
         GUI.enabled = true;
 
-        EditorGUILayout.LabelField("It only take 1 instance of this component to activate all IMouseDetector callbacks on this GameObject");
+        EditorGUILayout.LabelField("Only 1 instance of this component is req'd to activate all IMouseDetector callbacks on this GameObject");
 
         EditorGUILayout.PropertyField(refShape);
         EditorGUILayout.PropertyField(clickThrough);

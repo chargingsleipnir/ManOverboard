@@ -84,6 +84,7 @@ public class LevelManager : MonoBehaviour {
         for (int i = 0; i < spriteTossableSet.Count; i++) {
             spriteTossableSet[i].SetMouseRespCallbacks(OnTossableSpriteMouseDown, OnTossableSpriteMouseUp);
             if (spriteTossableSet[i] is CharBase) {
+                (spriteTossableSet[i] as CharBase).LvlMngr = this;
                 characterSet.Add(spriteTossableSet[i] as CharBase);
                 if (spriteTossableSet[i] is CharElder)
                     numElders++;
@@ -132,11 +133,16 @@ public class LevelManager : MonoBehaviour {
             }
         }
 
+        bool 
+            childrenDonLifeJacket = lifeJacketsChild.Count > 0 && numChildren > 0,
+            adultDonLifeJacket = lifeJacketsAdult.Count > 0 && numElders > 0,
+            canScoop = itemsCanScoop.Count > 0 && numElders > 0;
+
         foreach (CharBase character in characterSet) {
             character.CheckCanAct(
-                lifeJacketsChild.Count > 0 && numChildren > 0,
-                lifeJacketsAdult.Count > 0 && numElders > 0,
-                itemsCanScoop.Count > 0 && numElders > 0
+                childrenDonLifeJacket,
+                adultDonLifeJacket,
+                canScoop
             );
         }
 
@@ -214,10 +220,8 @@ public class LevelManager : MonoBehaviour {
 
         heldObj = spriteObj;
         heldSpriteTossable = spriteObj.GetComponent<SpriteTossable>();
-        if(heldSpriteTossable is CharBase) {
+        if(heldSpriteTossable is CharBase)
             heldChar = spriteObj.GetComponent<CharBase>();
-            heldChar.SetCallbacks(HighlightToSelectCB, RemoveWaterCB, FadeLevelCB, UnfadeLevelCB);
-        }
         else
             heldChar = null;
 
@@ -307,12 +311,12 @@ public class LevelManager : MonoBehaviour {
         }
     }
 
-    public void FadeLevelCB() {
+    public void FadeLevel() {
         charContAreaScpt.gameObject.SetActive(false);
         rearMenuFieldObj.SetActive(true);
         PauseLevel();        
     }
-    public void UnfadeLevelCB() {
+    public void UnfadeLevel() {
         charContAreaScpt.gameObject.SetActive(false);
         rearMenuFieldObj.SetActive(false);
         UnPauseLevel();
@@ -327,7 +331,7 @@ public class LevelManager : MonoBehaviour {
     public void OnItemDeselectionCB(ItemBase item) {
         // TODO: Fill out as needed
     }
-    public void HighlightToSelectCB(Consts.HighlightGroupType groupType) {
+    public void HighlightToSelect(Consts.HighlightGroupType groupType) {
         levelState = Consts.LevelState.ObjectSelection;
 
         if (groupType == Consts.HighlightGroupType.Scooping) {
@@ -348,7 +352,7 @@ public class LevelManager : MonoBehaviour {
         }
     }
 
-    public void RemoveWaterCB(int waterWeight) {
+    public void RemoveWater(int waterWeight) {
         if (!levelActive)
             return;
 

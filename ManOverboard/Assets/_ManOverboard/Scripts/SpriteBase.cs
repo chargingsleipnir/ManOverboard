@@ -356,6 +356,16 @@ public class SpriteBase : MonoBehaviour {
         for (int i = 0; i < trackers.Length; i++)
             trackers[i].LinkMouseUpToDown = linkEvents;
     }
+    public void MouseUpToDownLinksTrue() {
+        RefShape2DMouseTracker[] trackers = GetComponents<RefShape2DMouseTracker>();
+        for (int i = 0; i < trackers.Length; i++)
+            trackers[i].LinkMouseUpToDown = true;
+    }
+    public void MouseUpToDownLinksFalse() {
+        RefShape2DMouseTracker[] trackers = GetComponents<RefShape2DMouseTracker>();
+        for (int i = 0; i < trackers.Length; i++)
+            trackers[i].LinkMouseUpToDown = false;
+    }
     public void ResetMouseUpToDownLinks() {
         RefShape2DMouseTracker[] trackers = GetComponents<RefShape2DMouseTracker>();
         for (int i = 0; i < trackers.Length; i++)

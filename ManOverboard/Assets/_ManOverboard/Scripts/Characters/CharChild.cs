@@ -17,7 +17,7 @@ public class CharChild : CharBase {
             canAct = true;
             canDonLifeJacketSelf = true;
 
-            commandPanel.PrepDonLifeJacketBtn(PrepDonLifeJacketSelf);
+            commandPanel.PrepBtn(Consts.Skills.DonLifeJacketSelf, PrepDonLifeJacketSelf);
         }
 
         commandPanel.SetBtns();
@@ -49,6 +49,6 @@ public class CharChild : CharBase {
 
     protected void PrepDonLifeJacketSelf() {
         IsCommandPanelOpen = false;
-        DelSetItemType(Consts.HighlightGroupType.LifeJacket);
+        lvlMngr.HighlightToSelect(Consts.HighlightGroupType.LifeJacket);
     }
 }

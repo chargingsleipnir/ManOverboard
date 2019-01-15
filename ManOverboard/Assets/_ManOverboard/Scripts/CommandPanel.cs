@@ -7,9 +7,8 @@ public class CommandPanel : SpriteBase {
 
     [SerializeField]
     private GameObject scoopBtnPrefab;
-
     [SerializeField]
-    private GameObject donJacketPrefab;
+    private GameObject donJacketBtnPrefab;
 
     private List<GameObject> initBtns;
 
@@ -22,12 +21,17 @@ public class CommandPanel : SpriteBase {
         gameObject.SetActive(false);
     }
 
-    public void PrepDonLifeJacketBtn(UnityAction mouseUpCB) {  
-        InstantiateBtnCommon(donJacketPrefab, mouseUpCB);
-    }
-
-    public void PrepScoopBtn(UnityAction mouseUpCB) {
-        InstantiateBtnCommon(scoopBtnPrefab, mouseUpCB);
+    public void PrepBtn(Consts.Skills skill, UnityAction mouseUpCB) {
+        // Set appropriate button
+        if(skill == Consts.Skills.DonLifeJacketSelf) {
+            InstantiateBtnCommon(donJacketBtnPrefab, mouseUpCB);
+        }
+        else if (skill == Consts.Skills.DonLifeJacketOther) {
+            InstantiateBtnCommon(donJacketBtnPrefab, mouseUpCB);
+        }
+        else if (skill == Consts.Skills.ScoopWater) {
+            InstantiateBtnCommon(scoopBtnPrefab, mouseUpCB);
+        }
     }
 
     private void InstantiateBtnCommon(GameObject prefab, UnityAction mouseUpCB) {

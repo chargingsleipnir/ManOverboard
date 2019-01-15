@@ -6,13 +6,21 @@ public class CharElder : CharChild {
 
     protected bool canDonLifeJacketChild = false;
     protected bool canScoop = false;
+    int waterWeight = 0;
 
-    protected int capWeight;
+    [SerializeField]
+    protected JobBase job;    
 
     protected override void Start() {
         strength = 50;
         speed = 50;
         Reset();
+    }
+
+    protected override void Reset() {
+        base.Reset();
+        if(job != null)
+            job.Init(this);
     }
 
     protected override void Update() {
@@ -27,7 +35,7 @@ public class CharElder : CharChild {
                 if (activityCounter <= 0) {
                     activityCounter = activityInterval;
                     if (canScoop)
-                        DelRemoveWater(capWeight);
+                        lvlMngr.RemoveWater(waterWeight);
                     else if(canDonLifeJacketChild) {
                         // TODO: Code/Action to make it happen
 
@@ -45,24 +53,28 @@ public class CharElder : CharChild {
         if (childrenDonLifeJacket) {
             canAct = true;
             canDonLifeJacketChild = true;
-            commandPanel.PrepDonLifeJacketBtn(PrepDonLifeJacketChild);
+            commandPanel.PrepBtn(Consts.Skills.DonLifeJacketOther, PrepDonLifeJacketChild);
         }
         if(adultDonLifeJacket) {
             canAct = true;
             canDonLifeJacketSelf = true;
-            commandPanel.PrepDonLifeJacketBtn(PrepDonLifeJacketSelf);
+            commandPanel.PrepBtn(Consts.Skills.DonLifeJacketSelf, PrepDonLifeJacketSelf);
         }
         if(scoopWater) {
             canAct = true;
             canScoop = true;
 
-            commandPanel.PrepScoopBtn(PrepScoop);
+            commandPanel.PrepBtn(Consts.Skills.ScoopWater, PrepScoop);
 
             // TODO: The actions that can be taken will build up from nothing (buttons not existing), however, as abilities are lost (items used, chars tossed),
             // The buttons will not disappear, but rather be greyed out.
             //scoopBtnSprite.ChangeColour(null, null, null, 1.0f);
             //scoopBtnSprite.ChangeColour(null, null, null, Consts.BTN_DISABLE_FADE);
         }
+
+        // TODO: Requires bool for job specific options
+        if(job != null)
+            job.CheckCanAct();
 
         commandPanel.SetBtns();
     }
@@ -85,8 +97,8 @@ public class CharElder : CharChild {
             item.transform.position = trans_ItemUseHand.position;
             item.transform.parent = trans_ItemUseHand.parent;
 
-            capWeight = (item as ItemCanScoop).capacity;
-            float heldWeight = item.Weight + capWeight;
+            waterWeight = (item as ItemCanScoop).capacity;
+            float heldWeight = item.Weight + waterWeight;
             float scoopRate = (heldWeight / strength) * heldWeight;
             if (scoopRate < Consts.MIN_SCOOP_RATE)
                 scoopRate = Consts.MIN_SCOOP_RATE;
@@ -105,7 +117,7 @@ public class CharElder : CharChild {
 
     protected void PrepDonLifeJacketChild() {
         IsCommandPanelOpen = false;
-        DelSetItemType(Consts.HighlightGroupType.LifeJacket);
+        lvlMngr.HighlightToSelect(Consts.HighlightGroupType.LifeJacket);
     }
 
     public virtual void PrepScoop() {
@@ -113,6 +125,6 @@ public class CharElder : CharChild {
             return;
 
         IsCommandPanelOpen = false;
-        DelSetItemType(Consts.HighlightGroupType.Scooping);
+        lvlMngr.HighlightToSelect(Consts.HighlightGroupType.Scooping);
     }
 }

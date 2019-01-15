@@ -185,6 +185,12 @@ public class RefShape2DMouseTracker : MonoBehaviour {
     public void AddMouseUpListener(UnityAction eventCB) {
         mouseUpEvent.AddListener(eventCB);
     }
+    public void AddMouseEnterListener(UnityAction eventCB) {
+        mouseEnterEvent.AddListener(eventCB);
+    }
+    public void AddMouseExitListener(UnityAction eventCB) {
+        mouseExitEvent.AddListener(eventCB);
+    }
 
     private void ResetEnteredSet() {
         mouseTrackerEnteredSet.Clear();

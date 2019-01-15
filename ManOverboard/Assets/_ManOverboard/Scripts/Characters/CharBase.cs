@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEditor;
 using ZeroProgress.Common;
 using ZeroProgress.Common.Collections;
@@ -36,20 +37,18 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
     protected Consts.CharState charState;
     protected bool canAct;
 
-    public delegate void DelPassItemType(Consts.HighlightGroupType type);
-    public delegate void DelPassInt(int waterWeight);
-
-    protected DelPassItemType DelSetItemType;
-    protected DelPassInt DelRemoveWater;
-    protected DelVoid FadeLevel;
-    protected DelVoid UnFadeLevel;
+    protected LevelManager lvlMngr;
+    public LevelManager LvlMngr { set { lvlMngr = value; }}
 
     protected int strength;
     protected int speed;
 
+    public int Strength { get; set; }
+    public int Speed { get; set; }
+
     protected ItemBaseSet levelItems;
     protected ItemBase activeItem;
-    protected List<ItemBase> heldItems;    
+    protected List<ItemBase> heldItems;
 
     protected int heldItemWeight;
     public override int Weight {
@@ -114,6 +113,13 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
         
         levelItems = Resources.Load<ItemBaseSet>("ScriptableObjects/SpriteSets/ItemBaseSet");
         actBtnSR = actionBtnObj.GetComponent<SpriteRenderer>();
+
+        RefShape2DMouseTracker actionBtnTracker = actionBtnObj.GetComponent<RefShape2DMouseTracker>();
+
+        // These are set here, the way they are, to help prevent from having to do this in the inspector for every individual character prefab variant (setting these publically for the base character prefab does not do the job properly)
+        actionBtnTracker.AddMouseUpListener(OpenCommandPanel);
+        actionBtnTracker.AddMouseEnterListener(MouseUpToDownLinksFalse);
+        actionBtnTracker.AddMouseExitListener(MouseUpToDownLinksTrue);
     }
 
     protected override void Start () {
@@ -180,6 +186,14 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
         return base.CheckImmClickExit() || charState == Consts.CharState.Saved;
     }
 
+    public void HoldItem(ItemBase item, bool inHand) {
+        heldItems.Add(item);
+        heldItemWeight += item.Weight;
+
+        if(inHand) {
+            // TODO: Place item location in character's hand, in front of character
+        }
+    }
     public void LoseItem(ItemBase item) {
         if (heldItems.Remove(item))
             heldItemWeight -= item.Weight;
@@ -212,12 +226,6 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
     }
 
     public virtual void UseItem(ItemBase item) { }
-    public void SetCallbacks(DelPassItemType setTypeCB, DelPassInt RemoveWaterCB, DelVoid fadeLevelCB, DelVoid unfadeLevelCB) {
-        DelSetItemType = setTypeCB;
-        DelRemoveWater = RemoveWaterCB;
-        FadeLevel = fadeLevelCB;
-        UnFadeLevel = unfadeLevelCB;
-    }
 
     public override void OverheadButtonActive(bool isActive) {
         if (charState == Consts.CharState.Default)
@@ -239,7 +247,7 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
         // TODO: Need to keep checking that char can act (because items are removed & characters are tossed)
         //CheckCanAct();
 
-        FadeLevel();
+        lvlMngr.FadeLevel();
     }
 
     public virtual void CancelAction() {
@@ -264,6 +272,6 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
         timerBar.IsActive = false;
         IsCancelBtnActive = false;
         charState = Consts.CharState.Default;
-        UnFadeLevel();
+        lvlMngr.UnfadeLevel();
     }
 }
