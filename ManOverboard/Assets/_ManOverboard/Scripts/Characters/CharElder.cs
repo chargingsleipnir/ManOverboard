@@ -23,44 +23,20 @@ public class CharElder : CharChild {
             job.Init(this);
     }
 
-    protected override void Update() {
-        if (Paused)
-            return;
-
-        if (tossableState == Consts.SpriteTossableState.Default) {
-            if (charState == Consts.CharState.InAction) {
-                activityCounter -= Time.deltaTime;
-                float counterPct = 1.0f - (activityCounter / activityInterval);
-                timerBar.Fill = counterPct;
-                if (activityCounter <= 0) {
-                    activityCounter = activityInterval;
-                    if (canScoop)
-                        lvlMngr.RemoveWater(waterWeight);
-                    else if(canDonLifeJacketChild) {
-                        // TODO: Code/Action to make it happen
-
-                        // Once the jacket is donned, action is over
-                        charState = Consts.CharState.Default;
-                    }
-                }
-            }
-        }
-    }
-
-    public override void CheckCanAct(bool childrenDonLifeJacket, bool adultDonLifeJacket, bool scoopWater) {
+    public override void SetActionBtns() {
 
         // TODO: Need to consider that a single button should apply to both, jacketting a child or self
-        if (childrenDonLifeJacket) {
+        if (lvlMngr.CheckCanDonLifeJacketChildren(true)) {
             canAct = true;
             canDonLifeJacketChild = true;
             commandPanel.PrepBtn(Consts.Skills.DonLifeJacketOther, PrepDonLifeJacketChild);
         }
-        if(adultDonLifeJacket) {
+        if(lvlMngr.CheckCanDonLifeJacketAdults(false)) {
             canAct = true;
             canDonLifeJacketSelf = true;
             commandPanel.PrepBtn(Consts.Skills.DonLifeJacketSelf, PrepDonLifeJacketSelf);
         }
-        if(scoopWater) {
+        if(lvlMngr.CheckCanScoop()) {
             canAct = true;
             canScoop = true;
 
@@ -74,9 +50,21 @@ public class CharElder : CharChild {
 
         // TODO: Requires bool for job specific options
         if(job != null)
-            job.CheckCanAct();
+            job.SetActionBtns();
 
         commandPanel.SetBtns();
+    }
+
+    // Initiated from CharBase Update(), when activityCounter reaches 0
+    protected override void Action_CounterZero() {
+        if (canScoop)
+            lvlMngr.RemoveWater(waterWeight);
+        else if (canDonLifeJacketChild) {
+            // TODO: Code/Action to make it happen
+
+            // Once the jacket is donned, action is over
+            charState = Consts.CharState.Default;
+        }
     }
 
     public override void UseItem(ItemBase item) {

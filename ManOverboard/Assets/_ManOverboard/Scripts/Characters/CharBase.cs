@@ -35,7 +35,7 @@ Instead of masking, make is more general, and design the entire boat to be trans
 public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
 
     protected Consts.CharState charState;
-    protected bool canAct;
+    protected bool canAct = false;
 
     protected LevelManager lvlMngr;
     public LevelManager LvlMngr { set { lvlMngr = value; }}
@@ -142,6 +142,24 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
         SortCompLayerChange(Consts.DrawLayers.BoatLevel1Contents);
     }
 
+    protected override void Update() {
+        if (Paused)
+            return;
+
+        if (tossableState == Consts.SpriteTossableState.Default) {
+            if (charState == Consts.CharState.InAction) {
+                activityCounter -= Time.deltaTime * speed;
+                float counterPct = 1.0f - (activityCounter / activityInterval);
+                timerBar.Fill = counterPct;
+                Action_Step();
+                if (activityCounter <= 0) {
+                    activityCounter = activityInterval;
+                    Action_CounterZero();
+                }
+            }
+        }
+    }
+
     public override void MouseDownCB() {
         if (CheckImmClickExit())
             return;
@@ -237,15 +255,17 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
     // TODO: Check if given commands are available, and disable buttons if not.
     // In the case of crewman, the button for scooping water should be disabled if no scooping items are available.
 
-    public virtual void CheckCanAct(bool childrenDonLifeJacket, bool adultDonLifeJacket, bool canScoop) {}
+    public virtual void SetActionBtns() { }
+    public virtual void CheckCanAct() { }
+    protected virtual void Action_Step() { }
+    protected virtual void Action_CounterZero() { }
 
     public void OpenCommandPanel() {
+        CheckCanAct();
+
         tossableState = Consts.SpriteTossableState.Default;
         IsCommandPanelOpen = true;
         IsActionBtnActive = false;
-
-        // TODO: Need to keep checking that char can act (because items are removed & characters are tossed)
-        //CheckCanAct();
 
         lvlMngr.FadeLevel();
     }
@@ -268,10 +288,14 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
             }
         }
 
+        EndAction();
+        lvlMngr.UnfadeLevel();
+    }
+
+    public virtual void EndAction() {
         activityCounter = activityInterval = 0;
         timerBar.IsActive = false;
         IsCancelBtnActive = false;
         charState = Consts.CharState.Default;
-        lvlMngr.UnfadeLevel();
     }
 }

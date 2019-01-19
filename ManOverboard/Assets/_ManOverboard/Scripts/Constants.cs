@@ -17,6 +17,8 @@ public static class Consts {
 
     public const float BTN_DISABLE_FADE = 0.33f;
 
+    public const float DON_RATE = 250.0f;
+
     public enum LeakTypesAndRates {
         Pinhole = 1,
         Bullet = 3,

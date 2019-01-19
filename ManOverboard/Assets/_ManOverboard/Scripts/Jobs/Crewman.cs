@@ -21,7 +21,10 @@ public class Crewman : JobBase {
         // Set cap position relative to character's head here?
     }
 
-    public override void CheckCanAct(/* Items and other things to check that would determine if an actions can still be perfomed */) {
+    public override void SetActionBtns() {
+
+    }
+    public override void CheckCanAct() {
         // Need to tell character (for their command panel) whether or not they can still perfom whatever action
         // First time this sets all buttons, leaving out those that cannot be perfomed
         // Afterwards, this greys out those that cannot be done.

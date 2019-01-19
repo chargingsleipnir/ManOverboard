@@ -13,7 +13,7 @@ public class ItemBase : SpriteTossable {
 
     public CharBase CharHeldBy { get; set; }
 
-    protected bool inUse;
+    public bool InUse { get; private set; }
 
     private ItemBaseSet items;
 
@@ -28,7 +28,7 @@ public class ItemBase : SpriteTossable {
     protected override void Start() {
         base.Start();
 
-        inUse = false;
+        InUse = false;
     }
 
     public override void Toss(Vector2 vel) {
@@ -48,11 +48,11 @@ public class ItemBase : SpriteTossable {
     }
 
     public override void MouseUpCB() {
-        if (inUse)
+        if (InUse)
             return;
 
         if (selectable) {
-            inUse = true;
+            InUse = true;
             OnItemSelect(this);
         }
         else {
@@ -61,7 +61,7 @@ public class ItemBase : SpriteTossable {
     }
 
     public override void HighlightToSelect() {
-        if (inUse)
+        if (InUse)
             return;
 
         base.HighlightToSelect();
@@ -71,7 +71,7 @@ public class ItemBase : SpriteTossable {
         SortCompFullReset();
         EnableMouseTracking(true);
         OnItemDeselect(this);
-        inUse = false;
+        InUse = false;
         if (RetPosLocal != null)
             transform.localPosition = (Vector3)RetPosLocal;
     }

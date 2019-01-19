@@ -133,18 +133,8 @@ public class LevelManager : MonoBehaviour {
             }
         }
 
-        bool 
-            childrenDonLifeJacket = lifeJacketsChild.Count > 0 && numChildren > 0,
-            adultDonLifeJacket = lifeJacketsAdult.Count > 0 && numElders > 0,
-            canScoop = itemsCanScoop.Count > 0 && numElders > 0;
-
-        foreach (CharBase character in characterSet) {
-            character.CheckCanAct(
-                childrenDonLifeJacket,
-                adultDonLifeJacket,
-                canScoop
-            );
-        }
+        foreach (CharBase character in characterSet)
+            character.SetActionBtns();
 
         // Check if children will be highlightable/selectable
         if (lifeJacketsChild.Count > 0 && numChildren > 0 && numElders > 0) {
@@ -159,6 +149,22 @@ public class LevelManager : MonoBehaviour {
         if (shipSinkCoroutine != null)
             StopCoroutine(shipSinkCoroutine);
         shipSinkCoroutine = StartCoroutine(SinkShipInterval());
+    }
+
+    public bool CheckCanDonLifeJacketChildren(bool checkNumChildren) {
+        if(checkNumChildren)
+            return lifeJacketsChild.Count > 0 && numChildren > 0;
+
+        return lifeJacketsChild.Count > 0;
+    }
+    public bool CheckCanDonLifeJacketAdults(bool checkNumAdults) {
+        if (checkNumAdults)
+            return lifeJacketsAdult.Count > 0 && numElders > 0;
+
+        return lifeJacketsAdult.Count > 0;
+    }
+    public bool CheckCanScoop() {
+        return itemsCanScoop.Count > 0;
     }
 
     private void Update() {
@@ -327,6 +333,12 @@ public class LevelManager : MonoBehaviour {
         ReturnToNeutral();
         if (heldChar != null)
             heldChar.UseItem(item);
+
+        if(item is LifeJacket) {
+            // TODO: Make these conditional if required. This actually work fine for now though.
+            lifeJacketsChild.Remove(item as LifeJacket);
+            lifeJacketsAdult.Remove(item as LifeJacket);
+        }
     }
     public void OnItemDeselectionCB(ItemBase item) {
         // TODO: Fill out as needed

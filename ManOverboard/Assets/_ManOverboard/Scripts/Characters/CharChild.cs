@@ -12,8 +12,8 @@ public class CharChild : CharBase {
         Reset();
     }
 
-    public override void CheckCanAct(bool childrenDonLifeJacket, bool adultDonLifeJacket, bool canScoop) {
-        if(childrenDonLifeJacket) {
+    public override void SetActionBtns() {
+        if (lvlMngr.CheckCanDonLifeJacketChildren(false)) {
             canAct = true;
             canDonLifeJacketSelf = true;
 
@@ -21,6 +21,26 @@ public class CharChild : CharBase {
         }
 
         commandPanel.SetBtns();
+    }
+    public override void CheckCanAct() {
+        if(lvlMngr.CheckCanDonLifeJacketChildren(false)) {
+            commandPanel.EnableBtn(Consts.Skills.DonLifeJacketSelf);
+            canDonLifeJacketSelf = true;
+        }
+        else {
+            commandPanel.DisableBtn(Consts.Skills.DonLifeJacketSelf);
+            canDonLifeJacketSelf = false;
+        }
+    }
+
+    // Initiated from CharBase Update(), when activityCounter reaches 0
+    protected override void Action_CounterZero() {
+        if (canDonLifeJacketSelf) {
+            // TODO: Just set in center of self for now, will need proper location around center of torso later
+            activeItem.transform.position = transform.position;
+            activeItem.transform.parent = transform;
+        }
+        EndAction();
     }
 
     public override void UseItem(ItemBase item) {
@@ -37,13 +57,12 @@ public class CharChild : CharBase {
         if (item is LifeJacket) {
             charState = Consts.CharState.InAction;
 
-            // TODO: Just set in center of self for now, will need proper location around center of torso later
-            item.transform.position = transform.position;
-            item.transform.parent = transform;
+            // Place life jacket in hand and start donning timer
+            item.transform.position = trans_ItemUseHand.position;
+            item.transform.parent = trans_ItemUseHand.parent;
 
             // TODO: Of course this isn't meaningful right now, need to formulate exactly how this will work.
-            float donRate = speed;
-            activityCounter = activityInterval = donRate;
+            activityCounter = activityInterval = Consts.DON_RATE;
         }
     }
 
