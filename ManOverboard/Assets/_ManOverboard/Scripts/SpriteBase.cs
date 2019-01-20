@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -325,7 +326,15 @@ public class SpriteBase : MonoBehaviour {
     private SpriteOutline so;
     protected bool selectable;
 
+    protected bool awakeRan = false;
     protected virtual void Awake() {
+        InactiveAwake();
+    }
+    // ** Bullshit required because Unity is such a load of garbage. **
+    public virtual void InactiveAwake() {
+        if (awakeRan)
+            return;
+
         sgRef = null;
         if (GetComponent<SortingGroup>() != null)
             sgRef = new SortingGroupComponentRef(this, GetComponent<SortingGroup>());
@@ -340,6 +349,8 @@ public class SpriteBase : MonoBehaviour {
         origPos = transform.position;
 
         selectable = false;
+
+        awakeRan = true;
     }
 
     protected virtual void Start() {

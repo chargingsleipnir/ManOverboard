@@ -120,6 +120,12 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
         actionBtnTracker.AddMouseUpListener(OpenCommandPanel);
         actionBtnTracker.AddMouseEnterListener(MouseUpToDownLinksFalse);
         actionBtnTracker.AddMouseExitListener(MouseUpToDownLinksTrue);
+
+        RefShape2DMouseTracker cancelBtnTracker = cancelBtnObj.GetComponent<RefShape2DMouseTracker>();
+
+        cancelBtnTracker.AddMouseUpListener(CancelAction);
+        cancelBtnTracker.AddMouseEnterListener(MouseUpToDownLinksFalse);
+        cancelBtnTracker.AddMouseExitListener(MouseUpToDownLinksTrue);
     }
 
     protected override void Start () {
@@ -217,6 +223,11 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
             heldItemWeight -= item.Weight;
     }
 
+    public override void Toss(Vector2 vel) {
+        EndAction();
+        base.Toss(vel);
+    }
+
     public override void ApplyTransformToContArea(GameObject contAreaObj, bool prioritizeRefShape) {
         if(!canAct) {
             base.ApplyTransformToContArea(contAreaObj, prioritizeRefShape);
@@ -255,7 +266,7 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
     // TODO: Check if given commands are available, and disable buttons if not.
     // In the case of crewman, the button for scooping water should be disabled if no scooping items are available.
 
-    public virtual void SetActionBtns() { }
+    public virtual void SetActionBtns() { commandPanel.InactiveAwake(); }
     public virtual void CheckCanAct() { }
     protected virtual void Action_Step() { }
     protected virtual void Action_CounterZero() { }
@@ -272,6 +283,8 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
 
     public virtual void CancelAction() {
         if (activeItem != null) {
+
+            // Runs callback in level manager to put item back into list
             activeItem.Deselect();
 
             if (activeItem.RetPosLocal == null) {

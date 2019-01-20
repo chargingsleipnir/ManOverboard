@@ -119,18 +119,8 @@ public class LevelManager : MonoBehaviour {
         lifeJacketsAdult = new List<LifeJacket>();
         lifeJacketsChild = new List<LifeJacket>();
         foreach (ItemBase item in items) {
-            if (item is ItemCanScoop) {
-                item.AddHighlightComponent();
-                itemsCanScoop.Add(item as ItemCanScoop);
-            }
-            else if (item is LifeJacket) {
-                item.AddHighlightComponent();
-                LifeJacket jacket = item as LifeJacket;
-                if (jacket.size == Consts.FitSizes.adult)
-                    lifeJacketsAdult.Add(jacket);
-                else
-                    lifeJacketsChild.Add(jacket);
-            }
+            item.AddHighlightComponent();
+            OnItemDeselectionCB(item);
         }
 
         foreach (CharBase character in characterSet)
@@ -255,12 +245,16 @@ public class LevelManager : MonoBehaviour {
 
         if (levelState == Consts.LevelState.CharHeldToToss) {
 
-            characterSet.Remove(heldSpriteTossable as CharBase);        
+            if (heldSpriteTossable is ItemBase)
+                RemoveItem(heldSpriteTossable as ItemBase);
+            else
+                RemoveCharacter(heldSpriteTossable as CharBase);     
 
             // TODO: Top out the toss speed to something not TOO unreasonable
             float tossSpeed = mouseDelta.magnitude / Time.deltaTime;
 
             // TODO: Consider that when a character is holding 1 or more items, they should maybe be unparented and given varying trajectories upon being tossed.
+            // Lifejacket donned would be exeption to this, being worn, not held.
             // Takes care of set removal
             heldSpriteTossable.Toss(mouseDelta * tossSpeed);
 
@@ -334,14 +328,34 @@ public class LevelManager : MonoBehaviour {
         if (heldChar != null)
             heldChar.UseItem(item);
 
-        if(item is LifeJacket) {
-            // TODO: Make these conditional if required. This actually work fine for now though.
+        RemoveItem(item);
+    }
+    private void RemoveCharacter(CharBase character) {
+        characterSet.Remove(character);
+        if (character is CharChild) {
+            children.Remove(character as CharChild);
+            numChildren--;
+        }
+        else {
+            numElders--;
+        }
+    }
+    private void RemoveItem(ItemBase item) {
+        if (item is LifeJacket) {
             lifeJacketsChild.Remove(item as LifeJacket);
             lifeJacketsAdult.Remove(item as LifeJacket);
         }
     }
     public void OnItemDeselectionCB(ItemBase item) {
-        // TODO: Fill out as needed
+        if (item is LifeJacket) {
+            LifeJacket jacket = item as LifeJacket;
+            if (jacket.size == Consts.FitSizes.child)
+                lifeJacketsChild.Add(jacket);
+            else
+                lifeJacketsAdult.Add(jacket);
+        }
+        if (item is ItemCanScoop)
+            itemsCanScoop.Add(item as ItemCanScoop);
     }
     public void HighlightToSelect(Consts.HighlightGroupType groupType) {
         levelState = Consts.LevelState.ObjectSelection;

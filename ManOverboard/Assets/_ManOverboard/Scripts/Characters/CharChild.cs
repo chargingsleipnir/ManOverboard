@@ -13,6 +13,8 @@ public class CharChild : CharBase {
     }
 
     public override void SetActionBtns() {
+        base.SetActionBtns();
+
         if (lvlMngr.CheckCanDonLifeJacketChildren(false)) {
             canAct = true;
             canDonLifeJacketSelf = true;
@@ -68,6 +70,7 @@ public class CharChild : CharBase {
 
     protected void PrepDonLifeJacketSelf() {
         IsCommandPanelOpen = false;
+        ReturnToBoat();
         lvlMngr.HighlightToSelect(Consts.HighlightGroupType.LifeJacket);
     }
 }

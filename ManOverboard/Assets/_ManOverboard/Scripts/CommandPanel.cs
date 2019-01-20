@@ -11,16 +11,22 @@ public class CommandPanel : SpriteBase {
     private GameObject donJacketBtnPrefab;
 
     private List<GameObject> initBtns;
-    private Dictionary<Consts.Skills, GameObject> btnRef;
+    private Dictionary<Consts.Skills, GameObject> skillToBtnDict;
 
     private float singleBtnHeight;
 
     protected override void Awake() {
-        base.Awake();
+        InactiveAwake();
+    }
+    // ** Bullshit required because Unity is such a load of garbage. **
+    public override void InactiveAwake() {
+        if (awakeRan)
+            return;
+
+        base.InactiveAwake();
         singleBtnHeight = srRef.comp.size.y;
         initBtns = new List<GameObject>();
-        btnRef = new Dictionary<Consts.Skills, GameObject>();
-        gameObject.SetActive(false);
+        skillToBtnDict = new Dictionary<Consts.Skills, GameObject>();
     }
 
     public void PrepBtn(Consts.Skills skill, UnityAction mouseUpCB) {
@@ -38,8 +44,9 @@ public class CommandPanel : SpriteBase {
 
     private void InstantiateBtnCommon(GameObject prefab, Consts.Skills skill, UnityAction mouseUpCB) {
         GameObject btn = Instantiate(prefab, transform);
+        btn.GetComponent<SpriteBase>().InactiveAwake();
         initBtns.Add(btn);
-        btnRef.Add(skill, btn);
+        skillToBtnDict.Add(skill, btn);
 
         RefShape2DMouseTracker tracker = btn.GetComponent<RefShape2DMouseTracker>();
         tracker.AddMouseUpListener(mouseUpCB);
@@ -55,11 +62,17 @@ public class CommandPanel : SpriteBase {
         }
     }
 
-    // Temporary "disabling". Fade the button and make it non-responsive rather than this.
+    // Temporary "disabling". Make it non-responsive as well.
     public void EnableBtn(Consts.Skills skill) {
-        btnRef[skill].SetActive(true);
+        SpriteBase btnSprite = skillToBtnDict[skill].GetComponent<SpriteBase>();
+        btnSprite.ChangeColour(null, null, null, 1.0f);
+
+        skillToBtnDict[skill].GetComponent<RefShape2DMouseTracker>().enabled = true;
     }
     public void DisableBtn(Consts.Skills skill) {
-        btnRef[skill].SetActive(false);
+        SpriteBase btnSprite = skillToBtnDict[skill].GetComponent<SpriteBase>();
+        btnSprite.ChangeColour(null, null, null, Consts.BTN_DISABLE_FADE);
+
+        skillToBtnDict[skill].GetComponent<RefShape2DMouseTracker>().enabled = false;
     }
 }

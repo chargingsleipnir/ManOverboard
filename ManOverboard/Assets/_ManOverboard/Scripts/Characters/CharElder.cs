@@ -24,6 +24,7 @@ public class CharElder : CharChild {
     }
 
     public override void SetActionBtns() {
+        base.SetActionBtns();
 
         // TODO: Need to consider that a single button should apply to both, jacketting a child or self
         if (lvlMngr.CheckCanDonLifeJacketChildren(true)) {
@@ -41,11 +42,6 @@ public class CharElder : CharChild {
             canScoop = true;
 
             commandPanel.PrepBtn(Consts.Skills.ScoopWater, PrepScoop);
-
-            // TODO: The actions that can be taken will build up from nothing (buttons not existing), however, as abilities are lost (items used, chars tossed),
-            // The buttons will not disappear, but rather be greyed out.
-            //scoopBtnSprite.ChangeColour(null, null, null, 1.0f);
-            //scoopBtnSprite.ChangeColour(null, null, null, Consts.BTN_DISABLE_FADE);
         }
 
         // TODO: Requires bool for job specific options
@@ -105,6 +101,7 @@ public class CharElder : CharChild {
 
     protected void PrepDonLifeJacketChild() {
         IsCommandPanelOpen = false;
+        ReturnToBoat();
         lvlMngr.HighlightToSelect(Consts.HighlightGroupType.LifeJacket);
     }
 
@@ -113,6 +110,7 @@ public class CharElder : CharChild {
             return;
 
         IsCommandPanelOpen = false;
+        ReturnToBoat();
         lvlMngr.HighlightToSelect(Consts.HighlightGroupType.Scooping);
     }
 }
