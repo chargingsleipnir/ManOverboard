@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class CharChild : CharBase {
 
-    protected bool canDonLifeJacketSelf = false;
+    protected bool canDonLifeJacket = false;
 
     protected override void Start() {
         strength = 25;
@@ -13,64 +13,57 @@ public class CharChild : CharBase {
     }
 
     public override void SetActionBtns() {
-        base.SetActionBtns();
+        commandPanel.InactiveAwake();
 
         if (lvlMngr.CheckCanDonLifeJacketChildren(false)) {
             canAct = true;
-            canDonLifeJacketSelf = true;
+            canDonLifeJacket = true;
 
-            commandPanel.PrepBtn(Consts.Skills.DonLifeJacketSelf, PrepDonLifeJacketSelf);
+            commandPanel.PrepBtn(Consts.Skills.DonLifeJacket, PrepDonLifeJacket);
         }
 
         commandPanel.SetBtns();
     }
-    public override void CheckCanAct() {
-        if(lvlMngr.CheckCanDonLifeJacketChildren(false)) {
-            commandPanel.EnableBtn(Consts.Skills.DonLifeJacketSelf);
-            canDonLifeJacketSelf = true;
-        }
-        else {
-            commandPanel.DisableBtn(Consts.Skills.DonLifeJacketSelf);
-            canDonLifeJacketSelf = false;
-        }
+    public override void CheckActions() {
+        if (canDonLifeJacket)
+            commandPanel.EnableBtn(Consts.Skills.DonLifeJacket, lvlMngr.CheckCanDonLifeJacketChildren(false));
     }
 
-    // Initiated from CharBase Update(), when activityCounter reaches 0
-    protected override void Action_CounterZero() {
-        if (canDonLifeJacketSelf) {
-            // TODO: Just set in center of self for now, will need proper location around center of torso later
-            activeItem.transform.position = transform.position;
-            activeItem.transform.parent = transform;
-        }
-        EndAction();
-    }
+    public override void GetSelection(SpriteBase sprite) {
+        lvlMngr.ReturnToNeutral();
+        this.activeSkill = Consts.Skills.DonLifeJacket; // ** TODO: Should not have this here - hacky workaround
 
-    public override void UseItem(ItemBase item) {
-        activeItem = item;
+        activeItem = sprite as ItemBase;
         activeItem.EnableMouseTracking(false);
 
         timerBar.IsActive = true;
 
-        if (!heldItems.Contains(item)) {
-            heldItems.Add(item);
-            heldItemWeight += item.Weight;
+        if (!heldItems.Contains(activeItem)) {
+            heldItems.Add(activeItem);
+            heldItemWeight += activeItem.Weight;
         }
 
-        if (item is LifeJacket) {
-            charState = Consts.CharState.InAction;
+        // Presuming item is life jacket, as that's all the child can use right now.
 
-            // Place life jacket in hand and start donning timer
-            item.transform.position = trans_ItemUseHand.position;
-            item.transform.parent = trans_ItemUseHand.parent;
+        // Place life jacket in hand and start donning timer
+        activeItem.transform.position = trans_ItemUseHand.position;
+        activeItem.transform.parent = trans_ItemUseHand.parent;
 
-            // TODO: Of course this isn't meaningful right now, need to formulate exactly how this will work.
-            activityCounter = activityInterval = Consts.DON_RATE;
-        }
+        // TODO: Of course this isn't meaningful right now, need to formulate exactly how this will work.
+        activityCounter = activityInterval = Consts.DON_RATE;
+        ActionComplete = CompleteDonLifeJacket;
+
+        charState = Consts.CharState.InAction;
     }
 
-    protected void PrepDonLifeJacketSelf() {
-        IsCommandPanelOpen = false;
-        ReturnToBoat();
+    protected virtual void PrepDonLifeJacket() {
+        PrepAction(Consts.Skills.DonLifeJacket);
         lvlMngr.HighlightToSelect(Consts.HighlightGroupType.LifeJacket);
+    }
+    protected void CompleteDonLifeJacket() {
+        // TODO: Just set in center of self for now, will need proper location around center of torso later
+        activeItem.transform.position = transform.position;
+        activeItem.transform.parent = transform;
+        EndAction();
     }
 }

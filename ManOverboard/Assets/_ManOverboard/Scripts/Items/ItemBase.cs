@@ -4,12 +4,7 @@ using UnityEngine;
 using UnityEditor;
 using ZeroProgress.Common;
 
-// TODO: Make this into ItemTossable if I start using items that are not tossable, which is likely
 public class ItemBase : SpriteTossable {
-
-    public delegate void DelPassItemBase(ItemBase item);
-    DelPassItemBase OnItemSelect;
-    DelPassItemBase OnItemDeselect;
 
     public CharBase CharHeldBy { get; set; }
 
@@ -53,7 +48,7 @@ public class ItemBase : SpriteTossable {
 
         if (selectable) {
             InUse = true;
-            OnItemSelect(this);
+            lvlMngr.OnSelection(this);
         }
         else {
             base.MouseUpCB();
@@ -70,14 +65,9 @@ public class ItemBase : SpriteTossable {
     public void Deselect() {
         SortCompFullReset();
         EnableMouseTracking(true);
-        OnItemDeselect(this);
+        lvlMngr.OnDeselection(this);
         InUse = false;
         if (RetPosLocal != null)
             transform.localPosition = (Vector3)RetPosLocal;
-    }
-
-    public void SetItemSelectionCallback(DelPassItemBase ItemSelectCB, DelPassItemBase ItemDeselectCB) {
-        OnItemSelect = ItemSelectCB;
-        OnItemDeselect = ItemDeselectCB;
     }
 }

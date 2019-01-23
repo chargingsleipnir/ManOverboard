@@ -79,8 +79,8 @@ public static class Consts {
         Characters
     }
     public enum Skills {
-        DonLifeJacketSelf,
-        DonLifeJacketOther,
+        None,
+        DonLifeJacket,
         ScoopWater,
         LowerAnchor,
         ReleaseAnchor,

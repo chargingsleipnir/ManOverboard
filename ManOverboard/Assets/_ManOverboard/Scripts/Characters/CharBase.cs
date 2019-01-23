@@ -30,15 +30,18 @@ Instead of masking, make is more general, and design the entire boat to be trans
 
  */
 
-
 [RequireComponent(typeof(SpriteRenderer), typeof(Rigidbody2D), typeof(BoxCollider2D))]
 public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
 
-    protected Consts.CharState charState;
-    protected bool canAct = false;
+    protected delegate void ActionCBs();
+    protected ActionCBs ActionStep;
+    protected ActionCBs ActionComplete;
 
-    protected LevelManager lvlMngr;
-    public LevelManager LvlMngr { set { lvlMngr = value; }}
+    protected List<SpriteBase> actObjQueue;
+
+    protected Consts.CharState charState;
+    protected Consts.Skills activeSkill;
+    protected bool canAct = false;
 
     protected int strength;
     protected int speed;
@@ -110,7 +113,13 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
 
     protected override void Awake() {
         base.Awake();
-        
+
+        ActionStep = Action_Step;
+        ActionComplete = Action_Complete;
+
+        activeSkill = Consts.Skills.None;
+        actObjQueue = new List<SpriteBase>();
+
         levelItems = Resources.Load<ItemBaseSet>("ScriptableObjects/SpriteSets/ItemBaseSet");
         actBtnSR = actionBtnObj.GetComponent<SpriteRenderer>();
 
@@ -157,10 +166,10 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
                 activityCounter -= Time.deltaTime * speed;
                 float counterPct = 1.0f - (activityCounter / activityInterval);
                 timerBar.Fill = counterPct;
-                Action_Step();
+                //ActionStep(); <-- Simply nothing using it yet
                 if (activityCounter <= 0) {
                     activityCounter = activityInterval;
-                    Action_CounterZero();
+                    ActionComplete();
                 }
             }
         }
@@ -173,13 +182,13 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
         if (charState == Consts.CharState.Default) {
             IsActionBtnActive = true;
             tossableState = Consts.SpriteTossableState.Held;
-            OnMouseDownCB(gameObject);
+            lvlMngr.OnSpriteMouseDown(gameObject);
         }
         else if (charState == Consts.CharState.InAction) {
             IsCancelBtnActive = true;
             timerBar.IsActive = false;
             tossableState = Consts.SpriteTossableState.Held;
-            OnMouseDownCB(gameObject);
+            lvlMngr.OnSpriteMouseDown(gameObject);
         }
         // If in menu
         // If paused
@@ -193,13 +202,13 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
             if (charState == Consts.CharState.Default) {
                 IsActionBtnActive = false;
                 tossableState = Consts.SpriteTossableState.Default;
-                OnMouseUpCB();
+                lvlMngr.OnSpriteMouseUp();
             }
             else if (charState == Consts.CharState.InAction) {
                 IsCancelBtnActive = false;
                 timerBar.IsActive = true;
                 tossableState = Consts.SpriteTossableState.Default;
-                OnMouseUpCB();
+                lvlMngr.OnSpriteMouseUp();
             }
         }
         // If in menu
@@ -254,7 +263,7 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
         contAreaObj.transform.localScale = new Vector3(Utility.GreaterOf(srRef.comp.sprite.bounds.size.x, actBtnRect.width) + Consts.CONT_AREA_BUFFER, srRef.comp.sprite.bounds.size.y + btnTopToCharTop + Consts.CONT_AREA_BUFFER, 1);
     }
 
-    public virtual void UseItem(ItemBase item) { }
+    public virtual void GetSelection(SpriteBase sprite) { }
 
     public override void OverheadButtonActive(bool isActive) {
         if (charState == Consts.CharState.Default)
@@ -266,19 +275,37 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
     // TODO: Check if given commands are available, and disable buttons if not.
     // In the case of crewman, the button for scooping water should be disabled if no scooping items are available.
 
-    public virtual void SetActionBtns() { commandPanel.InactiveAwake(); }
-    public virtual void CheckCanAct() { }
-    protected virtual void Action_Step() { }
-    protected virtual void Action_CounterZero() { }
+    public virtual void SetActionBtns() { }
+    public virtual void CheckActions() { }
+
+    // Essentially just placeholders to never have to check for null
+    private void Action_Step() { }
+    private void Action_Complete() { }
 
     public void OpenCommandPanel() {
-        CheckCanAct();
+        if (!canAct)
+            return;
+
+        CheckActions();
 
         tossableState = Consts.SpriteTossableState.Default;
         IsCommandPanelOpen = true;
         IsActionBtnActive = false;
 
         lvlMngr.FadeLevel();
+    }
+    protected void PrepAction(Consts.Skills activeSkill) {
+        IsCommandPanelOpen = false;
+        ReturnToBoat();
+        this.activeSkill = activeSkill;
+    }
+
+    public void ReturnToNeutral() {
+        IsActionBtnActive = false;
+        IsCancelBtnActive = false;
+        IsCommandPanelOpen = false;
+        CancelAction();
+        ChangeMouseUpToDownLinks(true);
     }
 
     public virtual void CancelAction() {
@@ -309,6 +336,8 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
         activityCounter = activityInterval = 0;
         timerBar.IsActive = false;
         IsCancelBtnActive = false;
+        actObjQueue.Clear();
         charState = Consts.CharState.Default;
+        activeSkill = Consts.Skills.None;
     }
 }

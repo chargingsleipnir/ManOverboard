@@ -4,11 +4,8 @@ using ZeroProgress.Common;
 
 public class SpriteTossable : SpriteBase, IMouseDownDetector, IMouseUpDetector {
 
-    public delegate void DelPassGO(GameObject obj);
-    protected DelPassGO OnMouseDownCB;
-
-    public delegate void DelVoid();
-    protected DelVoid OnMouseUpCB;
+    protected LevelManager lvlMngr;
+    public LevelManager LvlMngr { set { lvlMngr = value; } }
 
     private SpriteTossableSet set;
     protected ScriptableVector2 mousePos;
@@ -54,7 +51,7 @@ public class SpriteTossable : SpriteBase, IMouseDownDetector, IMouseUpDetector {
             return;
 
         tossableState = Consts.SpriteTossableState.Held;
-        OnMouseDownCB(gameObject);
+        lvlMngr.OnSpriteMouseDown(gameObject);
     }
     
     public virtual void MouseUpCB() {
@@ -62,15 +59,10 @@ public class SpriteTossable : SpriteBase, IMouseDownDetector, IMouseUpDetector {
             return;
 
         tossableState = Consts.SpriteTossableState.Default;
-        OnMouseUpCB();
+        lvlMngr.OnSpriteMouseUp();
     }
     protected virtual bool CheckImmClickExit() {
         return tossableState == Consts.SpriteTossableState.Tossed;
-    }
-
-    public void SetMouseRespCallbacks(DelPassGO OnMouseDownCB, DelVoid OnMouseUpCB) {
-        this.OnMouseDownCB = OnMouseDownCB;
-        this.OnMouseUpCB = OnMouseUpCB;
     }
 
     public virtual void ApplyTransformToContArea(GameObject contAreaObj, bool prioritizeRefShape) {

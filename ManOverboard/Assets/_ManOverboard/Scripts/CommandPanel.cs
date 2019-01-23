@@ -31,10 +31,7 @@ public class CommandPanel : SpriteBase {
 
     public void PrepBtn(Consts.Skills skill, UnityAction mouseUpCB) {
         // Set appropriate button
-        if(skill == Consts.Skills.DonLifeJacketSelf) {
-            InstantiateBtnCommon(donJacketBtnPrefab, skill, mouseUpCB);
-        }
-        else if (skill == Consts.Skills.DonLifeJacketOther) {
+        if(skill == Consts.Skills.DonLifeJacket) {
             InstantiateBtnCommon(donJacketBtnPrefab, skill, mouseUpCB);
         }
         else if (skill == Consts.Skills.ScoopWater) {
@@ -63,16 +60,10 @@ public class CommandPanel : SpriteBase {
     }
 
     // Temporary "disabling". Make it non-responsive as well.
-    public void EnableBtn(Consts.Skills skill) {
+    public void EnableBtn(Consts.Skills skill, bool enable) {
         SpriteBase btnSprite = skillToBtnDict[skill].GetComponent<SpriteBase>();
-        btnSprite.ChangeColour(null, null, null, 1.0f);
+        btnSprite.ChangeColour(null, null, null, enable ? 1.0f : Consts.BTN_DISABLE_FADE);
 
-        skillToBtnDict[skill].GetComponent<RefShape2DMouseTracker>().enabled = true;
-    }
-    public void DisableBtn(Consts.Skills skill) {
-        SpriteBase btnSprite = skillToBtnDict[skill].GetComponent<SpriteBase>();
-        btnSprite.ChangeColour(null, null, null, Consts.BTN_DISABLE_FADE);
-
-        skillToBtnDict[skill].GetComponent<RefShape2DMouseTracker>().enabled = false;
+        skillToBtnDict[skill].GetComponent<RefShape2DMouseTracker>().enabled = enable;
     }
 }
