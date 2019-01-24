@@ -30,9 +30,6 @@ public class CharChild : CharBase {
     }
 
     public override void GetSelection(SpriteBase sprite) {
-        lvlMngr.ReturnToNeutral();
-        this.activeSkill = Consts.Skills.DonLifeJacket; // ** TODO: Should not have this here - hacky workaround
-
         activeItem = sprite as ItemBase;
         activeItem.EnableMouseTracking(false);
 
@@ -42,6 +39,8 @@ public class CharChild : CharBase {
             heldItems.Add(activeItem);
             heldItemWeight += activeItem.Weight;
         }
+
+        lvlMngr.ResetEnvir();
 
         // Presuming item is life jacket, as that's all the child can use right now.
 

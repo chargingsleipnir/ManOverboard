@@ -17,6 +17,8 @@ public class LevelManager : MonoBehaviour {
     private GameObject rearMenuFieldPrefab;
     private GameObject rearMenuFieldObj;
 
+    private Consts.HighlightGroupType currGroupLit = Consts.HighlightGroupType.None;
+
     private bool levelActive;
     private bool levelPaused;
     private Coroutine shipSinkCoroutine;
@@ -183,33 +185,9 @@ public class LevelManager : MonoBehaviour {
         gameCtrl.GetCurrLevel();
     }
 
-    private void PauseLevel() {
-        levelPaused = true;
-
-        foreach (CharBase character in characterSet) {
-            if (character != heldChar)
-                character.Paused = true;
-        }
-    }
-    private void UnPauseLevel() {
-        if (!levelActive)
-            return;
-
-        levelPaused = false;
-
-        foreach (CharBase character in characterSet) {
-            if (character != heldChar)
-                character.Paused = false;
-        }
-    }
-
     public void OnSpriteMouseDown(GameObject spriteObj) {
         if (!levelActive)
             return;
-
-        // If a different character's menu is currently open, close it.
-        if (spriteObj != heldObj)
-            ReturnToNeutral();
 
         heldObj = spriteObj;
         heldSpriteTossable = spriteObj.GetComponent<SpriteTossable>();
@@ -308,20 +286,9 @@ public class LevelManager : MonoBehaviour {
         }
     }
 
-    public void FadeLevel() {
-        charContAreaScpt.gameObject.SetActive(false);
-        rearMenuFieldObj.SetActive(true);
-        PauseLevel();        
-    }
-    public void UnfadeLevel() {
-        charContAreaScpt.gameObject.SetActive(false);
-        rearMenuFieldObj.SetActive(false);
-        UnPauseLevel();
-    }
-
-    // TODO: Once I get character highlighting figured out, perhaps this needs to be made more generic to encompass anything that's highlighted?
     public void HighlightToSelect(Consts.HighlightGroupType groupType) {
         levelState = Consts.LevelState.ObjectSelection;
+        currGroupLit = groupType;
 
         if (groupType == Consts.HighlightGroupType.Scooping) {
             foreach (ItemCanScoop itemCS in itemsCanScoop)
@@ -340,6 +307,7 @@ public class LevelManager : MonoBehaviour {
                 child.HighlightToSelect();
         }
     }
+    // BOOKMARK
     public void UnHighlight() {
         levelState = Consts.LevelState.Default;
 
@@ -371,10 +339,17 @@ public class LevelManager : MonoBehaviour {
             foreach (CharChild child in children)
                 child.UnHighlight();
         }
+
+        currGroupLit = Consts.HighlightGroupType.None;
     }
+
+    // BOOKMARK
     public void OnSelection(SpriteBase sprite) {
+        UnHighlight(currGroupLit);
         heldChar.GetSelection(sprite);
 
+        // Remove item from general level listing, as it is now "occupied", or in the "possession" of the character.
+        // This will have to be modified if it becomes that 2 or more characters can act on one item at a time.
         if (sprite is ItemBase)
             RemoveItem(sprite as ItemBase);           
     }
@@ -423,20 +398,53 @@ public class LevelManager : MonoBehaviour {
         }
     }
 
-    public void ReturnToNeutral() {
+    // BOOKMARK
+    private void PauseLevel() {
+        levelPaused = true;
+
+        foreach (CharBase character in characterSet) {
+            if (character != heldChar)
+                character.Paused = true;
+        }
+    }
+    private void UnPauseLevel() {
+        if (!levelActive)
+            return;
+
+        levelPaused = false;
+
+        foreach (CharBase character in characterSet) {
+            if (character != heldChar)
+                character.Paused = false;
+        }
+    }
+    public void FadeLevel() {
+        charContAreaScpt.gameObject.SetActive(false);
+        rearMenuFieldObj.SetActive(true);
+        PauseLevel();
+    }
+    public void UnfadeLevel() {
+        charContAreaScpt.gameObject.SetActive(false);
+        rearMenuFieldObj.SetActive(false);
+        UnPauseLevel();
+        holdWeight.CurrentValue = 0;
+        uiUpdate.RaiseEvent();
+        heldObj = null;
+    }
+    public void ResetEnvir() {
+        UnfadeLevel();
+
+        UnHighlight(currGroupLit);
+
+        levelState = Consts.LevelState.Default;
+    }
+    public void ResetAll() {
         if (heldChar != null)
             heldChar.ReturnToNeutral();
 
         if(heldSpriteTossable != null)
             heldSpriteTossable.ReturnToBoat();
 
-        rearMenuFieldObj.SetActive(false);
-        holdWeight.CurrentValue = 0;
-        uiUpdate.RaiseEvent();
-
-        UnHighlight();
-
-        levelState = Consts.LevelState.Default;
-        UnPauseLevel();
+        ResetEnvir();
     }
 }

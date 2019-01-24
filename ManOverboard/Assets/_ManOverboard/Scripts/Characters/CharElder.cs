@@ -55,9 +55,6 @@ public class CharElder : CharChild {
     // TODO: This whole function needs to be split up, separating the objects being prepared, from the actions to be taken with them.
     public override void GetSelection(SpriteBase sprite) {
         if (activeSkill == Consts.Skills.ScoopWater) {
-            lvlMngr.ReturnToNeutral();
-            this.activeSkill = Consts.Skills.ScoopWater; // ** TODO: Should not have this here - hacky workaround
-
             ItemCanScoop scoop = sprite as ItemCanScoop;
             activeItem = scoop;
             activeItem.EnableMouseTracking(false);
@@ -67,6 +64,8 @@ public class CharElder : CharChild {
                 heldItems.Add(item);
                 heldItemWeight += item.Weight;
             }
+
+            lvlMngr.ResetEnvir();
 
             // Logic for scooping wth item
             scoop.transform.position = trans_ItemUseHand.position;
@@ -90,9 +89,6 @@ public class CharElder : CharChild {
 
                 // Adult jacket, can don self immediately
                 if (jacket.size == Consts.FitSizes.adult) {
-                    lvlMngr.ReturnToNeutral();
-                    this.activeSkill = Consts.Skills.DonLifeJacket; // ** TODO: Should not have this here - hacky workaround
-
                     activeItem = jacket;
                     activeItem.EnableMouseTracking(false);
 
@@ -101,6 +97,8 @@ public class CharElder : CharChild {
                         heldItems.Add(item);
                         heldItemWeight += item.Weight;
                     }
+
+                    lvlMngr.ResetEnvir();
 
                     // Place life jacket in hand and start donning timer
                     jacket.transform.position = trans_ItemUseHand.position;
@@ -115,24 +113,17 @@ public class CharElder : CharChild {
                 // Child jacket, need to wait for child to be selected
                 else {
                     actObjQueue.Add(sprite);
-                    lvlMngr.UnHighlight(Consts.HighlightGroupType.LifeJacket);
                     lvlMngr.HighlightToSelect(Consts.HighlightGroupType.Children);
                 }
             }
             if(sprite is CharChild) {
-                lvlMngr.ReturnToNeutral();
-                this.activeSkill = Consts.Skills.DonLifeJacket; // ** TODO: Should not have this here - hacky workaround
-
                 // TODO: These lines are delayed so that the "activeItem" isn't set before potential action is fully underway. Is this really a necessary precaution?
                 // Just make sure it can be unset if the action is not fully set into motion, without any hiccups.
+                // !! Queue being cleared in Charbase EndAction()
                 activeItem = actObjQueue[0] as ItemBase;
                 activeItem.EnableMouseTracking(false);
 
-                ItemBase item = sprite as ItemBase;
-                if (!heldItems.Contains(item)) {
-                    heldItems.Add(item);
-                    heldItemWeight += item.Weight;
-                }
+                lvlMngr.ResetEnvir();
 
                 activeItem.transform.position = trans_ItemUseHand.position;
                 activeItem.transform.parent = trans_ItemUseHand.parent;

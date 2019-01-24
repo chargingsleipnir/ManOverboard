@@ -179,6 +179,9 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
         if (CheckImmClickExit())
             return;
 
+        if (selectable)
+            return;
+
         if (charState == Consts.CharState.Default) {
             IsActionBtnActive = true;
             tossableState = Consts.SpriteTossableState.Held;
@@ -197,6 +200,11 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
     public override void MouseUpCB() {
         if (CheckImmClickExit())
             return;
+
+        if (selectable) {
+            lvlMngr.OnSelection(this);
+            return;
+        }
 
         if (tossableState == Consts.SpriteTossableState.Held) {
             if (charState == Consts.CharState.Default) {
@@ -328,6 +336,7 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
             }
         }
 
+        ReturnToBoat();
         EndAction();
         lvlMngr.UnfadeLevel();
     }
@@ -337,6 +346,7 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
         timerBar.IsActive = false;
         IsCancelBtnActive = false;
         actObjQueue.Clear();
+        activeItem = null; // The "active" item is only that which is used during an action which is still cancellable
         charState = Consts.CharState.Default;
         activeSkill = Consts.Skills.None;
     }

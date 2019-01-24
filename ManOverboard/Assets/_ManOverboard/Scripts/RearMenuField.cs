@@ -8,6 +8,6 @@ public class RearMenuField : SpriteBase, IMouseUpDetector {
     public LevelManager Mngr { get; set; }
 
     public void MouseUpCB() {
-        Mngr.ReturnToNeutral(); 
+        Mngr.ResetAll(); 
     }
 }
