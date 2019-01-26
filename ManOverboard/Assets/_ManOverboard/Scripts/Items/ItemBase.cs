@@ -8,8 +8,8 @@ public class ItemBase : SpriteTossable {
 
     public CharBase CharHeldBy { get; set; }
 
-    public bool InUse { get; private set; }
-
+    public bool InUse { get; set; }
+    
     private ItemBaseSet items;
 
     public Vector3? RetPosLocal { get; set; }
@@ -46,13 +46,10 @@ public class ItemBase : SpriteTossable {
         if (InUse)
             return;
 
-        if (selectable) {
-            InUse = true;
+        if (selectable)
             lvlMngr.OnSelection(this);
-        }
-        else {
+        else
             base.MouseUpCB();
-        }
     }
 
     public override void HighlightToSelect() {

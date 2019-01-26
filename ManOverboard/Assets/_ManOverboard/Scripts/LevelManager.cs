@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using ZeroProgress.Common;
 using ZeroProgress.Common.Collections;
 
@@ -37,6 +38,11 @@ public class LevelManager : MonoBehaviour {
     private List<ItemCanScoop> itemsCanScoop;
     private List<LifeJacket> lifeJacketsAdult;
     private List<LifeJacket> lifeJacketsChild;
+
+    public delegate void SelectionCallback(SpriteBase spriteSelected);
+    SelectionCallback SelectionCB;
+
+    private List<ItemBase> itemsToRemove;
 
     private GameObject heldObj;
     private SpriteTossable heldSpriteTossable;
@@ -113,13 +119,14 @@ public class LevelManager : MonoBehaviour {
 
         rearMenuFieldObj.SetActive(false);
 
+        itemsToRemove = new List<ItemBase>();
         // Establish every possible action in the level, and do any appropriate setup for it (like adding highlight components to selectable objects).
         itemsCanScoop = new List<ItemCanScoop>();
         lifeJacketsAdult = new List<LifeJacket>();
         lifeJacketsChild = new List<LifeJacket>();
         foreach (ItemBase item in items) {
             item.AddHighlightComponent();
-            OnDeselection(item);
+            ReturnItem(item);
         }
 
         foreach (CharBase character in characterSet)
@@ -286,9 +293,11 @@ public class LevelManager : MonoBehaviour {
         }
     }
 
-    public void HighlightToSelect(Consts.HighlightGroupType groupType) {
+    public void HighlightToSelect(Consts.HighlightGroupType groupType, SelectionCallback CB) {
         levelState = Consts.LevelState.ObjectSelection;
         currGroupLit = groupType;
+
+        SelectionCB = CB;
 
         if (groupType == Consts.HighlightGroupType.Scooping) {
             foreach (ItemCanScoop itemCS in itemsCanScoop)
@@ -344,27 +353,26 @@ public class LevelManager : MonoBehaviour {
     }
 
     // BOOKMARK
+    public void ConfirmSelections() {
+        // Remove items from lists
+        foreach (ItemBase item in itemsToRemove)
+            RemoveItem(item);
+
+        ResetEnvir();
+    }
     public void OnSelection(SpriteBase sprite) {
-        UnHighlight(currGroupLit);
-        heldChar.GetSelection(sprite);
+        UnHighlight(currGroupLit);        
 
         // Remove item from general level listing, as it is now "occupied", or in the "possession" of the character.
         // This will have to be modified if it becomes that 2 or more characters can act on one item at a time.
         if (sprite is ItemBase)
-            RemoveItem(sprite as ItemBase);           
+            itemsToRemove.Add(sprite as ItemBase);
+
+        SelectionCB(sprite);
     }
     public void OnDeselection(SpriteBase sprite) {
-        if (sprite is ItemBase) {
-            if (sprite is LifeJacket) {
-                LifeJacket jacket = sprite as LifeJacket;
-                if (jacket.size == Consts.FitSizes.child)
-                    lifeJacketsChild.Add(jacket);
-                else
-                    lifeJacketsAdult.Add(jacket);
-            }
-            if (sprite is ItemCanScoop)
-                itemsCanScoop.Add(sprite as ItemCanScoop);
-        }
+        if (sprite is ItemBase)
+            ReturnItem(sprite as ItemBase);
     }
     private void RemoveCharacter(CharBase character) {
         characterSet.Remove(character);
@@ -381,6 +389,17 @@ public class LevelManager : MonoBehaviour {
             lifeJacketsChild.Remove(item as LifeJacket);
             lifeJacketsAdult.Remove(item as LifeJacket);
         }
+    }
+    private void ReturnItem(ItemBase item) {
+        if (item is LifeJacket) {
+            LifeJacket jacket = item as LifeJacket;
+            if (jacket.size == Consts.FitSizes.child)
+                lifeJacketsChild.Add(jacket);
+            else
+                lifeJacketsAdult.Add(jacket);
+        }
+        if (item is ItemCanScoop)
+            itemsCanScoop.Add(item as ItemCanScoop);
     }
     
     public void RemoveWater(int waterWeight) {
@@ -433,11 +452,11 @@ public class LevelManager : MonoBehaviour {
     }
     public void ResetEnvir() {
         UnfadeLevel();
-
         UnHighlight(currGroupLit);
-
+        itemsToRemove.Clear();
         levelState = Consts.LevelState.Default;
     }
+    // Called by RearMenuField when field is clicked, so as to cancel current selection process.
     public void ResetAll() {
         if (heldChar != null)
             heldChar.ReturnToNeutral();
