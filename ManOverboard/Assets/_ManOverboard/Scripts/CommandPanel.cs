@@ -30,6 +30,9 @@ public class CommandPanel : SpriteBase {
     }
 
     public void PrepBtn(Consts.Skills skill, UnityAction mouseUpCB) {
+        if (skillToBtnDict.ContainsKey(skill))
+            return;
+
         // Set appropriate button
         if(skill == Consts.Skills.DonLifeJacket) {
             InstantiateBtnCommon(donJacketBtnPrefab, skill, mouseUpCB);
@@ -59,11 +62,13 @@ public class CommandPanel : SpriteBase {
         }
     }
 
-    // Temporary "disabling". Make it non-responsive as well.
     public void EnableBtn(Consts.Skills skill, bool enable) {
-        SpriteBase btnSprite = skillToBtnDict[skill].GetComponent<SpriteBase>();
-        btnSprite.ChangeColour(null, null, null, enable ? 1.0f : Consts.BTN_DISABLE_FADE);
-
-        skillToBtnDict[skill].GetComponent<RefShape2DMouseTracker>().enabled = enable;
+        GameObject btnObj;
+        if (!skillToBtnDict.TryGetValue(skill, out btnObj))
+            return;
+        else {
+            btnObj.GetComponent<SpriteBase>().ChangeColour(null, null, null, enable ? 1.0f : Consts.BTN_DISABLE_FADE);
+            btnObj.GetComponent<RefShape2DMouseTracker>().enabled = enable;
+        }
     }
 }

@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class CharElder : CharChild {
 
+    protected bool canDonLifeJacketChild = false;
     protected bool canScoop = false;
     int waterWeight = 0;
 
@@ -25,16 +26,16 @@ public class CharElder : CharChild {
     public override void SetActionBtns() {
         commandPanel.InactiveAwake();
 
-        // TODO: Need to consider that a single button should apply to both, jacketting a child or self
-        if (lvlMngr.CheckCanDonLifeJacketChildren(true) || lvlMngr.CheckCanDonLifeJacketAdults(false)) {
+        if (canDonLifeJacketSelf = lvlMngr.CheckCanDonLifeJacketAdults(false)) {
             canAct = true;
-            canDonLifeJacket = true;
             commandPanel.PrepBtn(Consts.Skills.DonLifeJacket, PrepDonLifeJacket);
         }
-        if(lvlMngr.CheckCanScoop()) {
+        if (canDonLifeJacketChild = lvlMngr.CheckCanDonLifeJacketChildren()) {
             canAct = true;
-            canScoop = true;
-
+            commandPanel.PrepBtn(Consts.Skills.DonLifeJacket, PrepDonLifeJacket);
+        }
+        if (canScoop = lvlMngr.CheckCanScoop()) {
+            canAct = true;
             commandPanel.PrepBtn(Consts.Skills.ScoopWater, PrepScoop);
         }
 
@@ -45,15 +46,70 @@ public class CharElder : CharChild {
         commandPanel.SetBtns();
     }
     public override void CheckActions() {
-        if (canDonLifeJacket)
-            commandPanel.EnableBtn(Consts.Skills.DonLifeJacket, lvlMngr.CheckCanDonLifeJacketChildren(true) || lvlMngr.CheckCanDonLifeJacketAdults(false));
-
-        if (canScoop)
-            commandPanel.EnableBtn(Consts.Skills.ScoopWater, lvlMngr.CheckCanScoop());
+        commandPanel.EnableBtn(Consts.Skills.DonLifeJacket, (canDonLifeJacketChild = lvlMngr.CheckCanDonLifeJacketChildren()) || (canDonLifeJacketSelf = lvlMngr.CheckCanDonLifeJacketAdults(false)));
+        commandPanel.EnableBtn(Consts.Skills.ScoopWater, canScoop = lvlMngr.CheckCanScoop());
     }
 
+    // Donning life jacket ===============================================================
+
+    protected override void PrepDonLifeJacket() {
+        PrepAction(Consts.Skills.DonLifeJacket);
+        if(canDonLifeJacketChild)
+            lvlMngr.HighlightToSelect(Consts.HighlightGroupType.LifeJacketChild, OnSelectionLifeJacket);
+        if (canDonLifeJacketSelf)
+            lvlMngr.HighlightToSelect(Consts.HighlightGroupType.LifeJacketAdult, OnSelectionLifeJacket);
+    }
+    protected override void OnSelectionLifeJacket(SpriteBase sprite) {
+        LifeJacket jacket = sprite as LifeJacket;
+
+        // Adult jacket, can don self immediately
+        if (jacket.size == Consts.FitSizes.adult) {
+            base.OnSelectionLifeJacket(sprite);
+        }
+        // Child jacket, need to wait for child to be selected
+        else {
+            itemHeld = sprite as LifeJacket;
+            lvlMngr.HighlightToSelect(Consts.HighlightGroupType.Children, OnSelectionChild);
+        }
+    }
+    private void OnSelectionChild(SpriteBase sprite) {
+        // Add child for completion Callback
+        activeChar = sprite as CharChild;
+
+        itemHeld.EnableMouseTracking(false);
+        itemHeld.transform.position = trans_ItemUseHand.position;
+        itemHeld.transform.parent = trans_ItemUseHand.parent;
+
+        activityCounter = activityInterval = Consts.DON_RATE;
+        ActionComplete = CompleteDonLifeJacketChild;
+        TakeAction();
+    }
+    private void CompleteDonLifeJacketChild() {
+        // TODO: Just set in center of self for now, will need proper location around center of torso later
+        itemHeld.transform.position = activeChar.transform.position;
+        itemHeld.transform.parent = activeChar.transform;
+
+        // Remove item so it can no longer be acted upon, and transfer weight to child
+        itemsWorn.Remove(itemHeld);
+        itemWeight -= itemHeld.Weight;
+
+        // TODO: Fix this garbage
+        activeChar.itemWeight += itemHeld.Weight;
+        activeChar.IsWearingLifeJacket = true;
+
+        //(selectObjQueue[0] as ItemBase).RetPosLocal = (selectObjQueue[0] as ItemBase).transform.localPosition;
+
+        EndAction();
+    }
+
+    // Scooping Water ===============================================================
+
+    public virtual void PrepScoop() {
+        PrepAction(Consts.Skills.ScoopWater);
+        lvlMngr.HighlightToSelect(Consts.HighlightGroupType.Scooping, OnSelectionScoop);
+    }
     private void OnSelectionScoop(SpriteBase sprite) {
-        selectObjQueue.Add(sprite);
+        itemHeld = sprite as ItemCanScoop;
         sprite.EnableMouseTracking(false);
 
         // Logic for scooping wth item
@@ -70,61 +126,6 @@ public class CharElder : CharChild {
         activityCounter = activityInterval = scoopRate;
         ActionComplete = CompleteSingleScoop;
         TakeAction();
-    }
-
-    protected override void OnSelectionLifeJacket(SpriteBase sprite) {
-        LifeJacket jacket = sprite as LifeJacket;
-
-        // Adult jacket, can don self immediately
-        if (jacket.size == Consts.FitSizes.adult) {
-            base.OnSelectionLifeJacket(sprite);
-        }
-        // Child jacket, need to wait for child to be selected
-        else {
-            selectObjQueue.Add(sprite);
-            lvlMngr.HighlightToSelect(Consts.HighlightGroupType.Children, OnSelectionChild);
-        }
-    }
-    private void OnSelectionChild(SpriteBase sprite) {
-        // Add child for completion Callback
-        selectObjQueue.Add(sprite);
-
-        // selectObjQueue[0] refers to child life jacket at this point
-        selectObjQueue[0].EnableMouseTracking(false);
-
-        selectObjQueue[0].transform.position = trans_ItemUseHand.position;
-        selectObjQueue[0].transform.parent = trans_ItemUseHand.parent;
-
-        activityCounter = activityInterval = Consts.DON_RATE;
-        ActionComplete = CompleteDonLifeJacketChild;
-        TakeAction();
-    }
-
-    protected override void PrepDonLifeJacket() {
-        PrepAction(Consts.Skills.DonLifeJacket);
-        lvlMngr.HighlightToSelect(Consts.HighlightGroupType.LifeJacket, OnSelectionLifeJacket);
-    }
-    private void CompleteDonLifeJacketChild() {
-        // TODO: Just set in center of self for now, will need proper location around center of torso later
-        selectObjQueue[0].transform.position = selectObjQueue[1].transform.position;
-        selectObjQueue[0].transform.parent = selectObjQueue[1].transform;
-
-        // Remove item so it can no longer be acted upon, and transfer weight to child
-        ItemBase jacket = selectObjQueue[0] as ItemBase;
-        itemsHeld.Remove(jacket);
-        heldItemWeight -= jacket.Weight;
-
-        // TODO: Fix this garbage
-        (selectObjQueue[1] as CharChild).heldItemWeight += jacket.Weight;
-        
-        //(selectObjQueue[0] as ItemBase).RetPosLocal = (selectObjQueue[0] as ItemBase).transform.localPosition;
-
-        EndAction();
-    }
-
-    public virtual void PrepScoop() {
-        PrepAction(Consts.Skills.ScoopWater);
-        lvlMngr.HighlightToSelect(Consts.HighlightGroupType.Scooping, OnSelectionScoop);
     }
     private void CompleteSingleScoop() {
         lvlMngr.RemoveWater(waterWeight);

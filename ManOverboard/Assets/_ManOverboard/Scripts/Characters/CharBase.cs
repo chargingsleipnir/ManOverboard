@@ -37,7 +37,15 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
     protected ActionCBs ActionStep;
     protected ActionCBs ActionComplete;
 
-    protected List<SpriteBase> selectObjQueue;
+    protected ItemBase itemHeld;
+    protected CharBase activeChar;
+    protected List<ItemBase> itemsWorn;
+    public bool IsWearingLifeJacket { get; set; }
+
+    public int itemWeight;
+    public override int Weight {
+        get { return weight + itemWeight; }
+    }
 
     protected Consts.CharState charState;
     protected Consts.Skills activeSkill;
@@ -48,13 +56,6 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
 
     public int Strength { get; set; }
     public int Speed { get; set; }
-
-    protected List<ItemBase> itemsHeld;
-
-    public int heldItemWeight;
-    public override int Weight {
-        get { return weight + heldItemWeight; }
-    }
 
     protected bool saved = false;
     public bool Saved {
@@ -116,7 +117,6 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
         ActionComplete = Action_Complete;
 
         activeSkill = Consts.Skills.None;
-        selectObjQueue = new List<SpriteBase>();
 
         actBtnSR = actionBtnObj.GetComponent<SpriteRenderer>();
 
@@ -144,9 +144,9 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
         base.Reset();
 
         charState = Consts.CharState.Default;
-        itemsHeld = new List<ItemBase>();
+        itemsWorn = new List<ItemBase>();
 
-        heldItemWeight = 0;
+        itemWeight = 0;
         timerBar.Fill = 0;
         activityCounter = 0.0f;
         activityInterval = 0.0f;
@@ -192,7 +192,6 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
         }
         // If in menu
         // If paused
-        // If selectable?
     }
     public override void MouseUpCB() {
         if (CheckImmClickExit())
@@ -218,23 +217,29 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
         }
         // If in menu
         // If paused
-        // If selectable?
     }
     protected override bool CheckImmClickExit() {
         return base.CheckImmClickExit() || charState == Consts.CharState.Saved;
     }
 
-    public void HoldItem(ItemBase item, bool inHand) {
-        itemsHeld.Add(item);
-        heldItemWeight += item.Weight;
+    public void WearItem(ItemBase item) {
+        itemsWorn.Add(item);
+        itemWeight += item.Weight;
+    }
+    public void HoldItem(ItemBase item) {
+        itemHeld = item;
+        itemWeight += item.Weight;
 
-        if(inHand) {
-            // TODO: Place item location in character's hand, in front of character
-        }
+        item.transform.position = trans_ItemUseHand.position;
+        item.transform.parent = transform;
     }
     public void LoseItem(ItemBase item) {
-        if (itemsHeld.Remove(item))
-            heldItemWeight -= item.Weight;
+        if(item == itemHeld) {
+            itemWeight -= item.Weight;
+            itemHeld = null;
+        }
+        else if (itemsWorn.Remove(item))
+            itemWeight -= item.Weight;
     }
 
     public override void Toss(Vector2 vel) {
@@ -315,37 +320,29 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
     protected void TakeAction() {
         // Remove removable items (tools, small objects) from scene lists
         lvlMngr.ConfirmSelections();
+
         // Add them to what the character is holding
-        foreach(SpriteBase sprite in selectObjQueue) {
-            if(sprite is ItemBase) {
-                ItemBase item = sprite as ItemBase;
-                if (!itemsHeld.Contains(item)) {
-                    itemsHeld.Add(item);
-                    heldItemWeight += item.Weight;
-                    item.InUse = true;
-                }
-            }
+        if(itemHeld != null) {
+            itemWeight += itemHeld.Weight;
+            itemHeld.InUse = true;
         }
 
         timerBar.IsActive = true;
         charState = Consts.CharState.InAction;
     }
     public virtual void CancelAction() {
-        for(int i = itemsHeld.Count - 1; i > -1; i--) {
-            // Runs callback in level manager to put item back into list
-            itemsHeld[i].Deselect();
 
-            if (itemsHeld[i].RetPosLocal == null) {
+        if (itemHeld != null) {
+            itemWeight -= itemHeld.Weight;
+            itemHeld.Deselect();
+
+            if (itemHeld.RetPosLocal == null) {
                 // Place item at feet of character just to their left.
                 // TODO: Alter this to account for not every item having a refShape component? Shouldn't really come up though.
-                float posX = RefShape.XMin - (itemsHeld[i].RefShape.Width * 0.5f) - Consts.ITEM_DROP_X_BUFF;
-                float posY = RefShape.YMin + (itemsHeld[i].RefShape.Height * 0.5f);
-                itemsHeld[i].transform.position = new Vector3(posX, posY, itemsHeld[i].transform.position.z);
-
-                // Would only apply to those items that are set down (meaning not the sailor's cap)
-                heldItemWeight -= itemsHeld[i].Weight;
-                itemsHeld.Remove(itemsHeld[i]);
-            }            
+                float posX = RefShape.XMin - (itemHeld.RefShape.Width * 0.5f) - Consts.ITEM_DROP_X_BUFF;
+                float posY = RefShape.YMin + (itemHeld.RefShape.Height * 0.5f);
+                itemHeld.transform.position = new Vector3(posX, posY, itemHeld.transform.position.z);
+            }
         }
 
         ReturnToBoat();
@@ -357,7 +354,8 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
         activityCounter = activityInterval = 0;
         timerBar.IsActive = false;
         IsCancelBtnActive = false;
-        selectObjQueue.Clear();
+        itemHeld = null;
+        activeChar = null;
         charState = Consts.CharState.Default;
         activeSkill = Consts.Skills.None;
     }

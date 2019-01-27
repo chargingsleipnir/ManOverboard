@@ -17,7 +17,7 @@ public class Crewman : JobBase {
         character.Speed += 25;
 
         sailorCap.CharHeldBy = character;
-        character.HoldItem(sailorCap, false);
+        character.WearItem(sailorCap);
         // Set cap position relative to character's head here?
     }
 

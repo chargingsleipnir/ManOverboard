@@ -18,7 +18,7 @@ public class LevelManager : MonoBehaviour {
     private GameObject rearMenuFieldPrefab;
     private GameObject rearMenuFieldObj;
 
-    private Consts.HighlightGroupType currGroupLit = Consts.HighlightGroupType.None;
+    private List<Consts.HighlightGroupType> currGroupsLit;
 
     private bool levelActive;
     private bool levelPaused;
@@ -119,6 +119,7 @@ public class LevelManager : MonoBehaviour {
 
         rearMenuFieldObj.SetActive(false);
 
+        currGroupsLit = new List<Consts.HighlightGroupType>();
         itemsToRemove = new List<ItemBase>();
         // Establish every possible action in the level, and do any appropriate setup for it (like adding highlight components to selectable objects).
         itemsCanScoop = new List<ItemCanScoop>();
@@ -147,11 +148,16 @@ public class LevelManager : MonoBehaviour {
         shipSinkCoroutine = StartCoroutine(SinkShipInterval());
     }
 
-    public bool CheckCanDonLifeJacketChildren(bool checkNumChildren) {
-        if(checkNumChildren)
-            return lifeJacketsChild.Count > 0 && numChildren > 0;
+    public bool CheckCanDonLifeJacketChildren() {
+        int numChildrenNoJacket = 0;
+        foreach (CharChild child in children)
+            if (!child.IsWearingLifeJacket)
+                numChildrenNoJacket++;
 
-        return lifeJacketsChild.Count > 0;
+        if (numChildrenNoJacket == 0)
+            return false;
+
+        return lifeJacketsChild.Count > 0 && numChildrenNoJacket > 0;
     }
     public bool CheckCanDonLifeJacketAdults(bool checkNumAdults) {
         if (checkNumAdults)
@@ -295,7 +301,7 @@ public class LevelManager : MonoBehaviour {
 
     public void HighlightToSelect(Consts.HighlightGroupType groupType, SelectionCallback CB) {
         levelState = Consts.LevelState.ObjectSelection;
-        currGroupLit = groupType;
+        currGroupsLit.Add(groupType);
 
         SelectionCB = CB;
 
@@ -303,13 +309,13 @@ public class LevelManager : MonoBehaviour {
             foreach (ItemCanScoop itemCS in itemsCanScoop)
                 itemCS.HighlightToSelect();
         }
-        else if (groupType == Consts.HighlightGroupType.LifeJacket) {
+        else if (groupType == Consts.HighlightGroupType.LifeJacketChild) {
             foreach (LifeJacket itemLJ in lifeJacketsChild)
                 itemLJ.HighlightToSelect();
-            if (!(heldChar is CharChild)) {
-                foreach (LifeJacket itemLJ in lifeJacketsAdult)
-                    itemLJ.HighlightToSelect();
-            }
+        }
+        if (groupType == Consts.HighlightGroupType.LifeJacketAdult) {
+            foreach (LifeJacket itemLJ in lifeJacketsAdult)
+                itemLJ.HighlightToSelect();
         }
         else if (groupType == Consts.HighlightGroupType.Children) {
             foreach (CharChild child in children)
@@ -327,7 +333,9 @@ public class LevelManager : MonoBehaviour {
         foreach (LifeJacket itemLJ in lifeJacketsAdult)
             itemLJ.UnHighlight();
         foreach (CharChild child in children)
-            child.UnHighlight();        
+            child.UnHighlight();
+
+        currGroupsLit.Clear();
     }
     public void UnHighlight(Consts.HighlightGroupType groupType) {
         levelState = Consts.LevelState.Default;
@@ -336,20 +344,20 @@ public class LevelManager : MonoBehaviour {
             foreach (ItemCanScoop itemCS in itemsCanScoop)
                 itemCS.UnHighlight();
         }
-        else if (groupType == Consts.HighlightGroupType.LifeJacket) {
+        else if (groupType == Consts.HighlightGroupType.LifeJacketChild) {
             foreach (LifeJacket itemLJ in lifeJacketsChild)
                 itemLJ.UnHighlight();
-            if (!(heldChar is CharChild)) {
-                foreach (LifeJacket itemLJ in lifeJacketsAdult)
-                    itemLJ.UnHighlight();
-            }
+        }
+        if (groupType == Consts.HighlightGroupType.LifeJacketAdult) {
+            foreach (LifeJacket itemLJ in lifeJacketsAdult)
+                itemLJ.UnHighlight();
         }
         else if (groupType == Consts.HighlightGroupType.Children) {
             foreach (CharChild child in children)
                 child.UnHighlight();
         }
 
-        currGroupLit = Consts.HighlightGroupType.None;
+        currGroupsLit.Remove(groupType);
     }
 
     // BOOKMARK
@@ -361,7 +369,8 @@ public class LevelManager : MonoBehaviour {
         ResetEnvir();
     }
     public void OnSelection(SpriteBase sprite) {
-        UnHighlight(currGroupLit);        
+        for (int i = currGroupsLit.Count - 1; i >= 0; i--)
+            UnHighlight(currGroupsLit[i]);
 
         // Remove item from general level listing, as it is now "occupied", or in the "possession" of the character.
         // This will have to be modified if it becomes that 2 or more characters can act on one item at a time.
@@ -452,7 +461,8 @@ public class LevelManager : MonoBehaviour {
     }
     public void ResetEnvir() {
         UnfadeLevel();
-        UnHighlight(currGroupLit);
+        for(int i = currGroupsLit.Count - 1; i >= 0; i--)
+            UnHighlight(currGroupsLit[i]);
         itemsToRemove.Clear();
         levelState = Consts.LevelState.Default;
     }

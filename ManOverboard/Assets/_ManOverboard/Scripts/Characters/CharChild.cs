@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class CharChild : CharBase {
 
-    protected bool canDonLifeJacket = false;
+    protected bool canDonLifeJacketSelf = false;
 
     protected override void Start() {
         strength = 25;
@@ -15,23 +15,26 @@ public class CharChild : CharBase {
     public override void SetActionBtns() {
         commandPanel.InactiveAwake();
 
-        if (lvlMngr.CheckCanDonLifeJacketChildren(false)) {
+        if (canDonLifeJacketSelf = lvlMngr.CheckCanDonLifeJacketChildren()) {
             canAct = true;
-            canDonLifeJacket = true;
-
             commandPanel.PrepBtn(Consts.Skills.DonLifeJacket, PrepDonLifeJacket);
         }
 
         commandPanel.SetBtns();
     }
     public override void CheckActions() {
-        if (canDonLifeJacket)
-            commandPanel.EnableBtn(Consts.Skills.DonLifeJacket, lvlMngr.CheckCanDonLifeJacketChildren(false));
+        commandPanel.EnableBtn(Consts.Skills.DonLifeJacket, canDonLifeJacketSelf = lvlMngr.CheckCanDonLifeJacketChildren());
     }
 
+    // Donning life jacket ===============================================================
+
+    protected virtual void PrepDonLifeJacket() {
+        PrepAction(Consts.Skills.DonLifeJacket);
+        lvlMngr.HighlightToSelect(Consts.HighlightGroupType.LifeJacketChild, OnSelectionLifeJacket);
+    }
     protected virtual void OnSelectionLifeJacket(SpriteBase sprite) {
-        selectObjQueue.Add(sprite);
-        sprite.EnableMouseTracking(false);        
+        itemHeld = sprite as LifeJacket;
+        sprite.EnableMouseTracking(false);
 
         // Place life jacket in hand and start donning timer
         sprite.transform.position = trans_ItemUseHand.position;
@@ -41,18 +44,14 @@ public class CharChild : CharBase {
         ActionComplete = CompleteDonLifeJacket;
         TakeAction();
     }
-
-    protected virtual void PrepDonLifeJacket() {
-        PrepAction(Consts.Skills.DonLifeJacket);
-        lvlMngr.HighlightToSelect(Consts.HighlightGroupType.LifeJacket, OnSelectionLifeJacket);
-    }
     protected void CompleteDonLifeJacket() {
         // TODO: Just set in center of self for now, will need proper location around center of torso later
-        selectObjQueue[0].transform.position = transform.position;
-        selectObjQueue[0].transform.parent = transform;
+        itemHeld.transform.position = transform.position;
+        itemHeld.transform.parent = transform;
 
-        // Remove item so it can no longer be acted upon, but do not deduct weight, as it's now permanently afixxed to the character
-        itemsHeld.Remove(selectObjQueue[0] as ItemBase);
+        // Life jacket now permanently afixxed to the character
+        itemsWorn.Add(itemHeld);
+        IsWearingLifeJacket = true;
 
         //(selectObjQueue[0] as ItemBase).RetPosLocal = (selectObjQueue[0] as ItemBase).transform.localPosition;
         EndAction();

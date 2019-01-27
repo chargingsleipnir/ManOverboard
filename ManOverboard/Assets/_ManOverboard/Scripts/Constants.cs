@@ -52,9 +52,9 @@ public static class Consts {
     }
 
     public enum HighlightGroupType {
-        None,
         Scooping,
-        LifeJacket,
+        LifeJacketChild,
+        LifeJacketAdult,
         Children
     }
     public enum FitSizes { adult, child }
