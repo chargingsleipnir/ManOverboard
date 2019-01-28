@@ -15,7 +15,9 @@ public class CharChild : CharBase {
     public override void SetActionBtns() {
         commandPanel.InactiveAwake();
 
-        if (canDonLifeJacketSelf = lvlMngr.CheckCanDonLifeJacketChildren()) {
+        canDonLifeJacketSelf = lvlMngr.CheckCanDonLifeJacketChildren() && IsWearingLifeJacket == false;
+
+        if (canDonLifeJacketSelf) {
             canAct = true;
             commandPanel.PrepBtn(Consts.Skills.DonLifeJacket, PrepDonLifeJacket);
         }
@@ -23,7 +25,8 @@ public class CharChild : CharBase {
         commandPanel.SetBtns();
     }
     public override void CheckActions() {
-        commandPanel.EnableBtn(Consts.Skills.DonLifeJacket, canDonLifeJacketSelf = lvlMngr.CheckCanDonLifeJacketChildren());
+        canDonLifeJacketSelf = lvlMngr.CheckCanDonLifeJacketChildren() && IsWearingLifeJacket == false;
+        commandPanel.EnableBtn(Consts.Skills.DonLifeJacket, canDonLifeJacketSelf);
     }
 
     // Donning life jacket ===============================================================

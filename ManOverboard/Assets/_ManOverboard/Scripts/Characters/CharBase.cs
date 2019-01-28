@@ -47,7 +47,7 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
         get { return weight + itemWeight; }
     }
 
-    protected Consts.CharState charState;
+    public Consts.CharState CharState { get; set; }
     protected Consts.Skills activeSkill;
     protected bool canAct = false;
 
@@ -104,9 +104,9 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
         set {
             commandPanel.gameObject.SetActive(value);
             if (value == true)
-                charState = Consts.CharState.InMenu;
-            else if (charState == Consts.CharState.InMenu)
-                charState = Consts.CharState.Default;
+                CharState = Consts.CharState.InMenu;
+            else if (CharState == Consts.CharState.InMenu)
+                CharState = Consts.CharState.Default;
         }
     }
 
@@ -143,7 +143,7 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
     protected override void Reset() {
         base.Reset();
 
-        charState = Consts.CharState.Default;
+        CharState = Consts.CharState.Default;
         itemsWorn = new List<ItemBase>();
 
         itemWeight = 0;
@@ -159,7 +159,7 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
             return;
 
         if (tossableState == Consts.SpriteTossableState.Default) {
-            if (charState == Consts.CharState.InAction) {
+            if (CharState == Consts.CharState.InAction) {
                 activityCounter -= Time.deltaTime * speed;
                 float counterPct = 1.0f - (activityCounter / activityInterval);
                 timerBar.Fill = counterPct;
@@ -179,12 +179,12 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
         if (selectable)
             return;
 
-        if (charState == Consts.CharState.Default) {
+        if (CharState == Consts.CharState.Default) {
             IsActionBtnActive = true;
             tossableState = Consts.SpriteTossableState.Held;
             lvlMngr.OnSpriteMouseDown(gameObject);
         }
-        else if (charState == Consts.CharState.InAction) {
+        else if (CharState == Consts.CharState.InAction) {
             IsCancelBtnActive = true;
             timerBar.IsActive = false;
             tossableState = Consts.SpriteTossableState.Held;
@@ -203,12 +203,12 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
         }
 
         if (tossableState == Consts.SpriteTossableState.Held) {
-            if (charState == Consts.CharState.Default) {
+            if (CharState == Consts.CharState.Default) {
                 IsActionBtnActive = false;
                 tossableState = Consts.SpriteTossableState.Default;
                 lvlMngr.OnSpriteMouseUp();
             }
-            else if (charState == Consts.CharState.InAction) {
+            else if (CharState == Consts.CharState.InAction) {
                 IsCancelBtnActive = false;
                 timerBar.IsActive = true;
                 tossableState = Consts.SpriteTossableState.Default;
@@ -219,7 +219,7 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
         // If paused
     }
     protected override bool CheckImmClickExit() {
-        return base.CheckImmClickExit() || charState == Consts.CharState.Saved;
+        return base.CheckImmClickExit() || CharState == Consts.CharState.Saved;
     }
 
     public void WearItem(ItemBase item) {
@@ -274,7 +274,7 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
     }
 
     public override void OverheadButtonActive(bool isActive) {
-        if (charState == Consts.CharState.Default)
+        if (CharState == Consts.CharState.Default)
             IsActionBtnActive = isActive;
         else
             IsCancelBtnActive = isActive;
@@ -308,6 +308,9 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
         ReturnToBoat();
         this.activeSkill = activeSkill;
     }
+    public bool CheckAvailToAct() {
+        return CharState != Consts.CharState.InAction && CharState != Consts.CharState.Saved;
+    }
 
     public void ReturnToNeutral() {
         IsActionBtnActive = false;
@@ -328,7 +331,7 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
         }
 
         timerBar.IsActive = true;
-        charState = Consts.CharState.InAction;
+        CharState = Consts.CharState.InAction;
     }
     public virtual void CancelAction() {
 
@@ -356,7 +359,7 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
         IsCancelBtnActive = false;
         itemHeld = null;
         activeChar = null;
-        charState = Consts.CharState.Default;
+        CharState = Consts.CharState.Default;
         activeSkill = Consts.Skills.None;
     }
 }

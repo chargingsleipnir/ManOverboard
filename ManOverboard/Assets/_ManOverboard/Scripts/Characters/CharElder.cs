@@ -26,15 +26,19 @@ public class CharElder : CharChild {
     public override void SetActionBtns() {
         commandPanel.InactiveAwake();
 
-        if (canDonLifeJacketSelf = lvlMngr.CheckCanDonLifeJacketAdults(false)) {
+        canDonLifeJacketSelf = lvlMngr.CheckCanDonLifeJacketAdults() && IsWearingLifeJacket == false;
+        canDonLifeJacketChild = lvlMngr.CheckCanDonLifeJacketChildren();
+        canScoop = lvlMngr.CheckCanScoop();
+
+        if (canDonLifeJacketSelf) {
             canAct = true;
             commandPanel.PrepBtn(Consts.Skills.DonLifeJacket, PrepDonLifeJacket);
         }
-        if (canDonLifeJacketChild = lvlMngr.CheckCanDonLifeJacketChildren()) {
+        if (canDonLifeJacketChild) {
             canAct = true;
             commandPanel.PrepBtn(Consts.Skills.DonLifeJacket, PrepDonLifeJacket);
         }
-        if (canScoop = lvlMngr.CheckCanScoop()) {
+        if (canScoop) {
             canAct = true;
             commandPanel.PrepBtn(Consts.Skills.ScoopWater, PrepScoop);
         }
@@ -45,9 +49,26 @@ public class CharElder : CharChild {
 
         commandPanel.SetBtns();
     }
+
+
+
+    // TODO:
+    // 2. Need to block functionality that require the use of items that are currently in use (such as a life jacket actively being donned), or people currently doing something.
+    // -- If multiple characters are engaged in something, they should all get the same timer, at least in this case of the life jackets.
+    // -- This means the action can be stopped by any of them. (Pushing the cancel button on the child stops the adult from helping put their life jacket on, same as if done through adult.)
+
+
+
+
+
+
     public override void CheckActions() {
-        commandPanel.EnableBtn(Consts.Skills.DonLifeJacket, (canDonLifeJacketChild = lvlMngr.CheckCanDonLifeJacketChildren()) || (canDonLifeJacketSelf = lvlMngr.CheckCanDonLifeJacketAdults(false)));
-        commandPanel.EnableBtn(Consts.Skills.ScoopWater, canScoop = lvlMngr.CheckCanScoop());
+        canDonLifeJacketChild = lvlMngr.CheckCanDonLifeJacketChildren();
+        canDonLifeJacketSelf = lvlMngr.CheckCanDonLifeJacketAdults() && IsWearingLifeJacket == false;
+        canScoop = lvlMngr.CheckCanScoop();
+
+        commandPanel.EnableBtn(Consts.Skills.DonLifeJacket, canDonLifeJacketChild || canDonLifeJacketSelf);
+        commandPanel.EnableBtn(Consts.Skills.ScoopWater, canScoop);
     }
 
     // Donning life jacket ===============================================================

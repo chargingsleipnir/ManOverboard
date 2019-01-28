@@ -151,7 +151,7 @@ public class LevelManager : MonoBehaviour {
     public bool CheckCanDonLifeJacketChildren() {
         int numChildrenNoJacket = 0;
         foreach (CharChild child in children)
-            if (!child.IsWearingLifeJacket)
+            if (child.IsWearingLifeJacket == false && child.CheckAvailToAct())
                 numChildrenNoJacket++;
 
         if (numChildrenNoJacket == 0)
@@ -159,10 +159,7 @@ public class LevelManager : MonoBehaviour {
 
         return lifeJacketsChild.Count > 0 && numChildrenNoJacket > 0;
     }
-    public bool CheckCanDonLifeJacketAdults(bool checkNumAdults) {
-        if (checkNumAdults)
-            return lifeJacketsAdult.Count > 0 && numElders > 0;
-
+    public bool CheckCanDonLifeJacketAdults() {
         return lifeJacketsAdult.Count > 0;
     }
     public bool CheckCanScoop() {
