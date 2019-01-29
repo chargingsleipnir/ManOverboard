@@ -219,7 +219,7 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
         // If paused
     }
     protected override bool CheckImmClickExit() {
-        return base.CheckImmClickExit() || CharState == Consts.CharState.Saved;
+        return base.CheckImmClickExit() || CharState == Consts.CharState.Saved || CharState == Consts.CharState.Dazed;
     }
 
     public void WearItem(ItemBase item) {
@@ -358,7 +358,12 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
         timerBar.IsActive = false;
         IsCancelBtnActive = false;
         itemHeld = null;
-        activeChar = null;
+
+        if (activeChar != null) {
+            activeChar.ReturnToNeutral();
+            activeChar = null;
+        }
+        
         CharState = Consts.CharState.Default;
         activeSkill = Consts.Skills.None;
     }

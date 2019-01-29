@@ -558,6 +558,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   weight: 0
+  itemWeight: 0
   timerBar: {fileID: 54215060828298657}
   trans_ItemUseHand: {fileID: 0}
   actionBtnObj: {fileID: 634263974222550987}
@@ -594,7 +595,7 @@ MonoBehaviour:
   refShape: {fileID: 5195327199433342150}
   clickThrough: 0
   containsMousePoint: 0
-  linkMouseUpToDown: 0
+  linkMouseUpToDown: 1
   mouseDownEvent:
     m_PersistentCalls:
       m_Calls: []

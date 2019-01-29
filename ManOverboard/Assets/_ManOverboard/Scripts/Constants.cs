@@ -63,6 +63,7 @@ public static class Consts {
         InMenu,
         Paused,
         InAction,
+        Dazed,
         Saved
     }
     public enum SpriteTossableState {

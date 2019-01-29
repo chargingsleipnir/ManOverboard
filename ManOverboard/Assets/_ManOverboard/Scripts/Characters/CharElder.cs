@@ -50,18 +50,6 @@ public class CharElder : CharChild {
         commandPanel.SetBtns();
     }
 
-
-
-    // TODO:
-    // 2. Need to block functionality that require the use of items that are currently in use (such as a life jacket actively being donned), or people currently doing something.
-    // -- If multiple characters are engaged in something, they should all get the same timer, at least in this case of the life jackets.
-    // -- This means the action can be stopped by any of them. (Pushing the cancel button on the child stops the adult from helping put their life jacket on, same as if done through adult.)
-
-
-
-
-
-
     public override void CheckActions() {
         canDonLifeJacketChild = lvlMngr.CheckCanDonLifeJacketChildren();
         canDonLifeJacketSelf = lvlMngr.CheckCanDonLifeJacketAdults() && IsWearingLifeJacket == false;
@@ -96,6 +84,7 @@ public class CharElder : CharChild {
     private void OnSelectionChild(SpriteBase sprite) {
         // Add child for completion Callback
         activeChar = sprite as CharChild;
+        activeChar.CharState = Consts.CharState.Dazed;
 
         itemHeld.EnableMouseTracking(false);
         itemHeld.transform.position = trans_ItemUseHand.position;
@@ -117,6 +106,7 @@ public class CharElder : CharChild {
         // TODO: Fix this garbage
         activeChar.itemWeight += itemHeld.Weight;
         activeChar.IsWearingLifeJacket = true;
+        activeChar.CharState = Consts.CharState.Default;
 
         //(selectObjQueue[0] as ItemBase).RetPosLocal = (selectObjQueue[0] as ItemBase).transform.localPosition;
 
