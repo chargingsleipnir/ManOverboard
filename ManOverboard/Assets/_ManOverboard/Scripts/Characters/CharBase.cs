@@ -42,20 +42,17 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
     protected List<ItemBase> itemsWorn;
     public bool IsWearingLifeJacket { get; set; }
 
-    public int itemWeight;
+    public int ItemWeight { get; set; }
     public override int Weight {
-        get { return weight + itemWeight; }
+        get { return weight + ItemWeight; }
     }
 
     public Consts.CharState CharState { get; set; }
     protected Consts.Skills activeSkill;
     protected bool canAct = false;
 
-    protected int strength;
-    protected int speed;
-
-    public int Strength { get; set; }
-    public int Speed { get; set; }
+    public int strength;
+    public int speed;
 
     protected bool saved = false;
     public bool Saved {
@@ -146,7 +143,7 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
         CharState = Consts.CharState.Default;
         itemsWorn = new List<ItemBase>();
 
-        itemWeight = 0;
+        ItemWeight = 0;
         timerBar.Fill = 0;
         activityCounter = 0.0f;
         activityInterval = 0.0f;
@@ -224,22 +221,28 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
 
     public void WearItem(ItemBase item) {
         itemsWorn.Add(item);
-        itemWeight += item.Weight;
+        ItemWeight += item.Weight;
+        item.CharHeldBy = this;
+    }
+    public bool IsWearingItem(ItemBase item) {
+        return itemsWorn.Contains(item);
     }
     public void HoldItem(ItemBase item) {
         itemHeld = item;
-        itemWeight += item.Weight;
+        ItemWeight += item.Weight;
 
         item.transform.position = trans_ItemUseHand.position;
         item.transform.parent = transform;
     }
-    public void LoseItem(ItemBase item) {
-        if(item == itemHeld) {
-            itemWeight -= item.Weight;
+    // BOOKMARK
+    public virtual void LoseItem(ItemBase item) {
+        if (item == itemHeld) {
+            ItemWeight -= item.Weight;
             itemHeld = null;
         }
-        else if (itemsWorn.Remove(item))
-            itemWeight -= item.Weight;
+        else if (itemsWorn.Remove(item)) {
+            ItemWeight -= item.Weight;
+        }
     }
 
     public override void Toss(Vector2 vel) {
@@ -326,7 +329,7 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
 
         // Add them to what the character is holding
         if(itemHeld != null) {
-            itemWeight += itemHeld.Weight;
+            ItemWeight += itemHeld.Weight;
             itemHeld.InUse = true;
         }
 
@@ -334,30 +337,34 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
         CharState = Consts.CharState.InAction;
     }
     public virtual void CancelAction() {
-
-        if (itemHeld != null) {
-            itemWeight -= itemHeld.Weight;
-            itemHeld.Deselect();
-
-            if (itemHeld.RetPosLocal == null) {
-                // Place item at feet of character just to their left.
-                // TODO: Alter this to account for not every item having a refShape component? Shouldn't really come up though.
-                float posX = RefShape.XMin - (itemHeld.RefShape.Width * 0.5f) - Consts.ITEM_DROP_X_BUFF;
-                float posY = RefShape.YMin + (itemHeld.RefShape.Height * 0.5f);
-                itemHeld.transform.position = new Vector3(posX, posY, itemHeld.transform.position.z);
-            }
-        }
-
+        DropItemHeld();
         ReturnToBoat();
         EndAction();
         lvlMngr.UnfadeLevel();
+    }
+    // BOOKMARK
+    public virtual void DropItemHeld() {
+        if (itemHeld == null)
+            return;
+
+        ItemWeight -= itemHeld.Weight;
+        itemHeld.Deselect();
+
+        // Place item at feet of character just to their left.
+        // TODO: Alter this to account for not every item having a refShape component? Shouldn't really come up though.
+        float posX = RefShape.XMin - (itemHeld.RefShape.Width * 0.5f) - Consts.ITEM_DROP_X_BUFF;
+        float posY = RefShape.YMin + (itemHeld.RefShape.Height * 0.5f);
+        itemHeld.transform.position = new Vector3(posX, posY, itemHeld.transform.position.z);
+
+        itemHeld.CharHeldBy = null;
+        itemHeld = null;
     }
 
     public virtual void EndAction() {
         activityCounter = activityInterval = 0;
         timerBar.IsActive = false;
         IsCancelBtnActive = false;
-        itemHeld = null;
+        
 
         if (activeChar != null) {
             activeChar.ReturnToNeutral();

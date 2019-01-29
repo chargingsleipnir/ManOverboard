@@ -4,30 +4,76 @@ using UnityEngine;
 
 using ZeroProgress.Common.Collections;
 
-public class Crewman : JobBase {
+public class Crewman : CharAdult {
 
     [SerializeField]
     protected ItemBase sailorCap;
 
-    protected void Awake() {
-        sailorCap.RetPosLocal = sailorCap.transform.localPosition;
-    }
-    public override void Init(CharBase character) {
-        character.Strength += 25;
-        character.Speed += 25;
+    Vector3 capPosLocal;
+    bool capDonned;
 
-        sailorCap.CharHeldBy = character;
-        character.WearItem(sailorCap);
-        // Set cap position relative to character's head here?
+    protected override void Awake() {
+        capPosLocal = sailorCap.transform.localPosition;
+        capDonned = true;
+        base.Awake();
     }
 
-    public override void SetActionBtns() {
+    protected override void Start() {
+        strength += 25;
+        speed += 25;
+        Reset();
 
+        sailorCap.CharHeldBy = this;
+        WearItem(sailorCap);
     }
-    public override void CheckCanAct() {
-        // Need to tell character (for their command panel) whether or not they can still perfom whatever action
-        // First time this sets all buttons, leaving out those that cannot be perfomed
-        // Afterwards, this greys out those that cannot be done.
+
+    //public override void SetActionBtns() {
+
+    //}
+
+    //public override void CheckActions() {
+
+    //}
+
+    public override void LoseItem(ItemBase item) {
+
+        // Only way to specify this item with precision right now
+        if (item.name.Contains("SailorCap")) {
+            capDonned = false;
+        }
+
+        base.LoseItem(item);
+    }
+
+    protected override void OnSelectionScoop(SpriteBase sprite) {
+        if ((sprite as ItemBase) == sailorCap) {
+            // Deducting the weight only because the base function > TakeAction() will add it again.
+            //ItemWeight -= sailorCap.Weight;
+            capDonned = false;
+        }
+
+        base.OnSelectionScoop(sprite);
+    }
+
+    public override void DropItemHeld() {
+        if (itemHeld == null)
+            return;
+
+        if (itemHeld.name.Contains("SailorCap")) {
+            if (!capDonned) {
+                itemHeld.SortCompLayerReset(transform);
+                itemHeld.transform.localPosition = capPosLocal;
+                itemsWorn.Add(itemHeld);
+                itemHeld.CharHeldBy = this;
+                capDonned = true;
+                itemHeld.EnableMouseTracking(true);
+                lvlMngr.OnDeselection(itemHeld);
+                itemHeld.InUse = false;
+                itemHeld = null;
+            }
+        }
+        else
+            base.DropItemHeld();
     }
 
     //private void ClickThroughHat(bool clickThrough) {

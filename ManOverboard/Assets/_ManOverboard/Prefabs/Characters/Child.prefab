@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   weight: 0
+  strength: 25
+  speed: 25
   timerBar: {fileID: 2440072281519575599}
   trans_ItemUseHand: {fileID: 0}
   actionBtnObj: {fileID: 3013232751474710597}

@@ -9,10 +9,8 @@ public class ItemBase : SpriteTossable {
     public CharBase CharHeldBy { get; set; }
 
     public bool InUse { get; set; }
-    
-    private ItemBaseSet items;
 
-    public Vector3? RetPosLocal { get; set; }
+    private ItemBaseSet items;
 
     protected override void Awake() {
         base.Awake();
@@ -29,12 +27,14 @@ public class ItemBase : SpriteTossable {
     public override void Toss(Vector2 vel) {
         items.Remove(this);
 
-        if (CharHeldBy != null)
-            CharHeldBy.LoseItem(this);
+        RemoveFromChar();
 
         base.Toss(vel);
     }
-
+    public void RemoveFromChar() {
+        if (CharHeldBy != null)
+            CharHeldBy.LoseItem(this);
+    }
     public override void MouseDownCB() {
         if (selectable)
             return;
@@ -64,7 +64,5 @@ public class ItemBase : SpriteTossable {
         EnableMouseTracking(true);
         lvlMngr.OnDeselection(this);
         InUse = false;
-        if (RetPosLocal != null)
-            transform.localPosition = (Vector3)RetPosLocal;
     }
 }

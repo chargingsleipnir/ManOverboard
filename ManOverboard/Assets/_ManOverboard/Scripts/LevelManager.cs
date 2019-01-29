@@ -93,7 +93,7 @@ public class LevelManager : MonoBehaviour {
             spriteTossableSet[i].LvlMngr = this;
             if (spriteTossableSet[i] is CharBase) {
                 characterSet.Add(spriteTossableSet[i] as CharBase);
-                if (spriteTossableSet[i] is CharElder)
+                if (spriteTossableSet[i] is CharAdult)
                     numElders++;
                 else if (spriteTossableSet[i] is CharChild) {
                     numChildren++;
@@ -360,8 +360,10 @@ public class LevelManager : MonoBehaviour {
     // BOOKMARK
     public void ConfirmSelections() {
         // Remove items from lists
-        foreach (ItemBase item in itemsToRemove)
+        foreach (ItemBase item in itemsToRemove) {
+            item.RemoveFromChar();
             RemoveItem(item);
+        }
 
         ResetEnvir();
     }
@@ -394,6 +396,9 @@ public class LevelManager : MonoBehaviour {
         if (item is LifeJacket) {
             lifeJacketsChild.Remove(item as LifeJacket);
             lifeJacketsAdult.Remove(item as LifeJacket);
+        }
+        else if(item is ItemCanScoop) {
+            itemsCanScoop.Remove(item as ItemCanScoop);
         }
     }
     private void ReturnItem(ItemBase item) {

@@ -13,10 +13,10 @@ public static class Consts {
     public const float ITEM_DROP_X_BUFF = 0.25f;
 
     public const float SINK_STEP_SECS = 0.25f;
-    public const float MIN_SCOOP_RATE = 1.0f;
 
     public const float BTN_DISABLE_FADE = 0.33f;
 
+    public const float SCOOP_RATE = 200.0f;
     public const float DON_RATE = 250.0f;
 
     public enum LeakTypesAndRates {
