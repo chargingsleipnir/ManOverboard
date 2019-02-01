@@ -177,7 +177,8 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
             return;
 
         if (CharState == Consts.CharState.Default) {
-            IsActionBtnActive = true;
+            if(canAct)
+                IsActionBtnActive = true;
             tossableState = Consts.SpriteTossableState.Held;
             lvlMngr.OnSpriteMouseDown(gameObject);
         }
@@ -276,11 +277,23 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
         contAreaObj.transform.localScale = new Vector3(Utility.GreaterOf(srRef.comp.sprite.bounds.size.x, actBtnRect.width) + Consts.CONT_AREA_BUFFER, srRef.comp.sprite.bounds.size.y + btnTopToCharTop + Consts.CONT_AREA_BUFFER, 1);
     }
 
-    public override void OverheadButtonActive(bool isActive) {
+    public override void OnContAreaMouseEnter() {
+        if (!canAct)
+            return;
+
         if (CharState == Consts.CharState.Default)
-            IsActionBtnActive = isActive;
+            IsActionBtnActive = true;
         else
-            IsCancelBtnActive = isActive;
+            IsCancelBtnActive = true;
+    }
+    public override void OnContAreaMouseExit() {
+        if (!canAct)
+            return;
+
+        if (CharState == Consts.CharState.Default)
+            IsActionBtnActive = false;
+        else
+            IsCancelBtnActive = false;
     }
 
     // TODO: Check if given commands are available, and disable buttons if not.

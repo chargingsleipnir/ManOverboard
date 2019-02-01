@@ -183,12 +183,12 @@ public class LevelManager : MonoBehaviour {
     private void MouseEnterCharContArea() {
         levelState = Consts.LevelState.Default;
         heldObj.transform.position = grabPos;
-        heldSpriteTossable.OverheadButtonActive(true);
+        heldSpriteTossable.OnContAreaMouseEnter();
     }
 
     private void MouseExitCharContArea() {
         levelState = Consts.LevelState.CharHeldToToss;
-        heldSpriteTossable.OverheadButtonActive(false);
+        heldSpriteTossable.OnContAreaMouseExit();
     }
 
     private void CheckLevelEndResult() {

@@ -88,14 +88,12 @@ public class CharAdult : CharChild {
         itemHeld.transform.position = activeChar.transform.position;
         itemHeld.transform.parent = activeChar.transform;
 
-        // Remove item so it can no longer be acted upon, and transfer weight to child
-        itemsWorn.Remove(itemHeld);
         ItemWeight -= itemHeld.Weight;
-
-        // TODO: Fix this garbage
-        activeChar.ItemWeight += itemHeld.Weight;
+        activeChar.WearItem(itemHeld);
         activeChar.IsWearingLifeJacket = true;
         activeChar.CharState = Consts.CharState.Default;
+
+        itemHeld = null;
 
         //(selectObjQueue[0] as ItemBase).RetPosLocal = (selectObjQueue[0] as ItemBase).transform.localPosition;
 

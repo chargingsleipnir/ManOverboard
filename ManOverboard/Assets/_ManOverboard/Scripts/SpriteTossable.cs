@@ -105,5 +105,6 @@ public class SpriteTossable : SpriteBase, IMouseDownDetector, IMouseUpDetector {
 
     // Virtual function here for child use only -----------------------------------------------
 
-    public virtual void OverheadButtonActive(bool isActive) { }
+    public virtual void OnContAreaMouseEnter() { }
+    public virtual void OnContAreaMouseExit() { }
 }
