@@ -87,7 +87,7 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4378307273889770043, guid: d8036ebce40e6e049a18611bc3326581,
+    - target: {fileID: 8876014348971306236, guid: d8036ebce40e6e049a18611bc3326581,
         type: 3}
       propertyPath: m_LocalPosition.y
       value: 0.55
@@ -97,25 +97,10 @@ PrefabInstance:
       propertyPath: m_LocalPosition.y
       value: 0.55
       objectReference: {fileID: 0}
-    - target: {fileID: 8876014348971306236, guid: d8036ebce40e6e049a18611bc3326581,
+    - target: {fileID: 4378307273889770043, guid: d8036ebce40e6e049a18611bc3326581,
         type: 3}
       propertyPath: m_LocalPosition.y
       value: 0.55
-      objectReference: {fileID: 0}
-    - target: {fileID: 634263974222550987, guid: d8036ebce40e6e049a18611bc3326581,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7638725610537301241, guid: d8036ebce40e6e049a18611bc3326581,
-        type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 7638725610537301241, guid: d8036ebce40e6e049a18611bc3326581,
-        type: 3}
-      propertyPath: m_WasSpriteAssigned
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5195327199433342150, guid: d8036ebce40e6e049a18611bc3326581,
         type: 3}
@@ -133,6 +118,31 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6903331878907562231, guid: d8036ebce40e6e049a18611bc3326581,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7638725610537301241, guid: d8036ebce40e6e049a18611bc3326581,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7638725610537301241, guid: d8036ebce40e6e049a18611bc3326581,
+        type: 3}
+      propertyPath: m_WasSpriteAssigned
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7638725610537301241, guid: d8036ebce40e6e049a18611bc3326581,
+        type: 3}
+      propertyPath: m_SortingLayerID
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7638725610537301241, guid: d8036ebce40e6e049a18611bc3326581,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 634263974222550987, guid: d8036ebce40e6e049a18611bc3326581,
         type: 3}
       propertyPath: m_IsActive
       value: 0

@@ -23,7 +23,7 @@ public struct HoleData {
 }
 
 //[RequireComponent(typeof(Rigidbody2D), typeof(Collider2D))]
-public class Boat : SpriteBase {
+public class Boat : MonoBehaviour {
 
     public delegate void NumLeaksDelegate(int numLeaks);
     NumLeaksDelegate NumLeaksCB;
@@ -72,10 +72,8 @@ public class Boat : SpriteBase {
     /// </summary>
     protected List<Leak> activeLeaks = new List<Leak>();
 
-    protected override void Awake()
+    protected void Awake()
     {
-        base.Awake();
-
         buoyancy = Resources.Load<ScriptableInt>("ScriptableObjects/buoyancy");
         weightWater = Resources.Load<ScriptableInt>("ScriptableObjects/weightWater");
         weightLoad = Resources.Load<ScriptableInt>("ScriptableObjects/weightLoad");
@@ -96,7 +94,7 @@ public class Boat : SpriteBase {
 
     protected void OnStart(int buoyancyTotal) {
 
-        SortCompLayerChange(Consts.DrawLayers.BoatLevel1);
+        //SortCompLayerChange(Consts.DrawLayers.BoatLevel1);
 
         buoyancy.CurrentValue = buoyancyTotal;
 

@@ -339,6 +339,79 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 854752644c7f275439b14e7e1f9dba5e, type: 3}
+--- !u!21 &195304846
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Game2DWater Material
+  m_Shader: {fileID: 4800000, guid: 13121cb2798342840841b50208da77e6, type: 3}
+  m_ShaderKeywords: Water2D_Reflection Water2D_Refraction
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: 2000
+  stringTagMap:
+    RenderType: Opaque
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _NoiseTexture:
+        m_Texture: {fileID: 1678144651}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ReflectionTexture:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _RefractionTexture:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SurfaceTexture:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _WaterTexture:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - _DstBlend: 0
+    - _Mode: 2000
+    - _ReflectionNoiseSpeed: 0.075
+    - _ReflectionNoiseStrength: 0.02
+    - _ReflectionVisibility: 0.3
+    - _RefractionAmountOfBending: 0
+    - _RefractionNoiseSpeed: 0.075
+    - _RefractionNoiseStrength: 0.015
+    - _SrcBlend: 1
+    - _SurfaceLevel: 0.9
+    - _SurfaceNoiseSpeed: 0.025
+    - _SurfaceNoiseStrength: 0.025
+    - _SurfaceTextureOpacity: 0.5
+    - _Water2D_IsColorGradientEnabled: 0
+    - _Water2D_IsReflectionEnabled: 1
+    - _Water2D_IsRefractionEnabled: 1
+    - _Water2D_IsSurfaceEnabled: 0
+    - _Water2D_IsSurfaceNoiseEnabled: 0
+    - _Water2D_IsWaterNoiseEnabled: 0
+    - _WaterNoiseSpeed: 0.025
+    - _WaterNoiseStrength: 0.025
+    - _WaterTextureOpacity: 0.5
+    - _ZWrite: 1
+    m_Colors:
+    - _ReflectionNoiseScaleOffset: {r: 5, g: 14, b: 0, a: 0}
+    - _RefractionNoiseScaleOffset: {r: 8, g: 5, b: 0, a: 0}
+    - _SurfaceColor: {r: 0.14, g: 0.54, b: 0.85, a: 0.25}
+    - _SurfaceNoiseScaleOffset: {r: 1, g: 1, b: 0, a: 0}
+    - _WaterColor: {r: 0.11, g: 0.64, b: 0.92, a: 0.25}
+    - _WaterColorGradientEnd: {r: 1, g: 1, b: 1, a: 0.25}
+    - _WaterColorGradientStart: {r: 1, g: 1, b: 1, a: 0.25}
+    - _WaterNoiseScaleOffset: {r: 1, g: 1, b: 0, a: 0}
 --- !u!1 &635188636 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1031882782153492, guid: 10126059089110c4dbf74678801809dc,
@@ -434,7 +507,7 @@ PrefabInstance:
     - target: {fileID: 6262436557393273286, guid: 3fa37f7131547f146a7147c5ea42c0e9,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.472
+      value: 0.17
       objectReference: {fileID: 0}
     - target: {fileID: 6262436557393273286, guid: 3fa37f7131547f146a7147c5ea42c0e9,
         type: 3}
@@ -464,7 +537,7 @@ PrefabInstance:
     - target: {fileID: 6262436557393273286, guid: 3fa37f7131547f146a7147c5ea42c0e9,
         type: 3}
       propertyPath: m_RootOrder
-      value: 6
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6262436557393273286, guid: 3fa37f7131547f146a7147c5ea42c0e9,
         type: 3}
@@ -587,7 +660,7 @@ PrefabInstance:
     - target: {fileID: 6612468494089602893, guid: 4051ffac0f6718341b8c1f7a4db8d59c,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.663
+      value: 0.4
       objectReference: {fileID: 0}
     - target: {fileID: 6612468494089602893, guid: 4051ffac0f6718341b8c1f7a4db8d59c,
         type: 3}
@@ -617,7 +690,7 @@ PrefabInstance:
     - target: {fileID: 6612468494089602893, guid: 4051ffac0f6718341b8c1f7a4db8d59c,
         type: 3}
       propertyPath: m_RootOrder
-      value: 4
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6612468494089602893, guid: 4051ffac0f6718341b8c1f7a4db8d59c,
         type: 3}
@@ -656,7 +729,7 @@ PrefabInstance:
     - target: {fileID: 8971503508800013136, guid: bf2d9a98d23456547a42bc715e1cbebc,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.63
+      value: 0.391
       objectReference: {fileID: 0}
     - target: {fileID: 8971503508800013136, guid: bf2d9a98d23456547a42bc715e1cbebc,
         type: 3}
@@ -686,7 +759,7 @@ PrefabInstance:
     - target: {fileID: 8971503508800013136, guid: bf2d9a98d23456547a42bc715e1cbebc,
         type: 3}
       propertyPath: m_RootOrder
-      value: 5
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8971503508800013136, guid: bf2d9a98d23456547a42bc715e1cbebc,
         type: 3}
@@ -711,79 +784,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 2121458959}
   m_PrefabAsset: {fileID: 0}
---- !u!21 &1635395915
-Material:
-  serializedVersion: 6
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: Game2DWater Material
-  m_Shader: {fileID: 4800000, guid: 13121cb2798342840841b50208da77e6, type: 3}
-  m_ShaderKeywords: Water2D_Reflection Water2D_Refraction
-  m_LightmapFlags: 4
-  m_EnableInstancingVariants: 0
-  m_DoubleSidedGI: 0
-  m_CustomRenderQueue: 2000
-  stringTagMap:
-    RenderType: Opaque
-  disabledShaderPasses: []
-  m_SavedProperties:
-    serializedVersion: 3
-    m_TexEnvs:
-    - _NoiseTexture:
-        m_Texture: {fileID: 1678144651}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _ReflectionTexture:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _RefractionTexture:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _SurfaceTexture:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _WaterTexture:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    m_Floats:
-    - _DstBlend: 0
-    - _Mode: 2000
-    - _ReflectionNoiseSpeed: 0.075
-    - _ReflectionNoiseStrength: 0.02
-    - _ReflectionVisibility: 0.3
-    - _RefractionAmountOfBending: 0
-    - _RefractionNoiseSpeed: 0.075
-    - _RefractionNoiseStrength: 0.015
-    - _SrcBlend: 1
-    - _SurfaceLevel: 0.9
-    - _SurfaceNoiseSpeed: 0.025
-    - _SurfaceNoiseStrength: 0.025
-    - _SurfaceTextureOpacity: 0.5
-    - _Water2D_IsColorGradientEnabled: 0
-    - _Water2D_IsReflectionEnabled: 1
-    - _Water2D_IsRefractionEnabled: 1
-    - _Water2D_IsSurfaceEnabled: 0
-    - _Water2D_IsSurfaceNoiseEnabled: 0
-    - _Water2D_IsWaterNoiseEnabled: 0
-    - _WaterNoiseSpeed: 0.025
-    - _WaterNoiseStrength: 0.025
-    - _WaterTextureOpacity: 0.5
-    - _ZWrite: 1
-    m_Colors:
-    - _ReflectionNoiseScaleOffset: {r: 5, g: 14, b: 0, a: 0}
-    - _RefractionNoiseScaleOffset: {r: 8, g: 5, b: 0, a: 0}
-    - _SurfaceColor: {r: 0.14, g: 0.54, b: 0.85, a: 0.25}
-    - _SurfaceNoiseScaleOffset: {r: 1, g: 1, b: 0, a: 0}
-    - _WaterColor: {r: 0.11, g: 0.64, b: 0.92, a: 0.25}
-    - _WaterColorGradientEnd: {r: 1, g: 1, b: 1, a: 0.25}
-    - _WaterColorGradientStart: {r: 1, g: 1, b: 1, a: 0.25}
-    - _WaterNoiseScaleOffset: {r: 1, g: 1, b: 0, a: 0}
 --- !u!28 &1678144651
 Texture2D:
   m_ObjectHideFlags: 0
@@ -999,7 +999,7 @@ PrefabInstance:
     - target: {fileID: 7757988754453987207, guid: 06abac2b990d7c34391449ca659c074f,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.465
+      value: 0.156
       objectReference: {fileID: 0}
     - target: {fileID: 7757988754453987207, guid: 06abac2b990d7c34391449ca659c074f,
         type: 3}
@@ -1029,7 +1029,7 @@ PrefabInstance:
     - target: {fileID: 7757988754453987207, guid: 06abac2b990d7c34391449ca659c074f,
         type: 3}
       propertyPath: m_RootOrder
-      value: 7
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 7757988754453987207, guid: 06abac2b990d7c34391449ca659c074f,
         type: 3}
@@ -1149,7 +1149,17 @@ PrefabInstance:
     - target: {fileID: 212751243012516420, guid: 9d9309315914ae2478057670e95e66d4,
         type: 3}
       propertyPath: m_SortingLayer
-      value: 4
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 212751243012516420, guid: 9d9309315914ae2478057670e95e66d4,
+        type: 3}
+      propertyPath: m_SortingOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 212751243012516420, guid: 9d9309315914ae2478057670e95e66d4,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 114980580018284778, guid: 9d9309315914ae2478057670e95e66d4,
         type: 3}
@@ -1159,7 +1169,37 @@ PrefabInstance:
     - target: {fileID: 114980580018284778, guid: 9d9309315914ae2478057670e95e66d4,
         type: 3}
       propertyPath: offsetY
-      value: 0.05
+      value: -0.125
+      objectReference: {fileID: 0}
+    - target: {fileID: 114980580018284778, guid: 9d9309315914ae2478057670e95e66d4,
+        type: 3}
+      propertyPath: height
+      value: 0.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 5363815018345076819, guid: 9d9309315914ae2478057670e95e66d4,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 3721435723850083450, guid: 9d9309315914ae2478057670e95e66d4,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 2624265192891953633, guid: 9d9309315914ae2478057670e95e66d4,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 7266894407220088454, guid: 9d9309315914ae2478057670e95e66d4,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4354612589836478658, guid: 9d9309315914ae2478057670e95e66d4,
+        type: 3}
+      propertyPath: m_Color.a
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9d9309315914ae2478057670e95e66d4, type: 3}

@@ -473,8 +473,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 1982025277
-  m_SortingLayer: 3
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -496,7 +496,7 @@ SortingGroup:
   m_GameObject: {fileID: 7481352806194402557}
   m_Enabled: 1
   m_SortingLayerID: 1982025277
-  m_SortingLayer: 3
+  m_SortingLayer: 4
   m_SortingOrder: 0
 --- !u!50 &8650496246139267460
 Rigidbody2D:
@@ -558,7 +558,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   weight: 0
-  itemWeight: 0
+  strength: 0
+  speed: 0
   timerBar: {fileID: 54215060828298657}
   trans_ItemUseHand: {fileID: 0}
   actionBtnObj: {fileID: 634263974222550987}
