@@ -6,9 +6,15 @@ using System.IO;
 
 public class GameCtrl : MonoBehaviour {
 
+    private JSONRoot root;
+    private bool dataLoaded;
+
     // ============================== GENERAL ==============================
 
     public void Init() {
+        root = null;
+        dataLoaded = false;
+
         LoadLevelData();
         Consts.Init();
         DrawLayerMngr.Init();
@@ -36,12 +42,7 @@ public class GameCtrl : MonoBehaviour {
         SceneManager.LoadScene(levelNum + Consts.LEVEL_SCENE_IDX_DIFF);
     }
 
-
-
     // ============================== DATA LOADING ==============================
-
-    private JSONRoot root;
-    private bool dataLoaded = false;
 
     public bool LoadLevelData() {
         if (dataLoaded)
@@ -57,7 +58,8 @@ public class GameCtrl : MonoBehaviour {
         else {
             Debug.Log("Failed to retrieve level data");
         }
-        return dataLoaded;
+
+        return dataLoaded;        
     }
 
     public int GetLevelMaxCharLoss(int starVal) {

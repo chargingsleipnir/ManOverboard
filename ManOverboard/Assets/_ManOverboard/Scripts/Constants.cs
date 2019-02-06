@@ -74,7 +74,7 @@ public static class Consts {
     }
     public enum LevelState {
         Default,
-        CharHeldToToss,
+        SpriteHeldToToss,
         ObjectSelection
     }
     public enum CollType {
