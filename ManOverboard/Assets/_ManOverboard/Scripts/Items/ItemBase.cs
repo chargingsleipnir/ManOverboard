@@ -1,65 +1,40 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 using ZeroProgress.Common;
 
 public class ItemBase : SpriteTossable {
 
-    public delegate void DelPassItemBase(ItemBase item);
-    DelPassItemBase OnItemSelect;
-    DelPassItemBase OnItemDeselect;
+    public CharBase CharHeldBy { get; set; }
 
-    public CharBase heldBy;
+    public bool InUse { get; set; }
 
-    protected SpriteOutline so;
-    protected bool selectable;
-    protected bool selected;
-
-    public bool Selected {
-        get { return selected; }
-        set { selected = value; }
-    }
+    private ItemBaseSet items;
 
     protected override void Awake() {
         base.Awake();
-        so = GetComponent<SpriteOutline>();
+        items = Resources.Load<ItemBaseSet>("ScriptableObjects/SpriteSets/ItemBaseSet");
+        items.Add(this);
     }
 
     protected override void Start() {
         base.Start();
 
-        selectable = false;
-        selected = false;
+        InUse = false;
     }
 
     public override void Toss(Vector2 vel) {
-        if (heldBy != null)
-            heldBy.LoseItem(this);
+        items.Remove(this);
+
+        RemoveFromChar();
 
         base.Toss(vel);
     }
-
-    public void HighlightToClick() {
-        if (so.enabled)
-            return;
-
-        ChangeMouseUpToDownLinks(false);
-        SortCompLayerChange(Consts.DrawLayers.FrontOfLevel4, null);
-        so.enabled = true;
-        selectable = true;
+    public void RemoveFromChar() {
+        if (CharHeldBy != null)
+            CharHeldBy.LoseItem(this);
     }
-
-    public void UnHighlight() {
-        if (!so.enabled)
-            return;
-
-        ChangeMouseUpToDownLinks(true);
-        SortCompFullReset();
-        so.enabled = false;
-        selectable = false;
-        selected = false;
-    }
-
     public override void MouseDownCB() {
         if (selectable)
             return;
@@ -68,22 +43,26 @@ public class ItemBase : SpriteTossable {
     }
 
     public override void MouseUpCB() {
-        if (selectable) {
-            selected = true;
-            OnItemSelect(this);
-        }
-        else {
+        if (InUse)
+            return;
+
+        if (selectable)
+            lvlMngr.OnSelection(this);
+        else
             base.MouseUpCB();
-        }
+    }
+
+    public override void HighlightToSelect() {
+        if (InUse)
+            return;
+
+        base.HighlightToSelect();
     }
 
     public void Deselect() {
         SortCompFullReset();
-        OnItemDeselect(this);
-    }
-
-    public void SetItemSelectionCallback(DelPassItemBase OnItemSelect, DelPassItemBase OnItemDeselect) {
-        this.OnItemSelect = OnItemSelect;
-        this.OnItemDeselect = OnItemDeselect;
+        EnableMouseTracking(true);
+        lvlMngr.OnDeselection(this);
+        InUse = false;
     }
 }

@@ -48,11 +48,14 @@ TagManager:
   - name: Background1
     uniqueID: 1523859595
     locked: 0
+  - name: BoatLevel1
+    uniqueID: 2948417559
+    locked: 0
   - name: BoatLevel1Contents
     uniqueID: 1982025277
     locked: 0
-  - name: BoatLevel1
-    uniqueID: 2948417559
+  - name: BoatLevel1FrontWall
+    uniqueID: 174049011
     locked: 0
   - name: BehindWater
     uniqueID: 4237841631

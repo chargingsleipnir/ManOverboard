@@ -4,17 +4,13 @@ using ZeroProgress.Common;
 
 public class SpriteTossable : SpriteBase, IMouseDownDetector, IMouseUpDetector {
 
-    public delegate void DelPassGO(GameObject obj);
-    protected DelPassGO OnMouseDownCB;
-
-    public delegate void DelVoid();
-    protected DelVoid OnMouseUpCB;
+    protected LevelManager lvlMngr;
+    public LevelManager LvlMngr { set { lvlMngr = value; } }
 
     private SpriteTossableSet set;
     protected ScriptableVector2 mousePos;
 
-    protected bool held;
-    protected bool tossed;
+    protected Consts.SpriteTossableState tossableState;
 
     protected Rigidbody2D rb;
     protected BoxCollider2D bc;
@@ -30,52 +26,55 @@ public class SpriteTossable : SpriteBase, IMouseDownDetector, IMouseUpDetector {
         rb = GetComponent<Rigidbody2D>();
         bc = GetComponent<BoxCollider2D>();
 
-        set = AssetDatabase.LoadAssetAtPath<SpriteTossableSet>("Assets/_ManOverboard/Variables/Sets/SpriteTossableSet.asset");
-        mousePos = AssetDatabase.LoadAssetAtPath<ScriptableVector2>("Assets/_ManOverboard/Variables/v2_mouseWorldPos.asset");
-
+        mousePos = Resources.Load<ScriptableVector2>("ScriptableObjects/v2_mouseWorldPos");
+        set = Resources.Load<SpriteTossableSet>("ScriptableObjects/SpriteSets/SpriteTossableSet");
         set.Add(this);
     }
 
     protected override void Start() {
-        base.Start();
+        Reset();
+    }
+
+    protected override void Reset() {
+        base.Reset();
 
         // Rigidbody is essentially inactive until being flung/thrown by user.
         // (Could use posiiton constraints instead)
         rb.isKinematic = true;
         bc.enabled = false;
 
-        held = false;
-        tossed = false;
-    }
-
-    public void ChangeMouseUpToDownLinks(bool linkEvents) {
-        RefShape2DMouseTracker[] trackers = GetComponents<RefShape2DMouseTracker>();
-        for (int i = 0; i < trackers.Length; i++)
-            trackers[i].LinkMouseUpToDown = linkEvents;
+        tossableState = Consts.SpriteTossableState.Default;
     }
 
     public virtual void MouseDownCB() {
-        if (tossed)
+        if (CheckImmClickExit())
             return;
 
-        held = true;
-        OnMouseDownCB(gameObject);
+        tossableState = Consts.SpriteTossableState.Held;
+        lvlMngr.OnSpriteMouseDown(gameObject);
     }
+    
     public virtual void MouseUpCB() {
-        if (tossed || held == false)
+        if (CheckImmClickExit())
             return;
 
-        held = false;
-        OnMouseUpCB();
+        tossableState = Consts.SpriteTossableState.Default;
+        lvlMngr.OnSpriteMouseUp();
+    }
+    protected virtual bool CheckImmClickExit() {
+        return tossableState == Consts.SpriteTossableState.Tossed;
     }
 
-    public void SetMouseRespCallbacks(DelPassGO OnMouseDownCB, DelVoid OnMouseUpCB) {
-        this.OnMouseDownCB = OnMouseDownCB;
-        this.OnMouseUpCB = OnMouseUpCB;
-    }
-
-    public virtual void ApplyTransformToContArea(GameObject contAreaObj) {
+    public virtual void ApplyTransformToContArea(GameObject contAreaObj, bool prioritizeRefShape) {
         contAreaObj.transform.position = new Vector3(transform.position.x, transform.position.y, (float)Consts.ZLayers.FrontOfWater);
+
+        if(prioritizeRefShape) {
+            RefShape shape = GetComponent<RefShape>();
+            if (shape != null) {
+                contAreaObj.transform.localScale = new Vector3(shape.Width + Consts.CONT_AREA_BUFFER, shape.Height + Consts.CONT_AREA_BUFFER, 1);
+                return;
+            }
+        }
         contAreaObj.transform.localScale = new Vector3(srRef.comp.sprite.bounds.size.x + Consts.CONT_AREA_BUFFER, srRef.comp.sprite.bounds.size.y + Consts.CONT_AREA_BUFFER, 1);
     }
 
@@ -90,7 +89,7 @@ public class SpriteTossable : SpriteBase, IMouseDownDetector, IMouseUpDetector {
 
         // Move in front of all other non-water objects
         SortCompLayerChange(Consts.DrawLayers.BehindWater, null);
-        tossed = true;
+        tossableState = Consts.SpriteTossableState.Tossed;
         rb.isKinematic = false;
         rb.velocity = vel;
         bc.enabled = true;
@@ -106,5 +105,6 @@ public class SpriteTossable : SpriteBase, IMouseDownDetector, IMouseUpDetector {
 
     // Virtual function here for child use only -----------------------------------------------
 
-    public virtual void OverheadButtonActive(bool isActive) { }
+    public virtual void OnContAreaMouseEnter() { }
+    public virtual void OnContAreaMouseExit() { }
 }

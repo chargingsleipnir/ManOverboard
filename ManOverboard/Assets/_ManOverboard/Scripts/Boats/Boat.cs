@@ -23,7 +23,7 @@ public struct HoleData {
 }
 
 //[RequireComponent(typeof(Rigidbody2D), typeof(Collider2D))]
-public class Boat : SpriteBase {
+public class Boat : MonoBehaviour {
 
     public delegate void NumLeaksDelegate(int numLeaks);
     NumLeaksDelegate NumLeaksCB;
@@ -55,10 +55,12 @@ public class Boat : SpriteBase {
     private List<Hole> holesSubm;
     private List<Hole> holesSurf;
 
-    public IntReference buoyancy;
-    public IntReference weightWater;
-    public IntReference weightLoad; // Weight of people and items, things that can be tossed off by the player directly.
-    public IntReference weightTotal;
+    public int waterStartWeight;
+    private ScriptableInt buoyancy;
+    private ScriptableInt weightWater;
+    private ScriptableInt weightLoad; // Weight of people and items, things that can be tossed off by the player directly.
+    private ScriptableInt weightTotal;
+
     private SpriteTossableSet spriteTossableSet;
 
     // UI update event
@@ -70,11 +72,14 @@ public class Boat : SpriteBase {
     /// </summary>
     protected List<Leak> activeLeaks = new List<Leak>();
 
-    protected override void Awake()
+    protected void Awake()
     {
-        base.Awake();
+        buoyancy = Resources.Load<ScriptableInt>("ScriptableObjects/buoyancy");
+        weightWater = Resources.Load<ScriptableInt>("ScriptableObjects/weightWater");
+        weightLoad = Resources.Load<ScriptableInt>("ScriptableObjects/weightLoad");
+        weightTotal = Resources.Load<ScriptableInt>("ScriptableObjects/weightTotal");
 
-        spriteTossableSet = AssetDatabase.LoadAssetAtPath<SpriteTossableSet>("Assets/_ManOverboard/Variables/Sets/SpriteTossableSet.asset");
+        spriteTossableSet = Resources.Load<SpriteTossableSet>("ScriptableObjects/SpriteSets/SpriteTossableSet");
 
         myRigidbody = this.GetComponentIfNull(myRigidbody);
         
@@ -89,24 +94,24 @@ public class Boat : SpriteBase {
 
     protected void OnStart(int buoyancyTotal) {
 
-        SortCompLayerChange(Consts.DrawLayers.BoatLevel1);
+        //SortCompLayerChange(Consts.DrawLayers.BoatLevel1);
 
-        buoyancy.Value = buoyancyTotal;
+        buoyancy.CurrentValue = buoyancyTotal;
 
         // Default boat, no load, max buoyancy
-        weightLoad.Value = 0;
-        weightTotal.Value = 0;
+        weightLoad.CurrentValue = 0;
+        weightTotal.CurrentValue = 0;
 
         // Add people - increasing load weight & reducing buoyancy
         foreach (SpriteTossable sprite in spriteTossableSet) {
-            weightLoad.Value += sprite.Weight;
+            weightLoad.CurrentValue += sprite.Weight;
         }
-        weightTotal.Value += weightLoad.Value;
+        weightTotal.CurrentValue += weightLoad.CurrentValue;
         // TODO: Add ITEMS - increasing load weight & reducing buoyancy
 
         // Account current water load
-        weightWater.Value = weightWater.StraightValue;
-        weightTotal.Value += weightWater.Value;
+        weightWater.CurrentValue = waterStartWeight;
+        weightTotal.CurrentValue += weightWater.CurrentValue;
 
         uiUpdate.RaiseEvent();
 
@@ -154,7 +159,7 @@ public class Boat : SpriteBase {
     }
     protected void AdjustBoatDepth() {
         // Set the boat to where the top of the submergable area is directly on the water's surface, and raise by the buoyancy minus current weight
-        float newYPos = waterSurfaceYPos - (Mathf.Abs(transform.position.y - SubmergableAreaRef.YMax)) + (sinkHeightIncr * (buoyancy.Value - weightTotal.Value));
+        float newYPos = waterSurfaceYPos - (Mathf.Abs(transform.position.y - SubmergableAreaRef.YMax)) + (sinkHeightIncr * (buoyancy.CurrentValue - weightTotal.CurrentValue));
         transform.position = new Vector3(transform.position.x, newYPos, transform.position.z);
     }
 
@@ -165,8 +170,8 @@ public class Boat : SpriteBase {
             waterWeightChange += holesSubm[i].leakRate;
 
         // Each hole eaqually contributes to water gain / buoyancy loss
-        weightWater.Value += waterWeightChange;
-        weightTotal.Value += waterWeightChange;
+        weightWater.CurrentValue += waterWeightChange;
+        weightTotal.CurrentValue += waterWeightChange;
         uiUpdate.RaiseEvent();
 
         AdjustBoatDepth();
@@ -174,18 +179,18 @@ public class Boat : SpriteBase {
     }
 
     private void Surface(int weight) {
-        weightTotal.Value -= weight;
+        weightTotal.CurrentValue -= weight;
         uiUpdate.RaiseEvent();
 
         AdjustBoatDepth();
         CheckHolesBoatRaised();
     }
     public void RemoveWater(int weight) {
-        weightWater.Value -= weight;
+        weightWater.CurrentValue -= weight;
         Surface(weight);
     }
     public void RemoveLoad(int weight) {
-        weightLoad.Value -= weight;
+        weightLoad.CurrentValue -= weight;
         Surface(weight);
     }
 

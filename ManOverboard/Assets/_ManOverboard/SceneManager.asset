@@ -70,6 +70,13 @@ MonoBehaviour:
     useAnySceneTransitions: 1
     transitions: []
     lockConditions: []
+  - sceneId: 7
+    includeInIteration: 1
+    sceneName: Level 4
+    sceneAssetPath: Assets/_ManOverboard/Scenes/Dev/OdinSceneFlowTest/Level 4.unity
+    useAnySceneTransitions: 1
+    transitions: []
+    lockConditions: []
   anyScene:
     sceneId: -1
     includeInIteration: 1
@@ -89,7 +96,7 @@ MonoBehaviour:
       isMuted: 0
     lockConditions: []
   entrySceneId: 5
-  useOnPlay: 1
+  useOnPlay: 0
   goToOnPlay: 
 --- !u!114 &114049999551487362
 MonoBehaviour:
@@ -232,7 +239,16 @@ MonoBehaviour:
       height: 200
     isSelected: 0
     SceneId: 6
-  PanOffset: {x: -20.388863, y: -246.37994}
+  - IsSelectable: 1
+    NodeRect:
+      serializedVersion: 2
+      x: 1014.4646
+      y: 887.1224
+      width: 250
+      height: 200
+    isSelected: 0
+    SceneId: 7
+  PanOffset: {x: 204.86122, y: 48.949333}
   SceneManager: {fileID: 11400000}
 --- !u!114 &114690836214546684
 MonoBehaviour:

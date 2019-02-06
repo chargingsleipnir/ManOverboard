@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -322,7 +323,18 @@ public class SpriteBase : MonoBehaviour {
 
     private Vector3 origPos;
 
+    private SpriteOutline so;
+    protected bool selectable;
+
+    protected bool awakeRan = false;
     protected virtual void Awake() {
+        InactiveAwake();
+    }
+    // ** Bullshit required because Unity is such a load of garbage. **
+    public virtual void InactiveAwake() {
+        if (awakeRan)
+            return;
+
         sgRef = null;
         if (GetComponent<SortingGroup>() != null)
             sgRef = new SortingGroupComponentRef(this, GetComponent<SortingGroup>());
@@ -335,10 +347,40 @@ public class SpriteBase : MonoBehaviour {
         origParent = currParent = transform.parent;
 
         origPos = transform.position;
+
+        selectable = false;
+
+        awakeRan = true;
     }
 
     protected virtual void Start() {
+        Reset();
+    }
+
+    protected virtual void Reset() {
         EstablishPlacement();
+    }
+
+    // TODO: Cache trackers if I start using them more than this.
+    public void ChangeMouseUpToDownLinks(bool linkEvents) {
+        RefShape2DMouseTracker[] trackers = GetComponents<RefShape2DMouseTracker>();
+        for (int i = 0; i < trackers.Length; i++)
+            trackers[i].LinkMouseUpToDown = linkEvents;
+    }
+    public void MouseUpToDownLinksTrue() {
+        RefShape2DMouseTracker[] trackers = GetComponents<RefShape2DMouseTracker>();
+        for (int i = 0; i < trackers.Length; i++)
+            trackers[i].LinkMouseUpToDown = true;
+    }
+    public void MouseUpToDownLinksFalse() {
+        RefShape2DMouseTracker[] trackers = GetComponents<RefShape2DMouseTracker>();
+        for (int i = 0; i < trackers.Length; i++)
+            trackers[i].LinkMouseUpToDown = false;
+    }
+    public void ResetMouseUpToDownLinks() {
+        RefShape2DMouseTracker[] trackers = GetComponents<RefShape2DMouseTracker>();
+        for (int i = 0; i < trackers.Length; i++)
+            trackers[i].SetOrigLinkState();
     }
 
     public void ChangeColour(float? r, float? g, float? b, float? a) {
@@ -420,6 +462,48 @@ public class SpriteBase : MonoBehaviour {
         RefShape2DMouseTracker[] trackers = GetComponents<RefShape2DMouseTracker>();
         for (int i = 0; i < trackers.Length; i++)
             trackers[i].enabled = isEnabled;
+    }
+
+    public void AddHighlightComponent(bool enableComponent = false) {
+        so = GetComponent<SpriteOutline>();
+        if (so == null) {
+            so = gameObject.AddComponent<SpriteOutline>();
+            so.enabled = false;
+        }
+
+        so.ChangeColour(0, 1.0f, 0.18f, 1.0f);
+        if (enableComponent)
+            HighlightToSelect();
+    }
+    protected void RemoveHighlightComponent() {
+        if (so != null)
+            Destroy(so);
+    }
+    public virtual void HighlightToSelect() {
+        if (so == null)
+            return;
+
+        if (so.enabled)
+            return;
+
+        ChangeMouseUpToDownLinks(false);
+        SortCompLayerChange(Consts.DrawLayers.FrontOfLevel4, null);
+        so.enabled = true;
+        selectable = true;
+    }
+
+    public void UnHighlight() {
+        if (so == null)
+            return;
+
+        if (!so.enabled)
+            return;
+
+        // If sprite tossable overrides UnHighlight(), use ChangeMouseUpToDownLinks(true); instead of ResetMouseUpToDownLinks();
+        ResetMouseUpToDownLinks();
+        SortCompFullReset();
+        so.enabled = false;
+        selectable = false;
     }
 
     private void OnDestroy() {

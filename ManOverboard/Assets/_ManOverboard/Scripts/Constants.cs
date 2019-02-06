@@ -13,9 +13,11 @@ public static class Consts {
     public const float ITEM_DROP_X_BUFF = 0.25f;
 
     public const float SINK_STEP_SECS = 0.25f;
-    public const float MIN_SCOOP_RATE = 1.0f;
 
     public const float BTN_DISABLE_FADE = 0.33f;
+
+    public const float SCOOP_RATE = 200.0f;
+    public const float DON_RATE = 250.0f;
 
     public enum LeakTypesAndRates {
         Pinhole = 1,
@@ -33,8 +35,9 @@ public static class Consts {
         Default,
         Background2,
         Background1,
-        BoatLevel1Contents,
         BoatLevel1,
+        BoatLevel1Contents,
+        BoatLevel1FrontWall,
         BehindWater,
         Water,
         Foreground1,
@@ -49,13 +52,25 @@ public static class Consts {
         LAYER_COUNT = Enum.GetValues(typeof(DrawLayers)).Length;
     }
 
-    public enum ItemType {
-        Scooping = 0
+    public enum HighlightGroupType {
+        Scooping,
+        LifeJacketChild,
+        LifeJacketAdult,
+        Children
     }
+    public enum FitSizes { adult, child }
     public enum CharState {
         Default,
-        MenuOpen,
-        Scooping
+        InMenu,
+        Paused,
+        InAction,
+        Dazed,
+        Saved
+    }
+    public enum SpriteTossableState {
+        Default,
+        Held,
+        Tossed
     }
     public enum LevelState {
         Default,
@@ -65,5 +80,13 @@ public static class Consts {
     public enum CollType {
         Items,
         Characters
+    }
+    public enum Skills {
+        None,
+        DonLifeJacket,
+        ScoopWater,
+        LowerAnchor,
+        ReleaseAnchor,
+        RaiseSail
     }
 }

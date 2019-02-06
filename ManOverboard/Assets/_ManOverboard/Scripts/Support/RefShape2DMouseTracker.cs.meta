@@ -5,9 +5,12 @@ MonoImporter:
   serializedVersion: 2
   defaultReferences:
   - refShape: {instanceID: 0}
-  - mouseMoveEventIn: {fileID: 11400000, guid: 64e1a31f07b28e641a5502ba600dd9c6, type: 2}
-  - mouseDownEventIn: {fileID: 11400000, guid: 1e3a2ab6667a7f0468b14d82fec37f40, type: 2}
-  - mouseUpEventIn: {fileID: 11400000, guid: 0bad36c8433fcdd46b6fc7974dce3952, type: 2}
+  - mouseTrackerFullSet: {fileID: 11400000, guid: e7c503aa697f34c4d971acd3d0eb303d,
+      type: 2}
+  - mouseTrackerEnteredSet: {fileID: 11400000, guid: d54ec56afbef5984085d8c7f9092bb7c,
+      type: 2}
+  - mouseTrackerLinkedSet: {fileID: 11400000, guid: 42d9c6e253c7f54479d1a9034b8053b3,
+      type: 2}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

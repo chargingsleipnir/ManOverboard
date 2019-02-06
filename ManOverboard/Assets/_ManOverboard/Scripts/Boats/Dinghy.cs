@@ -6,8 +6,7 @@ public class Dinghy : Boat {
 
     const int BUOYANCY_MAX = 1000;
 
-    protected override void Start() {
-        base.Start();
+    protected void Start() {
         OnStart(BUOYANCY_MAX);
     }
 }
