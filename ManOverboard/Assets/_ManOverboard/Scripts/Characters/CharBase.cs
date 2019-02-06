@@ -350,6 +350,9 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
         CharState = Consts.CharState.InAction;
     }
     public virtual void CancelAction() {
+        if (CharState != Consts.CharState.InAction)
+            return;
+
         DropItemHeld();
         ReturnToBoat();
         EndAction();

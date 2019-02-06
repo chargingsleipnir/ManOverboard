@@ -8,11 +8,13 @@ using Game2DWaterKit;
 
 public class Hole {
     public GameObject obj;
-    public int leakRate;   
+    public int leakRate;
+    public int heightByBuoyancy;
 
-    public Hole(GameObject obj, int leakRate) {
+    public Hole(GameObject obj, int leakRate, int heightByBuoyancy) {
         this.obj = obj;
-        this.leakRate = leakRate;        
+        this.leakRate = leakRate;
+        this.heightByBuoyancy = heightByBuoyancy;
     }
 }
 
@@ -61,6 +63,11 @@ public class Boat : MonoBehaviour {
     private ScriptableInt weightLoad; // Weight of people and items, things that can be tossed off by the player directly.
     private ScriptableInt weightTotal;
 
+    private ScriptableInt numLeaksAbove;
+    private ScriptableInt numLeaksBelow;
+    private ScriptableInt distLeakAbove;
+    private ScriptableInt distLeakBelow;
+
     private SpriteTossableSet spriteTossableSet;
 
     // UI update event
@@ -78,6 +85,11 @@ public class Boat : MonoBehaviour {
         weightWater = Resources.Load<ScriptableInt>("ScriptableObjects/weightWater");
         weightLoad = Resources.Load<ScriptableInt>("ScriptableObjects/weightLoad");
         weightTotal = Resources.Load<ScriptableInt>("ScriptableObjects/weightTotal");
+
+        numLeaksAbove = Resources.Load<ScriptableInt>("ScriptableObjects/numLeaksAbove");
+        numLeaksBelow = Resources.Load<ScriptableInt>("ScriptableObjects/numLeaksBelow");
+        distLeakAbove = Resources.Load<ScriptableInt>("ScriptableObjects/distLeakAbove");
+        distLeakBelow = Resources.Load<ScriptableInt>("ScriptableObjects/distLeakBelow");
 
         spriteTossableSet = Resources.Load<SpriteTossableSet>("ScriptableObjects/SpriteSets/SpriteTossableSet");
 
@@ -102,6 +114,9 @@ public class Boat : MonoBehaviour {
         weightLoad.CurrentValue = 0;
         weightTotal.CurrentValue = 0;
 
+        distLeakAbove.CurrentValue = 0;
+        distLeakBelow.CurrentValue = 0;
+
         // Add people - increasing load weight & reducing buoyancy
         foreach (SpriteTossable sprite in spriteTossableSet) {
             weightLoad.CurrentValue += sprite.Weight;
@@ -112,8 +127,6 @@ public class Boat : MonoBehaviour {
         // Account current water load
         weightWater.CurrentValue = waterStartWeight;
         weightTotal.CurrentValue += weightWater.CurrentValue;
-
-        uiUpdate.RaiseEvent();
 
         // Set height of boat based on current buoyancy and water's surface (usually set to 0)
         sinkHeightIncr = SubmergableAreaRef.height / buoyancyTotal;
@@ -126,12 +139,34 @@ public class Boat : MonoBehaviour {
 
             GameObject holeObj = Instantiate(hole, new Vector3(Random.Range(SubmergableAreaRef.XMin, SubmergableAreaRef.XMax), yPos, transform.position.z - 0.1f), transform.rotation, transform) as GameObject;
             if (yPos <= waterSurfaceYPos) {
-                holesSubm.Add(new Hole(holeObj, (int)holeDataSet[i].leakType));
+                holesSubm.Add(new Hole(holeObj, (int)holeDataSet[i].leakType, holeDataSet[i].heightByBuoyancy));
             }
             else {
-                holesSurf.Add(new Hole(holeObj, (int)holeDataSet[i].leakType));
+                holesSurf.Add(new Hole(holeObj, (int)holeDataSet[i].leakType, holeDataSet[i].heightByBuoyancy));
             }
         }
+
+        AllLeaksToWaterUIUpdate();
+        uiUpdate.RaiseEvent();
+    }
+
+    private void AllLeaksToWaterUIUpdate() {
+
+        numLeaksAbove.CurrentValue = holesSurf.Count;
+        numLeaksBelow.CurrentValue = holesSubm.Count;
+
+        // "weightTotal.CurrentValue" is perfectly representative of where the water level is relative to the depth the boat can sink by buoyancy/weight.
+        if (holesSurf.Count > 0)
+            distLeakAbove.CurrentValue = holesSurf[holesSurf.Count - 1].heightByBuoyancy - weightTotal.CurrentValue;
+        // In this case, not a "Leak" above, but rather, the edge of that given boat level. When this hits zero, the entire floor is lost (game over if it's the last/only floor)
+        // TODO: Provide more dramatic warning in UI that the next "leak" is a floor being lost.
+        else
+            distLeakAbove.CurrentValue = buoyancy.CurrentValue - weightTotal.CurrentValue;
+
+        if (holesSubm.Count > 0)
+            distLeakBelow.CurrentValue = weightTotal.CurrentValue - holesSubm[holesSubm.Count - 1].heightByBuoyancy;
+        else
+            distLeakBelow.CurrentValue = -1;
     }
 
     public void AddNumLeaksCallback(NumLeaksDelegate CB) {
@@ -172,18 +207,22 @@ public class Boat : MonoBehaviour {
         // Each hole eaqually contributes to water gain / buoyancy loss
         weightWater.CurrentValue += waterWeightChange;
         weightTotal.CurrentValue += waterWeightChange;
-        uiUpdate.RaiseEvent();
 
         AdjustBoatDepth();
         CheckHolesBoatLowered();
+
+        AllLeaksToWaterUIUpdate();
+        uiUpdate.RaiseEvent();
     }
 
     private void Surface(int weight) {
         weightTotal.CurrentValue -= weight;
-        uiUpdate.RaiseEvent();
 
         AdjustBoatDepth();
         CheckHolesBoatRaised();
+
+        AllLeaksToWaterUIUpdate();
+        uiUpdate.RaiseEvent();
     }
     public void RemoveWater(int weight) {
         weightWater.CurrentValue -= weight;

@@ -31,6 +31,7 @@ public class LevelManager : MonoBehaviour {
     private List<CharBase> characterSet;
     private List<CharChild> children;
     private int charSetStartCount;
+    private int charsTossedWithLifeJackets;
     private int numChildren = 0;
     private int numElders = 0;
 
@@ -86,6 +87,9 @@ public class LevelManager : MonoBehaviour {
         shipSinkCoroutine = null;
 
         boat.AddNumLeaksCallback(NumLeaks);
+
+        charSetStartCount = 0;
+        charsTossedWithLifeJackets = 0;
 
         characterSet = new List<CharBase>();
         children = new List<CharChild>();
@@ -167,7 +171,7 @@ public class LevelManager : MonoBehaviour {
     }
 
     private void Update() {
-        if (levelState == Consts.LevelState.CharHeldToToss) {
+        if (levelState == Consts.LevelState.SpriteHeldToToss) {
             heldSpriteTossable.MoveRigidbody();
             mouseDelta = mousePos.CurrentValue - mouseLastPos;
             mouseLastPos = mousePos.CurrentValue;
@@ -187,7 +191,7 @@ public class LevelManager : MonoBehaviour {
     }
 
     private void MouseExitCharContArea() {
-        levelState = Consts.LevelState.CharHeldToToss;
+        levelState = Consts.LevelState.SpriteHeldToToss;
         heldSpriteTossable.OnContAreaMouseExit();
     }
 
@@ -228,12 +232,21 @@ public class LevelManager : MonoBehaviour {
 
         charContAreaScpt.gameObject.SetActive(false);
 
-        if (levelState == Consts.LevelState.CharHeldToToss) {
+        if (levelState == Consts.LevelState.SpriteHeldToToss) {
 
             if (heldSpriteTossable is ItemBase)
                 RemoveItem(heldSpriteTossable as ItemBase);
-            else
-                RemoveCharacter(heldSpriteTossable as CharBase);     
+            else {
+                CharBase c = heldSpriteTossable as CharBase;
+
+                // Presuming we're only in this function because character was tossed.
+                if (c.IsWearingLifeJacket) {
+                    charsTossedWithLifeJackets++;
+                    c.Saved = true;
+                }
+
+                RemoveCharacter(c);
+            }
 
             // TODO: Top out the toss speed to something not TOO unreasonable
             float tossSpeed = mouseDelta.magnitude / Time.deltaTime;
@@ -273,7 +286,7 @@ public class LevelManager : MonoBehaviour {
         // TODO: Have the number of leaks on the gui somewhere?
         if(numLeaks == 0) {
             // level over
-            int charLoss = charSetStartCount - characterSet.Count;
+            int charLoss = charSetStartCount - characterSet.Count - charsTossedWithLifeJackets;
 
             if (charLoss <= gameCtrl.GetLevelMaxCharLoss(3)) {
                 levelWinLossDisp.RaiseEvent("You a winner! 3 star play!");
@@ -290,8 +303,8 @@ public class LevelManager : MonoBehaviour {
 
             levelActive = false;
             levelState = Consts.LevelState.Default;
-            foreach (CharBase character in characterSet) {
-                character.Saved = true;
+            foreach (CharBase c in characterSet) {
+                c.Saved = true;
             }
         }
     }
