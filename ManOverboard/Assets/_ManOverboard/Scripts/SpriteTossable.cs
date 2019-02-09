@@ -100,7 +100,7 @@ public class SpriteTossable : SpriteBase, IMouseDownDetector, IMouseUpDetector {
     }
 
     public void ReturnToBoat() {
-        SortCompFullReset();
+        SortCompResetToBase();
     }
 
     // Virtual function here for child use only -----------------------------------------------

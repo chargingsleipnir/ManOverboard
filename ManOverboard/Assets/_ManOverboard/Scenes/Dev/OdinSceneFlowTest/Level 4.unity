@@ -466,6 +466,26 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5388908482178553069, guid: b1f08687a5981d3438bbb3ca8852a229,
+        type: 3}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5388908482178553069, guid: b1f08687a5981d3438bbb3ca8852a229,
+        type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5388908482178553069, guid: b1f08687a5981d3438bbb3ca8852a229,
+        type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5388908482178553069, guid: b1f08687a5981d3438bbb3ca8852a229,
+        type: 3}
+      propertyPath: m_Color.a
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b1f08687a5981d3438bbb3ca8852a229, type: 3}
 --- !u!1001 &405848603
@@ -672,6 +692,21 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2090326127209777638, guid: 06abac2b990d7c34391449ca659c074f,
+        type: 3}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2090326127209777638, guid: 06abac2b990d7c34391449ca659c074f,
+        type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2090326127209777638, guid: 06abac2b990d7c34391449ca659c074f,
+        type: 3}
+      propertyPath: m_Color.b
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 06abac2b990d7c34391449ca659c074f, type: 3}
@@ -962,7 +997,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 06abac2b990d7c34391449ca659c074f, type: 3}
---- !u!21 &1208609152
+--- !u!21 &1248106282
 Material:
   serializedVersion: 6
   m_ObjectHideFlags: 0
@@ -1065,7 +1100,7 @@ PrefabInstance:
     - target: {fileID: 114791493001334558, guid: 9d9309315914ae2478057670e95e66d4,
         type: 3}
       propertyPath: holeDataSet.Array.data[0].heightByBuoyancy
-      value: 560
+      value: 550
       objectReference: {fileID: 0}
     - target: {fileID: 114791493001334558, guid: 9d9309315914ae2478057670e95e66d4,
         type: 3}

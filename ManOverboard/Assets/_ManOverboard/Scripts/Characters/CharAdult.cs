@@ -66,18 +66,13 @@ public class CharAdult : CharChild {
         }
         // Child jacket, need to wait for child to be selected
         else {
-            itemHeld = sprite as LifeJacket;
             lvlMngr.HighlightToSelect(Consts.HighlightGroupType.Children, OnSelectionChild);
         }
     }
     private void OnSelectionChild(SpriteBase sprite) {
         // Add child for completion Callback
         activeChar = sprite as CharChild;
-        activeChar.CharState = Consts.CharState.Dazed;
-
-        itemHeld.EnableMouseTracking(false);
-        itemHeld.transform.position = trans_ItemUseHand.position;
-        itemHeld.transform.parent = trans_ItemUseHand.parent;
+        activeChar.SetStateDazed(true);
 
         activityCounter = activityInterval = Consts.DON_RATE;
         ActionComplete = CompleteDonLifeJacketChild;
@@ -92,6 +87,7 @@ public class CharAdult : CharChild {
         activeChar.WearItem(itemHeld);
         activeChar.IsWearingLifeJacket = true;
         activeChar.CharState = Consts.CharState.Default;
+        activeChar.SetStateDazed(false);
 
         itemHeld = null;
 
@@ -107,7 +103,6 @@ public class CharAdult : CharChild {
         lvlMngr.HighlightToSelect(Consts.HighlightGroupType.Scooping, OnSelectionScoop);
     }
     protected virtual void OnSelectionScoop(SpriteBase sprite) {
-        itemHeld = sprite as ItemBase;
         sprite.EnableMouseTracking(false);
 
         // Logic for scooping wth item

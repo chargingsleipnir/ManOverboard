@@ -36,13 +36,6 @@ public class CharChild : CharBase {
         lvlMngr.HighlightToSelect(Consts.HighlightGroupType.LifeJacketChild, OnSelectionLifeJacket);
     }
     protected virtual void OnSelectionLifeJacket(SpriteBase sprite) {
-        itemHeld = sprite as LifeJacket;
-        sprite.EnableMouseTracking(false);
-
-        // Place life jacket in hand and start donning timer
-        sprite.transform.position = trans_ItemUseHand.position;
-        sprite.transform.parent = trans_ItemUseHand.parent;
-
         activityCounter = activityInterval = Consts.DON_RATE;
         ActionComplete = CompleteDonLifeJacket;
         TakeAction();
