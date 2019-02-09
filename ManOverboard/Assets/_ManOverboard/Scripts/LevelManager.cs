@@ -43,7 +43,8 @@ public class LevelManager : MonoBehaviour {
     public delegate void SelectionCallback(SpriteBase spriteSelected);
     SelectionCallback SelectionCB;
 
-    private List<ItemBase> itemsToRemove;
+    // Presuming only one item can be selected at a time for now.
+    private ItemBase selectedItem;
 
     private GameObject heldObj;
     private SpriteTossable heldSpriteTossable;
@@ -66,8 +67,7 @@ public class LevelManager : MonoBehaviour {
     private GameEvent uiUpdate;
 
     // Level over event
-    [SerializeField]
-    private StringParamEvent levelWinLossDisp;
+    private StringParamEvent levelMsg;
 
     private Vector3 grabPos;    
 
@@ -79,6 +79,8 @@ public class LevelManager : MonoBehaviour {
 
         holdWeight = Resources.Load<ScriptableInt>("ScriptableObjects/weightHeldObj");
         mousePos = Resources.Load<ScriptableVector2>("ScriptableObjects/v2_mouseWorldPos");
+
+        levelMsg = Resources.Load<StringParamEvent>("ScriptableObjects/Events/WithParam/Str_AnyMsg");
 
         gameCtrl.Init();
     }
@@ -124,7 +126,7 @@ public class LevelManager : MonoBehaviour {
         rearMenuFieldObj.SetActive(false);
 
         currGroupsLit = new List<Consts.HighlightGroupType>();
-        itemsToRemove = new List<ItemBase>();
+        selectedItem = null;
         // Establish every possible action in the level, and do any appropriate setup for it (like adding highlight components to selectable objects).
         itemsCanScoop = new List<ItemCanScoop>();
         lifeJacketsAdult = new List<LifeJacket>();
@@ -242,7 +244,7 @@ public class LevelManager : MonoBehaviour {
                 // Presuming we're only in this function because character was tossed.
                 if (c.IsWearingLifeJacket) {
                     charsTossedWithLifeJackets++;
-                    c.Saved = true;
+                    c.SetStateSaved();
                 }
 
                 RemoveCharacter(c);
@@ -289,22 +291,23 @@ public class LevelManager : MonoBehaviour {
             int charLoss = charSetStartCount - characterSet.Count - charsTossedWithLifeJackets;
 
             if (charLoss <= gameCtrl.GetLevelMaxCharLoss(3)) {
-                levelWinLossDisp.RaiseEvent("You a winner! 3 star play!");
+                levelMsg.RaiseEvent("You a winner! 3 star play!");
             }
             else if (charLoss <= gameCtrl.GetLevelMaxCharLoss(2)) {
-                levelWinLossDisp.RaiseEvent("You a winner! 2 star play!");
+                levelMsg.RaiseEvent("You a winner! 2 star play!");
             }
             else if (charLoss <= gameCtrl.GetLevelMaxCharLoss(1)) {
-                levelWinLossDisp.RaiseEvent("You a winner! 1 star play!");
+                levelMsg.RaiseEvent("You a winner! 1 star play!");
             }
             else {
-                levelWinLossDisp.RaiseEvent("Too many people died!");
+                levelMsg.RaiseEvent("Too many people died!");
             }
 
             levelActive = false;
             levelState = Consts.LevelState.Default;
+
             foreach (CharBase c in characterSet) {
-                c.Saved = true;
+                c.SetStateSaved();
             }
         }
     }
@@ -371,11 +374,22 @@ public class LevelManager : MonoBehaviour {
     }
 
     // BOOKMARK
-    public void ConfirmSelections() {
-        // Remove items from lists
-        foreach (ItemBase item in itemsToRemove) {
-            item.RemoveFromChar();
-            RemoveItem(item);
+
+    // TODO:
+    /*
+     * 
+     * Itembase calling this from ConfirmSelections, AFTER itemheld set in place? No, items need to be removed first, then placed next.
+     public void RemoveFromChar() {
+        if (CharHeldBy != null)
+            CharHeldBy.LoseItem(this);
+    }
+     */
+
+    public void ConfirmSelections(CharBase charToAct) {
+        if (selectedItem != null) {
+            selectedItem.RemoveFromChar();
+            RemoveItem(selectedItem);
+            charToAct.HoldItem(selectedItem);
         }
 
         ResetEnvir();
@@ -387,7 +401,7 @@ public class LevelManager : MonoBehaviour {
         // Remove item from general level listing, as it is now "occupied", or in the "possession" of the character.
         // This will have to be modified if it becomes that 2 or more characters can act on one item at a time.
         if (sprite is ItemBase)
-            itemsToRemove.Add(sprite as ItemBase);
+            selectedItem = sprite as ItemBase;
 
         SelectionCB(sprite);
     }
@@ -441,6 +455,10 @@ public class LevelManager : MonoBehaviour {
         }
     }
 
+    public void SetBoatAsParent(SpriteBase sprite) {
+        sprite.SortCompResetToBase(boat.transform);
+    }
+
     // BOOKMARK
     private void PauseLevel() {
         levelPaused = true;
@@ -478,7 +496,7 @@ public class LevelManager : MonoBehaviour {
         UnfadeLevel();
         for(int i = currGroupsLit.Count - 1; i >= 0; i--)
             UnHighlight(currGroupsLit[i]);
-        itemsToRemove.Clear();
+        selectedItem = null;
         levelState = Consts.LevelState.Default;
     }
     // Called by RearMenuField when field is clicked, so as to cancel current selection process.

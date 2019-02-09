@@ -319,6 +319,7 @@ public class SpriteBase : MonoBehaviour {
     public RefShape RefShape { get; private set; }
 
     private Transform origParent;
+    private Transform baseParent;
     private Transform currParent;
 
     private Vector3 origPos;
@@ -344,7 +345,7 @@ public class SpriteBase : MonoBehaviour {
         RefShape = GetComponent<RefShape>();
 
         // Get whatever parent sprite group data is available
-        origParent = currParent = transform.parent;
+        origParent = baseParent = currParent = transform.parent;
 
         origPos = transform.position;
 
@@ -387,11 +388,6 @@ public class SpriteBase : MonoBehaviour {
         srRef.comp.color = new Color(r ?? srRef.comp.color.r, g ?? srRef.comp.color.g, b ?? srRef.comp.color.b, a ?? srRef.comp.color.a);
     }
 
-    public void GoToOrigPlacement() {
-        transform.position = origPos;
-        SortCompFullReset();
-    }
-
     public void EstablishPlacement() {
         if (srRef.GroupParent != null)
             return;
@@ -422,8 +418,18 @@ public class SpriteBase : MonoBehaviour {
         LayerSortComp.LayerReset();
         SendChangeToTracker();
     }
-    public void SortCompFullReset() {
+    public void SortCompResetToOriginal() {
         currParent = transform.parent = origParent;
+        LayerSortComp.LayerReset();
+        SendChangeToTracker();
+    }
+    public void SortCompResetToBase() {
+        currParent = transform.parent = baseParent;
+        LayerSortComp.LayerReset();
+        SendChangeToTracker();
+    }
+    public void SortCompResetToBase(Transform newBaseParent) {
+        currParent = baseParent = transform.parent = newBaseParent;
         LayerSortComp.LayerReset();
         SendChangeToTracker();
     }
@@ -501,7 +507,7 @@ public class SpriteBase : MonoBehaviour {
 
         // If sprite tossable overrides UnHighlight(), use ChangeMouseUpToDownLinks(true); instead of ResetMouseUpToDownLinks();
         ResetMouseUpToDownLinks();
-        SortCompFullReset();
+        SortCompResetToBase();
         so.enabled = false;
         selectable = false;
     }

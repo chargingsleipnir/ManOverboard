@@ -35,8 +35,15 @@ public class Crewman : CharAdult {
 
     //}
 
-    public override void LoseItem(ItemBase item) {
+    protected override void OnSelectionScoop(SpriteBase sprite) {
+        if ((sprite as ItemBase) == sailorCap) {
+            capDonned = false;
+        }
 
+        base.OnSelectionScoop(sprite);
+    }
+
+    public override void LoseItem(ItemBase item) {
         // Only way to specify this item with precision right now
         if (item.name.Contains("SailorCap")) {
             capDonned = false;
@@ -45,35 +52,27 @@ public class Crewman : CharAdult {
         base.LoseItem(item);
     }
 
-    protected override void OnSelectionScoop(SpriteBase sprite) {
-        if ((sprite as ItemBase) == sailorCap) {
-            // Deducting the weight only because the base function > TakeAction() will add it again.
-            //ItemWeight -= sailorCap.Weight;
-            capDonned = false;
-        }
-
-        base.OnSelectionScoop(sprite);
-    }
-
     public override void DropItemHeld() {
         if (itemHeld == null)
             return;
 
         if (itemHeld.name.Contains("SailorCap")) {
             if (!capDonned) {
-                itemHeld.SortCompLayerReset(transform);
-                itemHeld.transform.localPosition = capPosLocal;
-                itemsWorn.Add(itemHeld);
-                itemHeld.CharHeldBy = this;
+                sailorCap = itemHeld;
+                sailorCap.SortCompResetToBase(transform);
+                sailorCap.transform.localPosition = capPosLocal;
+                sailorCap.CharHeldBy = this;
+                itemsWorn.Add(sailorCap);
                 capDonned = true;
-                itemHeld.EnableMouseTracking(true);
-                lvlMngr.OnDeselection(itemHeld);
-                itemHeld.InUse = false;
+                sailorCap.EnableMouseTracking(true);
+                lvlMngr.OnDeselection(sailorCap);
+                sailorCap.InUse = false;
                 itemHeld = null;
+                return;
             }
         }
-        else
-            base.DropItemHeld();
+
+        base.DropItemHeld();
     }
 
     //private void ClickThroughHat(bool clickThrough) {

@@ -62,7 +62,6 @@ public static class Consts {
     public enum CharState {
         Default,
         InMenu,
-        Paused,
         InAction,
         Dazed,
         Saved

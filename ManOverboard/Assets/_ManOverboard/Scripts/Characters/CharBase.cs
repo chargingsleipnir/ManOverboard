@@ -54,18 +54,6 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
     public int strength;
     public int speed;
 
-    protected bool saved = false;
-    public bool Saved {
-        get {
-            return saved;
-        }
-        set {
-            saved = value;
-            if (value)
-                CancelAction();
-        }
-    }
-
     public bool Paused { get; set; }
     protected float activityCounter;
     protected float activityInterval;
@@ -166,6 +154,8 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
                     ActionComplete();
                 }
             }
+            else if(CharState == Consts.CharState.Dazed) {
+            }
         }
     }
 
@@ -231,19 +221,22 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
     public void HoldItem(ItemBase item) {
         itemHeld = item;
         ItemWeight += item.Weight;
+        item.InUse = true;
 
+        item.EnableMouseTracking(false);
         item.transform.position = trans_ItemUseHand.position;
         item.transform.parent = transform;
     }
     // BOOKMARK
     public virtual void LoseItem(ItemBase item) {
-        if (item == itemHeld) {
+        if (itemsWorn.Remove(item)) {
+            ItemWeight -= item.Weight;
+        }
+        else if (item == itemHeld) {
             ItemWeight -= item.Weight;
             itemHeld = null;
         }
-        else if (itemsWorn.Remove(item)) {
-            ItemWeight -= item.Weight;
-        }
+        item.InUse = false;
     }
 
     public override void Toss(Vector2 vel) {
@@ -338,14 +331,7 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
 
     protected void TakeAction() {
         // Remove removable items (tools, small objects) from scene lists
-        lvlMngr.ConfirmSelections();
-
-        // Add them to what the character is holding
-        if(itemHeld != null) {
-            ItemWeight += itemHeld.Weight;
-            itemHeld.InUse = true;
-        }
-
+        lvlMngr.ConfirmSelections(this);
         timerBar.IsActive = true;
         CharState = Consts.CharState.InAction;
     }
@@ -353,6 +339,7 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
         if (CharState != Consts.CharState.InAction)
             return;
 
+        MouseUpToDownLinksTrue();
         DropItemHeld();
         ReturnToBoat();
         EndAction();
@@ -372,6 +359,9 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
         float posY = RefShape.YMin + (itemHeld.RefShape.Height * 0.5f);
         itemHeld.transform.position = new Vector3(posX, posY, itemHeld.transform.position.z);
 
+        // Turn this character's parent (the boat) into the new parent of the item, as it's just sitting on the floor of the boat now.
+        lvlMngr.SetBoatAsParent(itemHeld);
+
         itemHeld.CharHeldBy = null;
         itemHeld = null;
     }
@@ -383,11 +373,27 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
         
 
         if (activeChar != null) {
-            activeChar.ReturnToNeutral();
+            activeChar.SetStateDazed(false);
+            activeChar.ReturnToNeutral();            
             activeChar = null;
         }
-        
+
         CharState = Consts.CharState.Default;
         activeSkill = Consts.Skills.None;
+    }
+
+    public void SetStateDazed(bool isDazed) {
+        if (isDazed) {
+            CharState = Consts.CharState.Dazed;
+            ChangeColour(null, null, null, 0.5f);
+        }
+        else {
+            CharState = Consts.CharState.Default;
+            ChangeColour(null, null, null, 1.0f);
+        }
+    }
+    public void SetStateSaved() {
+        CancelAction();
+        CharState = Consts.CharState.Saved;
     }
 }

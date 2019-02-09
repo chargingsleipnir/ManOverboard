@@ -185,7 +185,7 @@ GameObject:
   - component: {fileID: 222993379450225250}
   - component: {fileID: 114652589652905130}
   m_Layer: 5
-  m_Name: text_LevelEnd
+  m_Name: text_MsgToPlayer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -207,7 +207,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -207.9, y: 160}
+  m_AnchoredPosition: {x: -206, y: 118}
   m_SizeDelta: {x: 346, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &222993379450225250
@@ -251,7 +251,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: End message
+  m_Text: Any Message
 --- !u!1 &1364380553334470
 GameObject:
   m_ObjectHideFlags: 0
@@ -808,7 +808,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -300, y: 124}
+  m_AnchoredPosition: {x: -302, y: 171}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &222847516818437062
@@ -1046,7 +1046,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -301.9, y: 204}
+  m_AnchoredPosition: {x: -302, y: 204}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &222727921398861632

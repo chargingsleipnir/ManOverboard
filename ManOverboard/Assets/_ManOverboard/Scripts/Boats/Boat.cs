@@ -45,6 +45,8 @@ public class Boat : MonoBehaviour {
     private float waterSurfaceYPos;
     private RefRect2D SubmergableAreaRef;
 
+    private StringParamEvent levelMsg;
+
     public float FloorY {
         get { return SubmergableAreaRef.YMax - Consts.BOAT_LEDGE_FLOOR_DIFF; }
     }
@@ -93,6 +95,8 @@ public class Boat : MonoBehaviour {
 
         spriteTossableSet = Resources.Load<SpriteTossableSet>("ScriptableObjects/SpriteSets/SpriteTossableSet");
 
+        levelMsg = Resources.Load<StringParamEvent>("ScriptableObjects/Events/WithParam/Str_AnyMsg");
+
         myRigidbody = this.GetComponentIfNull(myRigidbody);
         
         if(myColliders == null || myColliders.Length == 0)
@@ -119,10 +123,14 @@ public class Boat : MonoBehaviour {
 
         // Add people - increasing load weight & reducing buoyancy
         foreach (SpriteTossable sprite in spriteTossableSet) {
+            // Items held/worn by a character have their weight added to the total with the character, so ignore them here.
+            if(sprite is ItemBase) {
+                if ((sprite as ItemBase).CharHeldBy != null)
+                    continue;
+            }
             weightLoad.CurrentValue += sprite.Weight;
-        }
+        }        
         weightTotal.CurrentValue += weightLoad.CurrentValue;
-        // TODO: Add ITEMS - increasing load weight & reducing buoyancy
 
         // Account current water load
         weightWater.CurrentValue = waterStartWeight;
@@ -156,12 +164,14 @@ public class Boat : MonoBehaviour {
         numLeaksBelow.CurrentValue = holesSubm.Count;
 
         // "weightTotal.CurrentValue" is perfectly representative of where the water level is relative to the depth the boat can sink by buoyancy/weight.
-        if (holesSurf.Count > 0)
+        if (holesSurf.Count > 0) {
             distLeakAbove.CurrentValue = holesSurf[holesSurf.Count - 1].heightByBuoyancy - weightTotal.CurrentValue;
+        }
         // In this case, not a "Leak" above, but rather, the edge of that given boat level. When this hits zero, the entire floor is lost (game over if it's the last/only floor)
-        // TODO: Provide more dramatic warning in UI that the next "leak" is a floor being lost.
-        else
+        else {
+            levelMsg.RaiseEvent("Level Flood Imminent!");
             distLeakAbove.CurrentValue = buoyancy.CurrentValue - weightTotal.CurrentValue;
+        }
 
         if (holesSubm.Count > 0)
             distLeakBelow.CurrentValue = weightTotal.CurrentValue - holesSubm[holesSubm.Count - 1].heightByBuoyancy;
@@ -174,6 +184,7 @@ public class Boat : MonoBehaviour {
     }
 
     private void CheckHolesBoatRaised() {
+        // TODO: When data is first read, have the holes organized in these lists, so the closest holes are always at the end of the list, furthest at the beginning.
         for (var i = 0; i < holesSubm.Count; i++) {
             if (holesSubm[i].obj.transform.position.y > waterSurfaceYPos) {
                 // TODO: Do something with hole.obj reference - change animation to show it's no longer taking in water (change obj reference to a script reference if needed)
@@ -199,6 +210,9 @@ public class Boat : MonoBehaviour {
     }
 
     public virtual void AddWater() {
+        if (holesSubm.Count == 0)
+            return;
+
         // Calculate water change value
         int waterWeightChange = 0;
         for (var i = 0; i < holesSubm.Count; i++)

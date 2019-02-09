@@ -60,7 +60,7 @@ public class ItemBase : SpriteTossable {
     }
 
     public void Deselect() {
-        SortCompFullReset();
+        SortCompResetToBase();
         EnableMouseTracking(true);
         lvlMngr.OnDeselection(this);
         InUse = false;
