@@ -98,7 +98,7 @@ public class CharAdult : CharChild {
 
     // Scooping Water ===============================================================
 
-    public virtual void PrepScoop() {
+    public void PrepScoop() {
         PrepAction(Consts.Skills.ScoopWater);
         lvlMngr.HighlightToSelect(Consts.HighlightGroupType.Scooping, OnSelectionScoop);
     }

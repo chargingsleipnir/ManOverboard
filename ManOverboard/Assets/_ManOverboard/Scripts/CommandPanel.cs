@@ -9,6 +9,8 @@ public class CommandPanel : SpriteBase {
     private GameObject scoopBtnPrefab;
     [SerializeField]
     private GameObject donJacketBtnPrefab;
+    [SerializeField]
+    private GameObject repairBtnPrefab;
 
     private List<GameObject> initBtns;
     private Dictionary<Consts.Skills, GameObject> skillToBtnDict;
@@ -39,6 +41,9 @@ public class CommandPanel : SpriteBase {
         }
         else if (skill == Consts.Skills.ScoopWater) {
             InstantiateBtnCommon(scoopBtnPrefab, skill, mouseUpCB);
+        }
+        else if (skill == Consts.Skills.RepairPinhole) {
+            InstantiateBtnCommon(repairBtnPrefab, skill, mouseUpCB);
         }
     }
 

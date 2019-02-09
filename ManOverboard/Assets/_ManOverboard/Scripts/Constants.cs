@@ -18,6 +18,7 @@ public static class Consts {
 
     public const float SCOOP_RATE = 200.0f;
     public const float DON_RATE = 250.0f;
+    public const float REPAIR_RATE = 500.0f;
 
     public enum LeakTypesAndRates {
         Pinhole = 1,
@@ -56,7 +57,9 @@ public static class Consts {
         Scooping,
         LifeJacketChild,
         LifeJacketAdult,
-        Children
+        Children,
+        RepairKits,
+        PinHoles
     }
     public enum FitSizes { adult, child }
     public enum CharState {
@@ -84,6 +87,7 @@ public static class Consts {
         None,
         DonLifeJacket,
         ScoopWater,
+        RepairPinhole,
         LowerAnchor,
         ReleaseAnchor,
         RaiseSail

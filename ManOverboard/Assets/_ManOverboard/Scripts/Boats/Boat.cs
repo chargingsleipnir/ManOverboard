@@ -6,18 +6,6 @@ using ZeroProgress.Common;
 using ZeroProgress.Common.Collections;
 using Game2DWaterKit;
 
-public class Hole {
-    public GameObject obj;
-    public int leakRate;
-    public int heightByBuoyancy;
-
-    public Hole(GameObject obj, int leakRate, int heightByBuoyancy) {
-        this.obj = obj;
-        this.leakRate = leakRate;
-        this.heightByBuoyancy = heightByBuoyancy;
-    }
-}
-
 [System.Serializable]
 public struct HoleData {
     public int heightByBuoyancy;
@@ -26,6 +14,10 @@ public struct HoleData {
 
 //[RequireComponent(typeof(Rigidbody2D), typeof(Collider2D))]
 public class Boat : MonoBehaviour {
+
+    protected bool startRan; // only here so start can be called from level manager because boat start needs to run before character start
+    protected LevelManager lvlMngr;
+    public LevelManager LvlMngr { set { lvlMngr = value; } }
 
     public delegate void NumLeaksDelegate(int numLeaks);
     NumLeaksDelegate NumLeaksCB;
@@ -56,8 +48,10 @@ public class Boat : MonoBehaviour {
     public GameObject hole;
     [Tooltip("Use values in line with object weight, buoyancy, etc. from the bottom of the boat, upward.")]
     public HoleData[] holeDataSet;
+
     private List<Hole> holesSubm;
     private List<Hole> holesSurf;
+    public List<Hole> Pinholes { get; private set; }
 
     public int waterStartWeight;
     private ScriptableInt buoyancy;
@@ -106,7 +100,10 @@ public class Boat : MonoBehaviour {
         waterSurfaceYPos = (water.transform.position.y + (water.GetComponent<Game2DWater>().WaterSize.y * 0.5f));
         holesSubm = new List<Hole>();
         holesSurf = new List<Hole>();
+        Pinholes = new List<Hole>();
     }
+
+    public virtual void Start() {} // only here so start can be called from level manager because boat start needs to run before character start
 
     protected void OnStart(int buoyancyTotal) {
 
@@ -146,11 +143,17 @@ public class Boat : MonoBehaviour {
             float yPos = SubmergableAreaRef.YMin + (holeDataSet[i].heightByBuoyancy * sinkHeightIncr);
 
             GameObject holeObj = Instantiate(hole, new Vector3(Random.Range(SubmergableAreaRef.XMin, SubmergableAreaRef.XMax), yPos, transform.position.z - 0.1f), transform.rotation, transform) as GameObject;
-            if (yPos <= waterSurfaceYPos) {
-                holesSubm.Add(new Hole(holeObj, (int)holeDataSet[i].leakType, holeDataSet[i].heightByBuoyancy));
-            }
-            else {
-                holesSurf.Add(new Hole(holeObj, (int)holeDataSet[i].leakType, holeDataSet[i].heightByBuoyancy));
+            Hole newHole = holeObj.GetComponent<Hole>();
+            newHole.Init(lvlMngr, (int)holeDataSet[i].leakType, holeDataSet[i].heightByBuoyancy);
+
+            if (yPos <= waterSurfaceYPos)
+                holesSubm.Add(newHole);
+            else
+                holesSurf.Add(newHole);
+
+            if (holeDataSet[i].leakType == Consts.LeakTypesAndRates.Pinhole) {
+                Pinholes.Add(newHole);
+                newHole.AddHighlightComponent();
             }
         }
 
@@ -165,7 +168,7 @@ public class Boat : MonoBehaviour {
 
         // "weightTotal.CurrentValue" is perfectly representative of where the water level is relative to the depth the boat can sink by buoyancy/weight.
         if (holesSurf.Count > 0) {
-            distLeakAbove.CurrentValue = holesSurf[holesSurf.Count - 1].heightByBuoyancy - weightTotal.CurrentValue;
+            distLeakAbove.CurrentValue = holesSurf[holesSurf.Count - 1].HeightByBuoyancy - weightTotal.CurrentValue;
         }
         // In this case, not a "Leak" above, but rather, the edge of that given boat level. When this hits zero, the entire floor is lost (game over if it's the last/only floor)
         else {
@@ -174,7 +177,7 @@ public class Boat : MonoBehaviour {
         }
 
         if (holesSubm.Count > 0)
-            distLeakBelow.CurrentValue = weightTotal.CurrentValue - holesSubm[holesSubm.Count - 1].heightByBuoyancy;
+            distLeakBelow.CurrentValue = weightTotal.CurrentValue - holesSubm[holesSubm.Count - 1].HeightByBuoyancy;
         else
             distLeakBelow.CurrentValue = -1;
     }
@@ -186,7 +189,7 @@ public class Boat : MonoBehaviour {
     private void CheckHolesBoatRaised() {
         // TODO: When data is first read, have the holes organized in these lists, so the closest holes are always at the end of the list, furthest at the beginning.
         for (var i = 0; i < holesSubm.Count; i++) {
-            if (holesSubm[i].obj.transform.position.y > waterSurfaceYPos) {
+            if (holesSubm[i].transform.position.y > waterSurfaceYPos) {
                 // TODO: Do something with hole.obj reference - change animation to show it's no longer taking in water (change obj reference to a script reference if needed)
                 holesSurf.Add(holesSubm[i]);
                 holesSubm.RemoveAt(i);
@@ -196,7 +199,7 @@ public class Boat : MonoBehaviour {
     }
     private void CheckHolesBoatLowered() {
         for (var i = 0; i < holesSurf.Count; i++) {
-            if (holesSurf[i].obj.transform.position.y <= waterSurfaceYPos) {
+            if (holesSurf[i].transform.position.y <= waterSurfaceYPos) {
                 // TODO: Do something with hole.obj reference - change animation to show it's taking in water (change obj reference to a script reference if needed)
                 holesSubm.Add(holesSurf[i]);
                 holesSurf.RemoveAt(i);
@@ -216,7 +219,7 @@ public class Boat : MonoBehaviour {
         // Calculate water change value
         int waterWeightChange = 0;
         for (var i = 0; i < holesSubm.Count; i++)
-            waterWeightChange += holesSubm[i].leakRate;
+            waterWeightChange += holesSubm[i].LeakRate;
 
         // Each hole eaqually contributes to water gain / buoyancy loss
         weightWater.CurrentValue += waterWeightChange;
