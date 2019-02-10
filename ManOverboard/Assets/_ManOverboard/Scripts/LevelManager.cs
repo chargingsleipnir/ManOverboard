@@ -176,7 +176,12 @@ public class LevelManager : MonoBehaviour {
         return itemsCanScoop.Count > 0;
     }
     public bool CheckCanRepair() {
-        return repairKits.Count > 0 && boat.Pinholes.Count > 0;
+        int usefullRepairKits = 0;
+        foreach (RepairKit kit in repairKits)
+            if (kit.uses > 0)
+                usefullRepairKits++;
+
+        return usefullRepairKits > 0 && boat.Pinholes.Count > 0;
 
         // TODO: Need to exclude holes that are in the process of being repaired.
     }
@@ -491,6 +496,10 @@ public class LevelManager : MonoBehaviour {
 
     public void SetBoatAsParent(SpriteBase sprite) {
         sprite.SortCompResetToBase(boat.transform);
+    }
+
+    public void RepairBoat(Hole hole) {
+        boat.Repair(hole);
     }
 
     // BOOKMARK

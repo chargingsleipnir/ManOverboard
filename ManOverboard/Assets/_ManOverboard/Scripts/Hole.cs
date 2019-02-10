@@ -7,6 +7,9 @@ public class Hole : SpriteBase, IMouseUpDetector {
     public int HeightByBuoyancy { get; private set; }
     private LevelManager lvlMngr;
 
+    [SerializeField]
+    private GameObject bandage;
+
     public void Init(LevelManager lvlMngr, int leakRate, int heightByBuoyancy) {
         this.lvlMngr = lvlMngr;
         this.LeakRate = leakRate;
@@ -56,5 +59,9 @@ public class Hole : SpriteBase, IMouseUpDetector {
         SortCompResetToBase();
         so.enabled = false;
         selectable = false;
+    }
+
+    public void Repair() {
+        bandage.SetActive(true);
     }
 }

@@ -19,6 +19,7 @@ public class SpriteTossable : SpriteBase, IMouseDownDetector, IMouseUpDetector {
     protected int weight;
     public virtual int Weight {
         get { return weight; }
+        set { weight = value; }
     }
 
     protected override void Awake() {

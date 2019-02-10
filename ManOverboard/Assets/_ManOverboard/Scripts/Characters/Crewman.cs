@@ -12,6 +12,8 @@ public class Crewman : CharAdult {
     Vector3 capPosLocal;
     bool capDonned;
 
+    private Hole holeToRepair;
+
     protected bool canRepair = false;
 
     protected override void Awake() {
@@ -112,15 +114,21 @@ public class Crewman : CharAdult {
         lvlMngr.HighlightToSelect(Consts.HighlightGroupType.PinHoles, OnSelectionPinhole);
     }
     private void OnSelectionPinhole(SpriteBase sprite) {
-        Debug.Log("Crewman: Selected: " + sprite.name);
+        holeToRepair = sprite as Hole;
 
         activityCounter = activityInterval = Consts.REPAIR_RATE;
         ActionComplete = CompleteRepair;
         TakeAction();
     }
     private void CompleteRepair() {
-        Debug.Log("Crewman - repair complete");
+        (itemHeld as RepairKit).uses -= 1;
+        // TODO: Does the weight simply disappear? Add it to the boat by reducing it's buoyancy?
+        // But repairing a hole would increase the buoyancy anyway, so reduce this weight and call it even?
+        itemHeld.Weight -= 2;
+
+        lvlMngr.RepairBoat(holeToRepair);
         EndAction();
+        DropItemHeld();
     }
 
     public void LowerAnchor() {

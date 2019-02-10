@@ -8,7 +8,9 @@ using Game2DWaterKit;
 
 [System.Serializable]
 public struct HoleData {
-    public int heightByBuoyancy;
+    [Range(0, 1.0f)]
+    public float xByPercent;
+    public int yByBuoyancy;    
     public Consts.LeakTypesAndRates leakType;
 }
 
@@ -138,13 +140,15 @@ public class Boat : MonoBehaviour {
         AdjustBoatDepth();
 
         // Put hole(s) in boat
+        // Use width of Submergable area reference to determine x position
+        float xWidth = SubmergableAreaRef.XMax - SubmergableAreaRef.XMin;
         for (var i = 0; i < holeDataSet.Length; i++) {
             // Calulate proper height
-            float yPos = SubmergableAreaRef.YMin + (holeDataSet[i].heightByBuoyancy * sinkHeightIncr);
+            float yPos = SubmergableAreaRef.YMin + (holeDataSet[i].yByBuoyancy * sinkHeightIncr);
 
-            GameObject holeObj = Instantiate(hole, new Vector3(Random.Range(SubmergableAreaRef.XMin, SubmergableAreaRef.XMax), yPos, transform.position.z - 0.1f), transform.rotation, transform) as GameObject;
+            GameObject holeObj = Instantiate(hole, new Vector3(SubmergableAreaRef.XMin + (holeDataSet[i].xByPercent * xWidth), yPos, transform.position.z - 0.1f), transform.rotation, transform) as GameObject;
             Hole newHole = holeObj.GetComponent<Hole>();
-            newHole.Init(lvlMngr, (int)holeDataSet[i].leakType, holeDataSet[i].heightByBuoyancy);
+            newHole.Init(lvlMngr, (int)holeDataSet[i].leakType, holeDataSet[i].yByBuoyancy);
 
             if (yPos <= waterSurfaceYPos)
                 holesSubm.Add(newHole);
@@ -248,6 +252,26 @@ public class Boat : MonoBehaviour {
     public void RemoveLoad(int weight) {
         weightLoad.CurrentValue -= weight;
         Surface(weight);
+    }
+    public void Repair(Hole hole) {
+        hole.Repair();
+        Pinholes.Remove(hole);
+
+        foreach(Hole h in holesSubm) {
+            if (h == hole) {
+                holesSubm.Remove(h);
+                return;
+            }
+        }
+        foreach(Hole h in holesSurf) {
+            if (h == hole) {
+                holesSurf.Remove(h);
+                return;
+            }
+        }
+
+        AllLeaksToWaterUIUpdate();
+        uiUpdate.RaiseEvent();
     }
 
     /// <summary>
