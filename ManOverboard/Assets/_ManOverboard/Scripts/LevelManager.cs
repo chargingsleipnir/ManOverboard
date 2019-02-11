@@ -90,7 +90,6 @@ public class LevelManager : MonoBehaviour {
         shipSinkCoroutine = null;
 
         boat.LvlMngr = this;
-        boat.AddNumLeaksCallback(NumLeaks);
         boat.Start();
 
         charSetStartCount = 0;
@@ -177,13 +176,17 @@ public class LevelManager : MonoBehaviour {
     }
     public bool CheckCanRepair() {
         int usefullRepairKits = 0;
+        int holesNotInRepair = 0;
+
         foreach (RepairKit kit in repairKits)
-            if (kit.uses > 0)
+            if(!kit.InUse && kit.uses > 0)
                 usefullRepairKits++;
 
-        return usefullRepairKits > 0 && boat.Pinholes.Count > 0;
+        foreach (Hole hole in boat.Pinholes)
+            if (!hole.InRepair)
+                holesNotInRepair++;
 
-        // TODO: Need to exclude holes that are in the process of being repaired.
+        return usefullRepairKits > 0 && holesNotInRepair > 0;
     }
 
     private void Update() {
@@ -298,7 +301,7 @@ public class LevelManager : MonoBehaviour {
         levelState = state;
     }
 
-    private void NumLeaks(int numLeaks) {
+    public void NumLeaks(int numLeaks) {
         // TODO: Have the number of leaks on the gui somewhere?
         if(numLeaks == 0) {
             // level over

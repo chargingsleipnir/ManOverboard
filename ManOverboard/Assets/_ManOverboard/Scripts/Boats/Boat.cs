@@ -21,9 +21,6 @@ public class Boat : MonoBehaviour {
     protected LevelManager lvlMngr;
     public LevelManager LvlMngr { set { lvlMngr = value; } }
 
-    public delegate void NumLeaksDelegate(int numLeaks);
-    NumLeaksDelegate NumLeaksCB;
-
     [SerializeField]
     [Tooltip("The rigid body of this object")]
     protected Rigidbody2D myRigidbody;
@@ -155,10 +152,8 @@ public class Boat : MonoBehaviour {
             else
                 holesSurf.Add(newHole);
 
-            if (holeDataSet[i].leakType == Consts.LeakTypesAndRates.Pinhole) {
+            if (holeDataSet[i].leakType == Consts.LeakTypesAndRates.Pinhole)
                 Pinholes.Add(newHole);
-                newHole.AddHighlightComponent();
-            }
         }
 
         AllLeaksToWaterUIUpdate();
@@ -186,10 +181,6 @@ public class Boat : MonoBehaviour {
             distLeakBelow.CurrentValue = -1;
     }
 
-    public void AddNumLeaksCallback(NumLeaksDelegate CB) {
-        NumLeaksCB = CB;
-    }
-
     private void CheckHolesBoatRaised() {
         // TODO: When data is first read, have the holes organized in these lists, so the closest holes are always at the end of the list, furthest at the beginning.
         for (var i = 0; i < holesSubm.Count; i++) {
@@ -197,7 +188,7 @@ public class Boat : MonoBehaviour {
                 // TODO: Do something with hole.obj reference - change animation to show it's no longer taking in water (change obj reference to a script reference if needed)
                 holesSurf.Add(holesSubm[i]);
                 holesSubm.RemoveAt(i);
-                NumLeaksCB(holesSubm.Count);
+                lvlMngr.NumLeaks(holesSubm.Count);
             }
         }
     }
@@ -260,18 +251,20 @@ public class Boat : MonoBehaviour {
         foreach(Hole h in holesSubm) {
             if (h == hole) {
                 holesSubm.Remove(h);
+                AllLeaksToWaterUIUpdate();
+                uiUpdate.RaiseEvent();
+                lvlMngr.NumLeaks(holesSubm.Count);                
                 return;
             }
         }
         foreach(Hole h in holesSurf) {
             if (h == hole) {
                 holesSurf.Remove(h);
+                AllLeaksToWaterUIUpdate();
+                uiUpdate.RaiseEvent();
                 return;
             }
-        }
-
-        AllLeaksToWaterUIUpdate();
-        uiUpdate.RaiseEvent();
+        }        
     }
 
     /// <summary>

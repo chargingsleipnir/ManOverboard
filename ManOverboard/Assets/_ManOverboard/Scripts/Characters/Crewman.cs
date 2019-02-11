@@ -74,6 +74,14 @@ public class Crewman : CharAdult {
         base.LoseItem(item);
     }
 
+    public override void CancelAction() {
+        if(holeToRepair != null) {
+            holeToRepair.InRepair = false;
+            holeToRepair = null;
+        }
+        base.CancelAction();
+    }
+
     public override void DropItemHeld() {
         if (itemHeld == null)
             return;
@@ -116,6 +124,7 @@ public class Crewman : CharAdult {
     private void OnSelectionPinhole(SpriteBase sprite) {
         holeToRepair = sprite as Hole;
 
+        holeToRepair.InRepair = true;
         activityCounter = activityInterval = Consts.REPAIR_RATE;
         ActionComplete = CompleteRepair;
         TakeAction();
@@ -127,8 +136,11 @@ public class Crewman : CharAdult {
         itemHeld.Weight -= 2;
 
         lvlMngr.RepairBoat(holeToRepair);
+        holeToRepair = null;
+
         EndAction();
         DropItemHeld();
+        
     }
 
     public void LowerAnchor() {

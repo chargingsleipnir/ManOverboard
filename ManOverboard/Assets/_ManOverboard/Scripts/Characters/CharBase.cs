@@ -378,7 +378,9 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
             activeChar = null;
         }
 
-        CharState = Consts.CharState.Default;
+        if(CharState != Consts.CharState.Saved)
+            CharState = Consts.CharState.Default;
+
         activeSkill = Consts.Skills.None;
     }
 
