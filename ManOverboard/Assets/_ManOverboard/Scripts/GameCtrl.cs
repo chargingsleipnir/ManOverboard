@@ -52,7 +52,6 @@ public class GameCtrl : MonoBehaviour {
         if (File.Exists(filePath)) {
             string jsonString = File.ReadAllText(filePath);
             root = JsonUtility.FromJson<JSONRoot>(jsonString);
-            //Debug.Log(root.level[0].maxCharLoss[0]);
             dataLoaded = true;
         }
         else {

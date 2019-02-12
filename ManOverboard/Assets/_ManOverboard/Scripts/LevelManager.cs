@@ -39,6 +39,7 @@ public class LevelManager : MonoBehaviour {
     private List<ItemCanScoop> itemsCanScoop;
     private List<LifeJacket> lifeJacketsAdult;
     private List<LifeJacket> lifeJacketsChild;
+    private List<RepairKit> repairKits;
 
     public delegate void SelectionCallback(SpriteBase spriteSelected);
     SelectionCallback SelectionCB;
@@ -88,7 +89,8 @@ public class LevelManager : MonoBehaviour {
     private void Start () {
         shipSinkCoroutine = null;
 
-        boat.AddNumLeaksCallback(NumLeaks);
+        boat.LvlMngr = this;
+        boat.Start();
 
         charSetStartCount = 0;
         charsTossedWithLifeJackets = 0;
@@ -131,6 +133,7 @@ public class LevelManager : MonoBehaviour {
         itemsCanScoop = new List<ItemCanScoop>();
         lifeJacketsAdult = new List<LifeJacket>();
         lifeJacketsChild = new List<LifeJacket>();
+        repairKits = new List<RepairKit>();
         foreach (ItemBase item in items) {
             item.AddHighlightComponent();
             ReturnItem(item);
@@ -170,6 +173,20 @@ public class LevelManager : MonoBehaviour {
     }
     public bool CheckCanScoop() {
         return itemsCanScoop.Count > 0;
+    }
+    public bool CheckCanRepair() {
+        int usefullRepairKits = 0;
+        int holesNotInRepair = 0;
+
+        foreach (RepairKit kit in repairKits)
+            if(!kit.InUse && kit.uses > 0)
+                usefullRepairKits++;
+
+        foreach (Hole hole in boat.Pinholes)
+            if (!hole.InRepair)
+                holesNotInRepair++;
+
+        return usefullRepairKits > 0 && holesNotInRepair > 0;
     }
 
     private void Update() {
@@ -284,7 +301,7 @@ public class LevelManager : MonoBehaviour {
         levelState = state;
     }
 
-    private void NumLeaks(int numLeaks) {
+    public void NumLeaks(int numLeaks) {
         // TODO: Have the number of leaks on the gui somewhere?
         if(numLeaks == 0) {
             // level over
@@ -334,6 +351,14 @@ public class LevelManager : MonoBehaviour {
             foreach (CharChild child in children)
                 child.HighlightToSelect();
         }
+        else if (groupType == Consts.HighlightGroupType.RepairKits) {
+            foreach (RepairKit kit in repairKits)
+                kit.HighlightToSelect();
+        }
+        else if (groupType == Consts.HighlightGroupType.PinHoles) {
+            foreach (Hole hole in boat.Pinholes)
+                hole.HighlightToSelect();
+        }
     }
     // BOOKMARK
     public void UnHighlight() {
@@ -347,6 +372,10 @@ public class LevelManager : MonoBehaviour {
             itemLJ.UnHighlight();
         foreach (CharChild child in children)
             child.UnHighlight();
+        foreach (RepairKit kit in repairKits)
+            kit.UnHighlight();
+        foreach (Hole hole in boat.Pinholes)
+            hole.UnHighlight();
 
         currGroupsLit.Clear();
     }
@@ -368,6 +397,14 @@ public class LevelManager : MonoBehaviour {
         else if (groupType == Consts.HighlightGroupType.Children) {
             foreach (CharChild child in children)
                 child.UnHighlight();
+        }
+        else if (groupType == Consts.HighlightGroupType.RepairKits) {
+            foreach (RepairKit kit in repairKits)
+                kit.UnHighlight();
+        }
+        else if (groupType == Consts.HighlightGroupType.PinHoles) {
+            foreach (Hole hole in boat.Pinholes)
+                hole.UnHighlight();
         }
 
         currGroupsLit.Remove(groupType);
@@ -427,6 +464,9 @@ public class LevelManager : MonoBehaviour {
         else if(item is ItemCanScoop) {
             itemsCanScoop.Remove(item as ItemCanScoop);
         }
+        else if (item is RepairKit) {
+            repairKits.Remove(item as RepairKit);
+        }
     }
     private void ReturnItem(ItemBase item) {
         if (item is LifeJacket) {
@@ -436,8 +476,10 @@ public class LevelManager : MonoBehaviour {
             else
                 lifeJacketsAdult.Add(jacket);
         }
-        if (item is ItemCanScoop)
+        else if (item is ItemCanScoop)
             itemsCanScoop.Add(item as ItemCanScoop);
+        else if (item is RepairKit)
+            repairKits.Add(item as RepairKit);
     }
     
     public void RemoveWater(int waterWeight) {
@@ -457,6 +499,10 @@ public class LevelManager : MonoBehaviour {
 
     public void SetBoatAsParent(SpriteBase sprite) {
         sprite.SortCompResetToBase(boat.transform);
+    }
+
+    public void RepairBoat(Hole hole) {
+        boat.Repair(hole);
     }
 
     // BOOKMARK

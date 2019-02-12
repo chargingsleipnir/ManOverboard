@@ -322,9 +322,9 @@ public class SpriteBase : MonoBehaviour {
     private Transform baseParent;
     private Transform currParent;
 
-    private Vector3 origPos;
+    //private Vector3 origPos;
 
-    private SpriteOutline so;
+    protected SpriteOutline so;
     protected bool selectable;
 
     protected bool awakeRan = false;
@@ -347,7 +347,7 @@ public class SpriteBase : MonoBehaviour {
         // Get whatever parent sprite group data is available
         origParent = baseParent = currParent = transform.parent;
 
-        origPos = transform.position;
+        //origPos = transform.position;
 
         selectable = false;
 
@@ -470,7 +470,7 @@ public class SpriteBase : MonoBehaviour {
             trackers[i].enabled = isEnabled;
     }
 
-    public void AddHighlightComponent(bool enableComponent = false) {
+    public virtual void AddHighlightComponent(bool enableComponent = false) {
         so = GetComponent<SpriteOutline>();
         if (so == null) {
             so = gameObject.AddComponent<SpriteOutline>();
@@ -498,7 +498,7 @@ public class SpriteBase : MonoBehaviour {
         selectable = true;
     }
 
-    public void UnHighlight() {
+    public virtual void UnHighlight() {
         if (so == null)
             return;
 

@@ -6,7 +6,11 @@ public class Dinghy : Boat {
 
     const int BUOYANCY_MAX = 1000;
 
-    protected void Start() {
+    public override void Start() {
+        if (startRan)
+            return;
+
         OnStart(BUOYANCY_MAX);
+        startRan = true;
     }
 }

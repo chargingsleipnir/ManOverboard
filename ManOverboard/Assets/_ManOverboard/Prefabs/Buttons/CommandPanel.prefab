@@ -108,3 +108,5 @@ MonoBehaviour:
     type: 3}
   donJacketBtnPrefab: {fileID: 1251050269509320, guid: 80d8a0cd751089d47a8002f4568cde78,
     type: 3}
+  repairBtnPrefab: {fileID: 3730163333829353307, guid: 0b7a3705be22e1745a185afd3c5be4d5,
+    type: 3}

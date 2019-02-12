@@ -11,6 +11,9 @@
 		},
 		{
 			"maxCharLoss": [3, 2, 1, 0]
+		},
+		{
+			"maxCharLoss": [3, 2, 1, 0]
 		}
 	]
 }

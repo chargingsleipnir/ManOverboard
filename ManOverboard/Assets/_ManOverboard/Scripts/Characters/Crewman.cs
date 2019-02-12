@@ -12,6 +12,10 @@ public class Crewman : CharAdult {
     Vector3 capPosLocal;
     bool capDonned;
 
+    private Hole holeToRepair;
+
+    protected bool canRepair = false;
+
     protected override void Awake() {
         capPosLocal = sailorCap.transform.localPosition;
         capDonned = true;
@@ -27,20 +31,38 @@ public class Crewman : CharAdult {
         WearItem(sailorCap);
     }
 
-    //public override void SetActionBtns() {
+    public override void SetActionBtns() {
+        commandPanel.InactiveAwake();
 
-    //}
+        canDonLifeJacketSelf = lvlMngr.CheckCanDonLifeJacketAdults() && IsWearingLifeJacket == false;
+        canDonLifeJacketChild = lvlMngr.CheckCanDonLifeJacketChildren();
+        canScoop = lvlMngr.CheckCanScoop();
+        canRepair = lvlMngr.CheckCanRepair();
 
-    //public override void CheckActions() {
-
-    //}
-
-    protected override void OnSelectionScoop(SpriteBase sprite) {
-        if ((sprite as ItemBase) == sailorCap) {
-            capDonned = false;
+        if (canDonLifeJacketSelf) {
+            canAct = true;
+            commandPanel.PrepBtn(Consts.Skills.DonLifeJacket, PrepDonLifeJacket);
+        }
+        if (canDonLifeJacketChild) {
+            canAct = true;
+            commandPanel.PrepBtn(Consts.Skills.DonLifeJacket, PrepDonLifeJacket);
+        }
+        if (canScoop) {
+            canAct = true;
+            commandPanel.PrepBtn(Consts.Skills.ScoopWater, PrepScoop);
+        }
+        if(canRepair) {
+            canAct = true;
+            commandPanel.PrepBtn(Consts.Skills.RepairPinhole, PrepRepair);
         }
 
-        base.OnSelectionScoop(sprite);
+        commandPanel.SetBtns();
+    }
+
+    public override void CheckActions() {
+        base.CheckActions();
+        canRepair = lvlMngr.CheckCanRepair();
+        commandPanel.EnableBtn(Consts.Skills.RepairPinhole, canRepair);
     }
 
     public override void LoseItem(ItemBase item) {
@@ -50,6 +72,14 @@ public class Crewman : CharAdult {
         }
 
         base.LoseItem(item);
+    }
+
+    public override void CancelAction() {
+        if(holeToRepair != null) {
+            holeToRepair.InRepair = false;
+            holeToRepair = null;
+        }
+        base.CancelAction();
     }
 
     public override void DropItemHeld() {
@@ -75,13 +105,43 @@ public class Crewman : CharAdult {
         base.DropItemHeld();
     }
 
-    //private void ClickThroughHat(bool clickThrough) {
-    //    RefShape2DMouseTracker[] trackers = sailorHat.GetComponents<RefShape2DMouseTracker>();
-    //    for (int i = 0; i < trackers.Length; i++)
-    //        trackers[i].clickThrough = clickThrough;
-    //}
-
     // JOB SPECIFIC ACTIONS (just examples for now)
+
+    protected override void OnSelectionScoop(SpriteBase sprite) {
+        if ((sprite as ItemBase) == sailorCap)
+            capDonned = false;
+
+        base.OnSelectionScoop(sprite);
+    }
+
+    public void PrepRepair() {
+        PrepAction(Consts.Skills.RepairPinhole);
+        lvlMngr.HighlightToSelect(Consts.HighlightGroupType.RepairKits, OnSelectionRepairKit);
+    }
+    private void OnSelectionRepairKit(SpriteBase sprite) {
+        lvlMngr.HighlightToSelect(Consts.HighlightGroupType.PinHoles, OnSelectionPinhole);
+    }
+    private void OnSelectionPinhole(SpriteBase sprite) {
+        holeToRepair = sprite as Hole;
+
+        holeToRepair.InRepair = true;
+        activityCounter = activityInterval = Consts.REPAIR_RATE;
+        ActionComplete = CompleteRepair;
+        TakeAction();
+    }
+    private void CompleteRepair() {
+        (itemHeld as RepairKit).uses -= 1;
+        // TODO: Does the weight simply disappear? Add it to the boat by reducing it's buoyancy?
+        // But repairing a hole would increase the buoyancy anyway, so reduce this weight and call it even?
+        itemHeld.Weight -= 2;
+
+        lvlMngr.RepairBoat(holeToRepair);
+        holeToRepair = null;
+
+        EndAction();
+        DropItemHeld();
+        
+    }
 
     public void LowerAnchor() {
 

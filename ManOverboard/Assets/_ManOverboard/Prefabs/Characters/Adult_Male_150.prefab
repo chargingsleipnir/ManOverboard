@@ -12,6 +12,21 @@ PrefabInstance:
       propertyPath: m_Name
       value: Adult_Male_150
       objectReference: {fileID: 0}
+    - target: {fileID: 279340563389323126, guid: e51c7e9663db9b0449b6b9e0405649a5,
+        type: 3}
+      propertyPath: weight
+      value: 150
+      objectReference: {fileID: 0}
+    - target: {fileID: 279340563389323126, guid: e51c7e9663db9b0449b6b9e0405649a5,
+        type: 3}
+      propertyPath: strength
+      value: 60
+      objectReference: {fileID: 0}
+    - target: {fileID: 279340563389323126, guid: e51c7e9663db9b0449b6b9e0405649a5,
+        type: 3}
+      propertyPath: speed
+      value: 60
+      objectReference: {fileID: 0}
     - target: {fileID: 9191943608723016714, guid: e51c7e9663db9b0449b6b9e0405649a5,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -71,21 +86,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalScale.y
       value: 0.75
-      objectReference: {fileID: 0}
-    - target: {fileID: 279340563389323126, guid: e51c7e9663db9b0449b6b9e0405649a5,
-        type: 3}
-      propertyPath: weight
-      value: 150
-      objectReference: {fileID: 0}
-    - target: {fileID: 279340563389323126, guid: e51c7e9663db9b0449b6b9e0405649a5,
-        type: 3}
-      propertyPath: strength
-      value: 50
-      objectReference: {fileID: 0}
-    - target: {fileID: 279340563389323126, guid: e51c7e9663db9b0449b6b9e0405649a5,
-        type: 3}
-      propertyPath: speed
-      value: 50
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e51c7e9663db9b0449b6b9e0405649a5, type: 3}
