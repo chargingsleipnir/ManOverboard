@@ -20,6 +20,9 @@ public static class Consts {
     public const float DON_RATE = 250.0f;
     public const float REPAIR_RATE = 500.0f;
 
+    public const float TOSS_NOISE_MIN = -10.0f;
+    public const float TOSS_NOISE_MAX = 10.0f;
+
     public enum LeakTypesAndRates {
         Pinhole = 1,
         Bullet = 3,

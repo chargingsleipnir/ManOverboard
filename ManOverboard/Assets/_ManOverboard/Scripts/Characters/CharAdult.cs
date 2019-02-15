@@ -80,16 +80,16 @@ public class CharAdult : CharChild {
     }
     private void CompleteDonLifeJacketChild() {
         // TODO: Just set in center of self for now, will need proper location around center of torso later
-        itemHeld.transform.position = activeChar.transform.position;
-        itemHeld.transform.parent = activeChar.transform;
+        ItemHeld.transform.position = activeChar.transform.position;
+        ItemHeld.transform.parent = activeChar.transform;
 
-        ItemWeight -= itemHeld.Weight;
-        activeChar.WearItem(itemHeld);
+        ItemWeight -= ItemHeld.Weight;
+        activeChar.WearItem(ItemHeld);
         activeChar.IsWearingLifeJacket = true;
         activeChar.CharState = Consts.CharState.Default;
         activeChar.SetStateDazed(false);
 
-        itemHeld = null;
+        ItemHeld = null;
 
         //(selectObjQueue[0] as ItemBase).RetPosLocal = (selectObjQueue[0] as ItemBase).transform.localPosition;
 

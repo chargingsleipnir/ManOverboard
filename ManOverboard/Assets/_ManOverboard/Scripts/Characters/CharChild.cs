@@ -42,11 +42,11 @@ public class CharChild : CharBase {
     }
     protected void CompleteDonLifeJacket() {
         // TODO: Just set in center of self for now, will need proper location around center of torso later
-        itemHeld.transform.position = transform.position;
-        itemHeld.transform.parent = transform;
+        ItemHeld.transform.position = transform.position;
+        ItemHeld.transform.parent = transform;
 
         // Life jacket now permanently afixxed to the character
-        itemsWorn.Add(itemHeld);
+        itemsWorn.Add(ItemHeld);
         IsWearingLifeJacket = true;
 
         //(selectObjQueue[0] as ItemBase).RetPosLocal = (selectObjQueue[0] as ItemBase).transform.localPosition;

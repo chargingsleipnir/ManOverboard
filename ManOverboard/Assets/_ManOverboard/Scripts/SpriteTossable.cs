@@ -84,6 +84,7 @@ public class SpriteTossable : SpriteBase, IMouseDownDetector, IMouseUpDetector {
         rb.isKinematic = false;
         rb.velocity = vel;
         bc.enabled = true;
+        gameObject.layer = 9;
 
         RefShape2DMouseTracker[] trackers = GetComponents<RefShape2DMouseTracker>();
         for (int i = 0; i < trackers.Length; i++)

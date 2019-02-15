@@ -11,6 +11,7 @@ public class LevelManager : MonoBehaviour {
     private GameCtrl gameCtrl;
 
     Consts.LevelState levelState;
+    private bool prepTossCalc;
 
     [SerializeField]
     private GameObject waterObj;
@@ -111,7 +112,6 @@ public class LevelManager : MonoBehaviour {
 
         charSetStartCount = characterSet.Count;
 
-        levelState = Consts.LevelState.Default;
         holdWeight.CurrentValue = 0;
         uiUpdate.RaiseEvent();
 
@@ -149,10 +149,26 @@ public class LevelManager : MonoBehaviour {
 
         levelActive = true;
         levelPaused = false;
+        prepTossCalc = false;
 
         if (shipSinkCoroutine != null)
             StopCoroutine(shipSinkCoroutine);
         shipSinkCoroutine = StartCoroutine(SinkShipInterval());
+    }
+
+    private void Update() {
+        if (levelActive == false || prepTossCalc == false)
+            return;
+
+        heldSpriteTossable.MoveRigidbody();
+        mouseDelta = mousePos.CurrentValue - mouseLastPos;
+        mouseLastPos = mousePos.CurrentValue;
+    }
+
+    private void OnDestroy() {
+        DrawLayerMngr.ClearSpriteRef();
+        spriteTossableSet.Clear();
+        items.Clear();
     }
 
     public bool CheckCanDonLifeJacketChildren() {
@@ -187,20 +203,6 @@ public class LevelManager : MonoBehaviour {
         return usefullRepairKits > 0 && holesNotInRepair > 0;
     }
 
-    private void Update() {
-        if (levelState == Consts.LevelState.SpriteHeldToToss) {
-            heldSpriteTossable.MoveRigidbody();
-            mouseDelta = mousePos.CurrentValue - mouseLastPos;
-            mouseLastPos = mousePos.CurrentValue;
-        }        
-    }
-
-    private void OnDestroy() {
-        DrawLayerMngr.ClearSpriteRef();
-        spriteTossableSet.Clear();
-        items.Clear();
-    }
-
     public void OnSpriteMouseDown(GameObject spriteObj) {
         if (!levelActive)
             return;
@@ -213,6 +215,9 @@ public class LevelManager : MonoBehaviour {
         else
             heldChar = null;
 
+        // Bring character to focus, in front of everything.
+        heldSpriteTossable.SortCompLayerChange(Consts.DrawLayers.FrontOfLevel3, null);
+
         holdWeight.CurrentValue = heldSpriteTossable.Weight;
         uiUpdate.RaiseEvent();
 
@@ -220,28 +225,29 @@ public class LevelManager : MonoBehaviour {
     }
     public void HeldSpriteClick() {
         heldSpriteTossable.OnClick();
-
-        // Bring character to focus, in front of everything.
-        heldSpriteTossable.SortCompLayerChange(Consts.DrawLayers.FrontOfLevel3, null);
-
         FadeLevel();
     }
 
-    public void HeldSpriteExitTossArea() {
-        //Debug.Log("HeldSpriteExitTossArea");
-
-        levelState = Consts.LevelState.Default;
-        heldSpriteTossable.transform.localPosition = grabPosLocal;
+    public void HeldSpriteRelease() {
+        prepTossCalc = false;
+        UnfadeLevel();
+        ResetHeld();        
     }
     public void HeldSpriteEnterTossArea() {
-        //Debug.Log("HeldSpriteEnterTossArea");
-        levelState = Consts.LevelState.SpriteHeldToToss;
+        prepTossCalc = true;
     }
     public void HeldSpriteToss() {
         spriteMouseRespScpt.SetActive(false);
 
-        if (heldSpriteTossable is ItemBase)
+        // TODO: Top out the toss speed to something not TOO unreasonable
+        //Vector2 tossDir = mouseDelta.normalized;
+        float tossSpeed = mouseDelta.magnitude / Time.deltaTime;
+
+
+        if (heldSpriteTossable is ItemBase) {
             RemoveItem(heldSpriteTossable as ItemBase);
+            heldSpriteTossable.Toss(mouseDelta * tossSpeed);
+        }
         else {
             CharBase c = heldSpriteTossable as CharBase;
 
@@ -252,22 +258,17 @@ public class LevelManager : MonoBehaviour {
             }
 
             RemoveCharacter(c);
-        }
 
-        // TODO: Top out the toss speed to something not TOO unreasonable
-        float tossSpeed = mouseDelta.magnitude / Time.deltaTime;
+            if (c.ItemHeld != null)
+                c.ItemHeld.Toss(Utility.AddNoiseDeg(mouseDelta, Consts.TOSS_NOISE_MIN, Consts.TOSS_NOISE_MAX) * tossSpeed);
 
-        // TODO: Consider that when a character is holding 1 or more items, they should maybe be unparented and given varying trajectories upon being tossed.
-        // Lifejacket donned would be exeption to this, being worn, not held.
-        // Takes care of set removal
-        heldSpriteTossable.Toss(mouseDelta * tossSpeed);
-        heldSpriteTossable.gameObject.layer = 9; // tossed objects
+            c.Toss(mouseDelta * tossSpeed);
+        }         
 
         // Change weight in boat
         boat.RemoveLoad(holdWeight.CurrentValue);
 
-        levelState = Consts.LevelState.Default;
-
+        prepTossCalc = false;
         heldChar = null;
         heldSpriteTossable = null;        
 
@@ -279,11 +280,6 @@ public class LevelManager : MonoBehaviour {
 
     private void CheckLevelEndResult() {
         gameCtrl.GetCurrLevel();
-    }
-
-    // TODO: need to find a better way to dynamically select item types. Passing raw ints in the inspector is insufficient
-    public void ToState(Consts.LevelState state) {
-        levelState = state;
     }
 
     public void NumLeaks(int numLeaks) {
@@ -306,7 +302,6 @@ public class LevelManager : MonoBehaviour {
             }
 
             levelActive = false;
-            levelState = Consts.LevelState.Default;
 
             foreach (CharBase c in characterSet) {
                 c.SetStateSaved();
@@ -315,7 +310,6 @@ public class LevelManager : MonoBehaviour {
     }
 
     public void HighlightToSelect(Consts.HighlightGroupType groupType, SelectionCallback CB) {
-        levelState = Consts.LevelState.ObjectSelection;
         currGroupsLit.Add(groupType);
 
         SelectionCB = CB;
@@ -347,8 +341,6 @@ public class LevelManager : MonoBehaviour {
     }
     // BOOKMARK
     public void UnHighlight() {
-        levelState = Consts.LevelState.Default;
-
         foreach (ItemCanScoop itemCS in itemsCanScoop)
             itemCS.UnHighlight();
         foreach (LifeJacket itemLJ in lifeJacketsChild)
@@ -365,8 +357,6 @@ public class LevelManager : MonoBehaviour {
         currGroupsLit.Clear();
     }
     public void UnHighlight(Consts.HighlightGroupType groupType) {
-        levelState = Consts.LevelState.Default;
-
         if (groupType == Consts.HighlightGroupType.Scooping) {
             foreach (ItemCanScoop itemCS in itemsCanScoop)
                 itemCS.UnHighlight();
@@ -524,11 +514,10 @@ public class LevelManager : MonoBehaviour {
         UnfadeLevel();
         for(int i = currGroupsLit.Count - 1; i >= 0; i--)
             UnHighlight(currGroupsLit[i]);
+
         selectedItem = null;
-        levelState = Consts.LevelState.Default;
     }
-    // Called by RearMenuField when field is clicked, so as to cancel current selection process.
-    public void ResetAll() {
+    public void ResetHeld() {
         if (heldChar != null)
             heldChar.ReturnToGameState();
 
@@ -536,7 +525,10 @@ public class LevelManager : MonoBehaviour {
             heldSpriteTossable.ReturnToBoat();
             heldSpriteTossable.transform.localPosition = grabPosLocal;
         }
-
+    }
+    // Called by RearMenuField when field is clicked, so as to cancel current selection process.
+    public void ResetAll() {
+        ResetHeld();
         ResetEnvir();
     }
 }

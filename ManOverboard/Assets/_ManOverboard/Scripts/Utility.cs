@@ -45,4 +45,11 @@ public static class Utility {
     public static void Scale(Transform transform, float? x, float? y, float? z) {
         transform.localScale = new Vector3(x ?? transform.localScale.x, y ?? transform.localScale.y, z ?? transform.localScale.z);
     }
+
+    public static Vector2 AddNoiseDeg(Vector2 deltaVector, float angleMin, float angleMax) {
+        float origAngle = Mathf.Atan2(deltaVector.y, deltaVector.x) * Mathf.Rad2Deg;
+        float newAngle = origAngle + Random.Range(angleMin, angleMax);
+
+        return new Vector2(Mathf.Cos(newAngle * Mathf.Deg2Rad) * deltaVector.magnitude, Mathf.Sin(newAngle * Mathf.Deg2Rad) * deltaVector.magnitude);
+    }
 }

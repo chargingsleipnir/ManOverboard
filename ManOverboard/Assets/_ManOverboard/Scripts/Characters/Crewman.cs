@@ -69,7 +69,7 @@ public class Crewman : CharAdult {
         base.Toss(vel);
 
         if (capDonned) {
-            sailorCap.Toss(vel);
+            sailorCap.Toss(Utility.AddNoiseDeg(vel, Consts.TOSS_NOISE_MIN, Consts.TOSS_NOISE_MAX));
             lvlMngr.RemoveItem(sailorCap);
         }
     }
@@ -92,12 +92,12 @@ public class Crewman : CharAdult {
     }
 
     public override void DropItemHeld() {
-        if (itemHeld == null)
+        if (ItemHeld == null)
             return;
 
-        if (itemHeld.name.Contains("SailorCap")) {
+        if (ItemHeld.name.Contains("SailorCap")) {
             if (!capDonned) {
-                sailorCap = itemHeld;
+                sailorCap = ItemHeld;
                 sailorCap.SortCompResetToBase(transform);
                 sailorCap.transform.localPosition = capPosLocal;
                 sailorCap.CharHeldBy = this;
@@ -106,7 +106,7 @@ public class Crewman : CharAdult {
                 sailorCap.EnableMouseTracking(true);
                 lvlMngr.OnDeselection(sailorCap);
                 sailorCap.InUse = false;
-                itemHeld = null;
+                ItemHeld = null;
                 return;
             }
         }
@@ -139,10 +139,10 @@ public class Crewman : CharAdult {
         TakeAction();
     }
     private void CompleteRepair() {
-        (itemHeld as RepairKit).uses -= 1;
+        (ItemHeld as RepairKit).uses -= 1;
         // TODO: Does the weight simply disappear? Add it to the boat by reducing it's buoyancy?
         // But repairing a hole would increase the buoyancy anyway, so reduce this weight and call it even?
-        itemHeld.Weight -= 2;
+        ItemHeld.Weight -= 2;
 
         lvlMngr.RepairBoat(holeToRepair);
         holeToRepair = null;

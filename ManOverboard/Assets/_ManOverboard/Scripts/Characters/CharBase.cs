@@ -37,7 +37,7 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
     protected ActionCBs ActionStep;
     protected ActionCBs ActionComplete;
 
-    protected ItemBase itemHeld;
+    public ItemBase ItemHeld { get; set; }
     protected CharBase activeChar;
     protected List<ItemBase> itemsWorn;
     public bool IsWearingLifeJacket { get; set; }
@@ -160,7 +160,7 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
         return itemsWorn.Contains(item);
     }
     public void HoldItem(ItemBase item) {
-        itemHeld = item;
+        ItemHeld = item;
         ItemWeight += item.Weight;
         item.InUse = true;
 
@@ -173,9 +173,9 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
         if (itemsWorn.Remove(item)) {
             ItemWeight -= item.Weight;
         }
-        else if (item == itemHeld) {
+        else if (item == ItemHeld) {
             ItemWeight -= item.Weight;
-            itemHeld = null;
+            ItemHeld = null;
         }
         item.InUse = false;
     }
@@ -183,11 +183,6 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
     public override void Toss(Vector2 vel) {
         EndAction();
         base.Toss(vel);
-
-        if (itemHeld != null) {
-            itemHeld.Toss(vel);
-            lvlMngr.RemoveItem(itemHeld);
-        }
     }
 
     // TODO: Check if given commands are available, and disable buttons if not.
@@ -249,23 +244,23 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
     }
     // BOOKMARK
     public virtual void DropItemHeld() {
-        if (itemHeld == null)
+        if (ItemHeld == null)
             return;
 
-        ItemWeight -= itemHeld.Weight;
-        itemHeld.Deselect();
+        ItemWeight -= ItemHeld.Weight;
+        ItemHeld.Deselect();
 
         // Place item at feet of character just to their left.
         // TODO: Alter this to account for not every item having a refShape component? Shouldn't really come up though.
-        float posX = RefShape.XMin - (itemHeld.RefShape.Width * 0.5f) - Consts.ITEM_DROP_X_BUFF;
-        float posY = RefShape.YMin + (itemHeld.RefShape.Height * 0.5f);
-        itemHeld.transform.position = new Vector3(posX, posY, itemHeld.transform.position.z);
+        float posX = RefShape.XMin - (ItemHeld.RefShape.Width * 0.5f) - Consts.ITEM_DROP_X_BUFF;
+        float posY = RefShape.YMin + (ItemHeld.RefShape.Height * 0.5f);
+        ItemHeld.transform.position = new Vector3(posX, posY, ItemHeld.transform.position.z);
 
         // Turn this character's parent (the boat) into the new parent of the item, as it's just sitting on the floor of the boat now.
-        lvlMngr.SetBoatAsParent(itemHeld);
+        lvlMngr.SetBoatAsParent(ItemHeld);
 
-        itemHeld.CharHeldBy = null;
-        itemHeld = null;
+        ItemHeld.CharHeldBy = null;
+        ItemHeld = null;
     }
 
     public virtual void EndAction() {
