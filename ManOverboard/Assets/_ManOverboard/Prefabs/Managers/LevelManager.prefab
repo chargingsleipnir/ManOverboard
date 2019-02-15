@@ -1,21 +1,11 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1001 &100100000
-Prefab:
-  m_ObjectHideFlags: 1
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications: []
-    m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 0}
-  m_RootGameObject: {fileID: 1463805558684432}
-  m_IsPrefabAsset: 1
 --- !u!1 &1463805558684432
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4087144830826592}
@@ -30,9 +20,10 @@ GameObject:
   m_IsActive: 1
 --- !u!4 &4087144830826592
 Transform:
-  m_ObjectHideFlags: 1
+  m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1463805558684432}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -43,49 +34,33 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &114508288241445222
 MonoBehaviour:
-  m_ObjectHideFlags: 1
+  m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1463805558684432}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 52652c96890963349a6f02065b1df71c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mouseTrackerFullSet: {fileID: 11400000, guid: e7c503aa697f34c4d971acd3d0eb303d,
-    type: 2}
-  mouseTrackerEnteredSet: {fileID: 11400000, guid: d54ec56afbef5984085d8c7f9092bb7c,
-    type: 2}
-  mouseTrackerLinkedSet: {fileID: 11400000, guid: 42d9c6e253c7f54479d1a9034b8053b3,
-    type: 2}
-  mousePos: {fileID: 11400000, guid: 4662ec67a56c16a4eb5641f4edc16bd0, type: 2}
 --- !u!114 &114991861146813028
 MonoBehaviour:
-  m_ObjectHideFlags: 1
+  m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1463805558684432}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: be7a30c37ac246e49ac9ed558c8ba2a8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameCtrl: {fileID: 114446832514159312, guid: 36bfc96ef999cc14f8d0bb0637927c73, type: 2}
+  gameCtrl: {fileID: 114446832514159312, guid: 36bfc96ef999cc14f8d0bb0637927c73, type: 3}
   waterObj: {fileID: 0}
   rearMenuFieldPrefab: {fileID: 1365011474752516, guid: 88dd4ad1446449a469d5b5e78384ded6,
-    type: 2}
+    type: 3}
   boat: {fileID: 0}
-  spriteTossableSet: {fileID: 11400000, guid: 5c6f14e4001067144bb604bf0f39e7ff, type: 2}
-  items: {fileID: 11400000, guid: 7e5097f77349a0a4489279a4c54b7a02, type: 2}
-  holdWeight:
-    UseStraightValue: 0
-    StraightValue: 0
-    ScriptableValue: {fileID: 11400000, guid: 91540696289c981458b3a4269b888920, type: 2}
-  charContAreaPrefab: {fileID: 1527078015339914, guid: 8b67eb1eb990113448bbb4bf57d3d234,
-    type: 2}
-  mousePos:
-    UseStraightValue: 0
-    StraightValue: {x: 0, y: 0}
-    ScriptableValue: {fileID: 11400000, guid: 4662ec67a56c16a4eb5641f4edc16bd0, type: 2}
+  spriteMouseRespPrefab: {fileID: 4487971901778390166, guid: 3d9ba56c5a7617849bc11d0c0df2a794,
+    type: 3}
   uiUpdate: {fileID: 11400000, guid: f357972b346076942a5abf68ed3f1fd1, type: 2}
-  levelWinLossDisp: {fileID: 11400000, guid: a6026cd0eae3f99488ad40db1e9c381d, type: 2}

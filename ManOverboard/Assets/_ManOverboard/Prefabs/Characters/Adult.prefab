@@ -17,7 +17,6 @@ MonoBehaviour:
   speed: 50
   timerBar: {fileID: 5651337678404862588}
   trans_ItemUseHand: {fileID: 0}
-  actionBtnObj: {fileID: 5071143735314810902}
   cancelBtnObj: {fileID: 1341361546913407638}
   commandPanel: {fileID: 8957854558928114995}
 --- !u!1001 &5669198375036116957
@@ -27,20 +26,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 6642933536239893835, guid: d8036ebce40e6e049a18611bc3326581,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 7481352806194402557, guid: d8036ebce40e6e049a18611bc3326581,
         type: 3}
       propertyPath: m_Name
       value: Adult
-      objectReference: {fileID: 0}
-    - target: {fileID: 634263974222550987, guid: d8036ebce40e6e049a18611bc3326581,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2065332924126577304, guid: d8036ebce40e6e049a18611bc3326581,
         type: 3}
@@ -97,11 +86,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4378307273889770043, guid: d8036ebce40e6e049a18611bc3326581,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.85
-      objectReference: {fileID: 0}
     - target: {fileID: 2031778639482237212, guid: d8036ebce40e6e049a18611bc3326581,
         type: 3}
       propertyPath: m_LocalPosition.y
@@ -112,7 +96,22 @@ PrefabInstance:
       propertyPath: m_LocalPosition.y
       value: 0.85
       objectReference: {fileID: 0}
+    - target: {fileID: 4378307273889770043, guid: d8036ebce40e6e049a18611bc3326581,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6642933536239893835, guid: d8036ebce40e6e049a18611bc3326581,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6903331878907562231, guid: d8036ebce40e6e049a18611bc3326581,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 634263974222550987, guid: d8036ebce40e6e049a18611bc3326581,
         type: 3}
       propertyPath: m_IsActive
       value: 0
@@ -153,12 +152,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4b8005e97937f740aab27ca6ed9ebe1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1 &5071143735314810902 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 634263974222550987, guid: d8036ebce40e6e049a18611bc3326581,
-    type: 3}
-  m_PrefabInstance: {fileID: 5669198375036116957}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1341361546913407638 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6642933536239893835, guid: d8036ebce40e6e049a18611bc3326581,

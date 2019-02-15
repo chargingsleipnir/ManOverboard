@@ -7,7 +7,7 @@ public static class Consts {
     public const int LEVEL_SCENE_IDX_DIFF = 2;
     public const int LEVEL_DATA_IDX_DIFF = 1;
 
-    public const float CONT_AREA_BUFFER = 0.1f;
+    public const float CONT_AREA_BUFFER = 0.0f;
 
     public const float BOAT_LEDGE_FLOOR_DIFF = 0.2f;
     public const float ITEM_DROP_X_BUFF = 0.25f;
@@ -68,11 +68,6 @@ public static class Consts {
         InAction,
         Dazed,
         Saved
-    }
-    public enum SpriteTossableState {
-        Default,
-        Held,
-        Tossed
     }
     public enum LevelState {
         Default,

@@ -17,7 +17,6 @@ MonoBehaviour:
   speed: 75
   timerBar: {fileID: 2309105815970332085}
   trans_ItemUseHand: {fileID: 6315135850354669199}
-  actionBtnObj: {fileID: 2884081086542542815}
   cancelBtnObj: {fileID: 9005927206115679583}
   commandPanel: {fileID: 1312433630616709882}
   sailorCap: {fileID: 1714100192509658064}
@@ -62,7 +61,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4984014173462138, guid: 98617f48a3581564e861a7a094d97cd9, type: 3}
       propertyPath: m_RootOrder
-      value: 5
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4984014173462138, guid: 98617f48a3581564e861a7a094d97cd9, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -100,13 +99,8 @@ PrefabInstance:
     - target: {fileID: 2359506773628506408, guid: 4051ffac0f6718341b8c1f7a4db8d59c,
         type: 3}
       propertyPath: m_Name
-      value: Adult_Male_180 Crewman
+      value: Adult_Male_Crewman_181
       objectReference: {fileID: 0}
-    - target: {fileID: 2860920246441237553, guid: 4051ffac0f6718341b8c1f7a4db8d59c,
-        type: 3}
-      propertyPath: job
-      value: 
-      objectReference: {fileID: 5545601647937467482}
     - target: {fileID: 6612468494089602893, guid: 4051ffac0f6718341b8c1f7a4db8d59c,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -172,6 +166,11 @@ PrefabInstance:
       propertyPath: m_SortingLayer
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8912451113234657262, guid: 4051ffac0f6718341b8c1f7a4db8d59c,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5737840929667764766, guid: 4051ffac0f6718341b8c1f7a4db8d59c,
         type: 3}
       propertyPath: m_IsActive
@@ -187,11 +186,11 @@ PrefabInstance:
       propertyPath: m_LocalPosition.y
       value: 0.9
       objectReference: {fileID: 0}
-    - target: {fileID: 8912451113234657262, guid: 4051ffac0f6718341b8c1f7a4db8d59c,
+    - target: {fileID: 2860920246441237553, guid: 4051ffac0f6718341b8c1f7a4db8d59c,
         type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.9
-      objectReference: {fileID: 0}
+      propertyPath: job
+      value: 
+      objectReference: {fileID: 5545601647937467482}
     m_RemovedComponents:
     - {fileID: 2860920246441237553, guid: 4051ffac0f6718341b8c1f7a4db8d59c, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 4051ffac0f6718341b8c1f7a4db8d59c, type: 3}
@@ -219,12 +218,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4b8005e97937f740aab27ca6ed9ebe1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1 &2884081086542542815 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5737840929667764766, guid: 4051ffac0f6718341b8c1f7a4db8d59c,
-    type: 3}
-  m_PrefabInstance: {fileID: 7468858910204569025}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &9005927206115679583 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1971957128386853022, guid: 4051ffac0f6718341b8c1f7a4db8d59c,

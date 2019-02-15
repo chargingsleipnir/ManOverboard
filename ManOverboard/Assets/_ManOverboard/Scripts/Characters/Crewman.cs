@@ -65,6 +65,15 @@ public class Crewman : CharAdult {
         commandPanel.EnableBtn(Consts.Skills.RepairPinhole, canRepair);
     }
 
+    public override void Toss(Vector2 vel) {
+        base.Toss(vel);
+
+        if (capDonned) {
+            sailorCap.Toss(vel);
+            lvlMngr.RemoveItem(sailorCap);
+        }
+    }
+
     public override void LoseItem(ItemBase item) {
         // Only way to specify this item with precision right now
         if (item.name.Contains("SailorCap")) {

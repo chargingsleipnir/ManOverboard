@@ -47,7 +47,6 @@ public class LevelManager : MonoBehaviour {
     // Presuming only one item can be selected at a time for now.
     private ItemBase selectedItem;
 
-    private GameObject heldObj;
     private SpriteTossable heldSpriteTossable;
     private CharBase heldChar;
 
@@ -55,8 +54,8 @@ public class LevelManager : MonoBehaviour {
 
     private ScriptableInt holdWeight;
 
-    public GameObject charContAreaPrefab;
-    private CharContArea charContAreaScpt;
+    public GameObject spriteMouseRespPrefab;
+    private SpriteMouseRespHdlr spriteMouseRespScpt;
 
     // Mouse tracking
     private ScriptableVector2 mousePos;
@@ -70,7 +69,7 @@ public class LevelManager : MonoBehaviour {
     // Level over event
     private StringParamEvent levelMsg;
 
-    private Vector3 grabPos;    
+    private Vector3 grabPosLocal;    
 
     private void Awake() {
         // ! gameCtrl.Init is just here while building levels, so we don't need to go through PreGame during testing.
@@ -116,14 +115,13 @@ public class LevelManager : MonoBehaviour {
         holdWeight.CurrentValue = 0;
         uiUpdate.RaiseEvent();
 
-        GameObject charContArea = Instantiate(charContAreaPrefab) as GameObject;
-        charContAreaScpt = charContArea.GetComponent<CharContArea>();
-        charContAreaScpt.SetMouseCBs(MouseEnterCharContArea, MouseExitCharContArea);
-        charContAreaScpt.gameObject.SetActive(false);
+        spriteMouseRespScpt = (Instantiate(spriteMouseRespPrefab) as GameObject).GetComponent<SpriteMouseRespHdlr>();
+        spriteMouseRespScpt.LvlMngr = this;
+        spriteMouseRespScpt.Init();
 
         rearMenuFieldObj = Instantiate(rearMenuFieldPrefab) as GameObject;
         RearMenuField menuFieldScpt = rearMenuFieldObj.GetComponent<RearMenuField>();
-        menuFieldScpt.Mngr = this;
+        menuFieldScpt.LvlMngr = this;
 
         rearMenuFieldObj.SetActive(false);
 
@@ -203,90 +201,75 @@ public class LevelManager : MonoBehaviour {
         items.Clear();
     }
 
-    private void MouseEnterCharContArea() {
-        levelState = Consts.LevelState.Default;
-        heldObj.transform.position = grabPos;
-        heldSpriteTossable.OnContAreaMouseEnter();
-    }
-
-    private void MouseExitCharContArea() {
-        levelState = Consts.LevelState.SpriteHeldToToss;
-        heldSpriteTossable.OnContAreaMouseExit();
-    }
-
-    private void CheckLevelEndResult() {
-        gameCtrl.GetCurrLevel();
-    }
-
     public void OnSpriteMouseDown(GameObject spriteObj) {
         if (!levelActive)
             return;
 
-        heldObj = spriteObj;
         heldSpriteTossable = spriteObj.GetComponent<SpriteTossable>();
-        if(heldSpriteTossable is CharBase)
+        grabPosLocal = heldSpriteTossable.transform.localPosition; // maintain copy of character's position where grabbed, relative to the boat
+
+        if (heldSpriteTossable is CharBase)
             heldChar = spriteObj.GetComponent<CharBase>();
         else
             heldChar = null;
 
-        // Bring character to focus, in front of everything.
-        heldSpriteTossable.SortCompLayerChange(Consts.DrawLayers.FrontOfLevel3, null);
-
-        // maintain copy of character's position where grabbed
-        grabPos = spriteObj.transform.position;
-
-        charContAreaScpt.gameObject.SetActive(true);
-        heldSpriteTossable.ApplyTransformToContArea(charContAreaScpt.gameObject, true);
-        charContAreaScpt.MouseEnterCB();
-
         holdWeight.CurrentValue = heldSpriteTossable.Weight;
         uiUpdate.RaiseEvent();
 
-        PauseLevel();
+        spriteMouseRespScpt.SetActive(true);
+    }
+    public void HeldSpriteClick() {
+        heldSpriteTossable.OnClick();
+
+        // Bring character to focus, in front of everything.
+        heldSpriteTossable.SortCompLayerChange(Consts.DrawLayers.FrontOfLevel3, null);
+
+        FadeLevel();
     }
 
-    public void OnSpriteMouseUp() {
-        if (!levelActive)
-            return;
-
-        charContAreaScpt.gameObject.SetActive(false);
-
-        if (levelState == Consts.LevelState.SpriteHeldToToss) {
-
-            if (heldSpriteTossable is ItemBase)
-                RemoveItem(heldSpriteTossable as ItemBase);
-            else {
-                CharBase c = heldSpriteTossable as CharBase;
-
-                // Presuming we're only in this function because character was tossed.
-                if (c.IsWearingLifeJacket) {
-                    charsTossedWithLifeJackets++;
-                    c.SetStateSaved();
-                }
-
-                RemoveCharacter(c);
-            }
-
-            // TODO: Top out the toss speed to something not TOO unreasonable
-            float tossSpeed = mouseDelta.magnitude / Time.deltaTime;
-
-            // TODO: Consider that when a character is holding 1 or more items, they should maybe be unparented and given varying trajectories upon being tossed.
-            // Lifejacket donned would be exeption to this, being worn, not held.
-            // Takes care of set removal
-            heldSpriteTossable.Toss(mouseDelta * tossSpeed);
-
-            heldObj.layer = 9; // tossed objects
-
-            // Change weight in boat
-            boat.RemoveLoad(holdWeight.CurrentValue);
-
-            heldChar = null;
-            heldSpriteTossable = null;
-        }
-        else
-            heldSpriteTossable.ReturnToBoat();
+    public void HeldSpriteExitTossArea() {
+        //Debug.Log("HeldSpriteExitTossArea");
 
         levelState = Consts.LevelState.Default;
+        heldSpriteTossable.transform.localPosition = grabPosLocal;
+    }
+    public void HeldSpriteEnterTossArea() {
+        //Debug.Log("HeldSpriteEnterTossArea");
+        levelState = Consts.LevelState.SpriteHeldToToss;
+    }
+    public void HeldSpriteToss() {
+        spriteMouseRespScpt.SetActive(false);
+
+        if (heldSpriteTossable is ItemBase)
+            RemoveItem(heldSpriteTossable as ItemBase);
+        else {
+            CharBase c = heldSpriteTossable as CharBase;
+
+            // Presuming we're only in this function because character was tossed.
+            if (c.IsWearingLifeJacket) {
+                charsTossedWithLifeJackets++;
+                c.SetStateSaved();
+            }
+
+            RemoveCharacter(c);
+        }
+
+        // TODO: Top out the toss speed to something not TOO unreasonable
+        float tossSpeed = mouseDelta.magnitude / Time.deltaTime;
+
+        // TODO: Consider that when a character is holding 1 or more items, they should maybe be unparented and given varying trajectories upon being tossed.
+        // Lifejacket donned would be exeption to this, being worn, not held.
+        // Takes care of set removal
+        heldSpriteTossable.Toss(mouseDelta * tossSpeed);
+        heldSpriteTossable.gameObject.layer = 9; // tossed objects
+
+        // Change weight in boat
+        boat.RemoveLoad(holdWeight.CurrentValue);
+
+        levelState = Consts.LevelState.Default;
+
+        heldChar = null;
+        heldSpriteTossable = null;        
 
         holdWeight.CurrentValue = 0;
         uiUpdate.RaiseEvent();
@@ -294,7 +277,9 @@ public class LevelManager : MonoBehaviour {
         UnPauseLevel();
     }
 
-    
+    private void CheckLevelEndResult() {
+        gameCtrl.GetCurrLevel();
+    }
 
     // TODO: need to find a better way to dynamically select item types. Passing raw ints in the inspector is insufficient
     public void ToState(Consts.LevelState state) {
@@ -456,7 +441,7 @@ public class LevelManager : MonoBehaviour {
             numElders--;
         }
     }
-    private void RemoveItem(ItemBase item) {
+    public void RemoveItem(ItemBase item) {
         if (item is LifeJacket) {
             lifeJacketsChild.Remove(item as LifeJacket);
             lifeJacketsAdult.Remove(item as LifeJacket);
@@ -509,9 +494,8 @@ public class LevelManager : MonoBehaviour {
     private void PauseLevel() {
         levelPaused = true;
 
-        foreach (CharBase character in characterSet) {
-            if (character != heldChar)
-                character.Paused = true;
+        foreach (SpriteTossable st in spriteTossableSet) {
+            st.Paused = true;
         }
     }
     private void UnPauseLevel() {
@@ -520,23 +504,21 @@ public class LevelManager : MonoBehaviour {
 
         levelPaused = false;
 
-        foreach (CharBase character in characterSet) {
-            if (character != heldChar)
-                character.Paused = false;
+        foreach (SpriteTossable st in spriteTossableSet) {
+            st.Paused = false;
         }
     }
     public void FadeLevel() {
-        charContAreaScpt.gameObject.SetActive(false);
+        spriteMouseRespScpt.SetActive(false);
         rearMenuFieldObj.SetActive(true);
         PauseLevel();
     }
     public void UnfadeLevel() {
-        charContAreaScpt.gameObject.SetActive(false);
+        spriteMouseRespScpt.SetActive(false);
         rearMenuFieldObj.SetActive(false);
         UnPauseLevel();
         holdWeight.CurrentValue = 0;
         uiUpdate.RaiseEvent();
-        heldObj = null;
     }
     public void ResetEnvir() {
         UnfadeLevel();
@@ -548,10 +530,12 @@ public class LevelManager : MonoBehaviour {
     // Called by RearMenuField when field is clicked, so as to cancel current selection process.
     public void ResetAll() {
         if (heldChar != null)
-            heldChar.ReturnToNeutral();
+            heldChar.ReturnToGameState();
 
-        if(heldSpriteTossable != null)
+        if (heldSpriteTossable != null) {
             heldSpriteTossable.ReturnToBoat();
+            heldSpriteTossable.transform.localPosition = grabPosLocal;
+        }
 
         ResetEnvir();
     }

@@ -50,11 +50,11 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
     public Consts.CharState CharState { get; set; }
     protected Consts.Skills activeSkill;
     protected bool canAct = false;
+    private bool actHold;
 
     public int strength;
     public int speed;
 
-    public bool Paused { get; set; }
     protected float activityCounter;
     protected float activityInterval;
 
@@ -63,17 +63,6 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
 
     [SerializeField]
     protected Transform trans_ItemUseHand;
-
-    [SerializeField]
-    protected GameObject actionBtnObj;
-    public bool IsActionBtnActive {
-        get { return actionBtnObj.activeSelf; }
-        set { actionBtnObj.SetActive(value); }
-    }
-    private SpriteRenderer actBtnSR;
-    protected bool GUIActive;
-    protected Rect actBtnRect;
-    protected Rect cmdPanelRect;
 
     [SerializeField]
     protected GameObject cancelBtnObj;
@@ -103,15 +92,6 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
 
         activeSkill = Consts.Skills.None;
 
-        actBtnSR = actionBtnObj.GetComponent<SpriteRenderer>();
-
-        RefShape2DMouseTracker actionBtnTracker = actionBtnObj.GetComponent<RefShape2DMouseTracker>();
-
-        // These are set here, the way they are, to help prevent from having to do this in the inspector for every individual character prefab variant (setting these publically for the base character prefab does not do the job properly)
-        actionBtnTracker.AddMouseUpListener(OpenCommandPanel);
-        actionBtnTracker.AddMouseEnterListener(MouseUpToDownLinksFalse);
-        actionBtnTracker.AddMouseExitListener(MouseUpToDownLinksTrue);
-
         RefShape2DMouseTracker cancelBtnTracker = cancelBtnObj.GetComponent<RefShape2DMouseTracker>();
 
         cancelBtnTracker.AddMouseUpListener(CancelAction);
@@ -131,6 +111,8 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
         CharState = Consts.CharState.Default;
         itemsWorn = new List<ItemBase>();
 
+        actHold = false;
+
         ItemWeight = 0;
         timerBar.Fill = 0;
         activityCounter = 0.0f;
@@ -140,74 +122,33 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
     }
 
     protected override void Update() {
-        if (Paused)
+        if (CheckImmExit())
             return;
 
-        if (tossableState == Consts.SpriteTossableState.Default) {
-            if (CharState == Consts.CharState.InAction) {
-                activityCounter -= Time.deltaTime * speed;
-                float counterPct = 1.0f - (activityCounter / activityInterval);
-                timerBar.Fill = counterPct;
-                //ActionStep(); <-- Simply nothing using it yet
-                if (activityCounter <= 0) {
-                    activityCounter = activityInterval;
-                    ActionComplete();
-                }
-            }
-            else if(CharState == Consts.CharState.Dazed) {
+        if (!actHold && CharState == Consts.CharState.InAction) {
+            activityCounter -= Time.deltaTime * speed;
+            float counterPct = 1.0f - (activityCounter / activityInterval);
+            timerBar.Fill = counterPct;
+            //ActionStep(); <-- Simply nothing using it yet
+            if (activityCounter <= 0) {
+                activityCounter = activityInterval;
+                ActionComplete();
             }
         }
     }
 
-    public override void MouseDownCB() {
-        if (CheckImmClickExit())
-            return;
-
-        if (selectable)
-            return;
-
+    public override void OnClick() {
         if (CharState == Consts.CharState.Default) {
-            if(canAct)
-                IsActionBtnActive = true;
-            tossableState = Consts.SpriteTossableState.Held;
-            lvlMngr.OnSpriteMouseDown(gameObject);
+            OpenCommandPanel();
         }
         else if (CharState == Consts.CharState.InAction) {
+            actHold = true;
             IsCancelBtnActive = true;
-            timerBar.IsActive = false;
-            tossableState = Consts.SpriteTossableState.Held;
-            lvlMngr.OnSpriteMouseDown(gameObject);
         }
-        // If in menu
-        // If paused
     }
-    public override void MouseUpCB() {
-        if (CheckImmClickExit())
-            return;
 
-        if (selectable) {
-            lvlMngr.OnSelection(this);
-            return;
-        }
-
-        if (tossableState == Consts.SpriteTossableState.Held) {
-            if (CharState == Consts.CharState.Default) {
-                IsActionBtnActive = false;
-                tossableState = Consts.SpriteTossableState.Default;
-                lvlMngr.OnSpriteMouseUp();
-            }
-            else if (CharState == Consts.CharState.InAction) {
-                IsCancelBtnActive = false;
-                timerBar.IsActive = true;
-                tossableState = Consts.SpriteTossableState.Default;
-                lvlMngr.OnSpriteMouseUp();
-            }
-        }
-        // If in menu
-        // If paused
-    }
-    protected override bool CheckImmClickExit() {
-        return base.CheckImmClickExit() || CharState == Consts.CharState.Saved || CharState == Consts.CharState.Dazed;
+    protected override bool CheckImmExit() {
+        return base.CheckImmExit() || CharState == Consts.CharState.Saved || CharState == Consts.CharState.Dazed;
     }
 
     public void WearItem(ItemBase item) {
@@ -242,51 +183,11 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
     public override void Toss(Vector2 vel) {
         EndAction();
         base.Toss(vel);
-    }
 
-    public override void ApplyTransformToContArea(GameObject contAreaObj, bool prioritizeRefShape) {
-        if(!canAct) {
-            base.ApplyTransformToContArea(contAreaObj, prioritizeRefShape);
-            return;
+        if (itemHeld != null) {
+            itemHeld.Toss(vel);
+            lvlMngr.RemoveItem(itemHeld);
         }
-
-        actBtnRect = new Rect(
-            actionBtnObj.transform.position.x,
-            actionBtnObj.transform.position.y,
-            actBtnSR.size.x * actionBtnObj.transform.lossyScale.x,
-            actBtnSR.size.y * actionBtnObj.transform.lossyScale.y
-        );
-
-        float btnTopToCharTop = actBtnRect.height > 0 ? actBtnRect.yMax - (actBtnSR.size.y * 0.5f) - (transform.position.y + (srRef.comp.sprite.bounds.size.y * 0.5f)) : 0;
-        contAreaObj.transform.position = new Vector3(transform.position.x, transform.position.y + (btnTopToCharTop * 0.5f), (float)Consts.ZLayers.FrontOfWater);
-
-        if(prioritizeRefShape) {
-            RefShape shape = GetComponent<RefShape>();
-            if (shape != null) {
-                contAreaObj.transform.localScale = new Vector3(Utility.GreaterOf(shape.Width, actBtnRect.width) + Consts.CONT_AREA_BUFFER, shape.Height + btnTopToCharTop + Consts.CONT_AREA_BUFFER, 1);
-                return;
-            }
-        }
-        contAreaObj.transform.localScale = new Vector3(Utility.GreaterOf(srRef.comp.sprite.bounds.size.x, actBtnRect.width) + Consts.CONT_AREA_BUFFER, srRef.comp.sprite.bounds.size.y + btnTopToCharTop + Consts.CONT_AREA_BUFFER, 1);
-    }
-
-    public override void OnContAreaMouseEnter() {
-        if (!canAct)
-            return;
-
-        if (CharState == Consts.CharState.Default)
-            IsActionBtnActive = true;
-        else
-            IsCancelBtnActive = true;
-    }
-    public override void OnContAreaMouseExit() {
-        if (!canAct)
-            return;
-
-        if (CharState == Consts.CharState.Default)
-            IsActionBtnActive = false;
-        else
-            IsCancelBtnActive = false;
     }
 
     // TODO: Check if given commands are available, and disable buttons if not.
@@ -306,9 +207,7 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
         CheckActions();
         MouseUpToDownLinksTrue();
 
-        tossableState = Consts.SpriteTossableState.Default;
         IsCommandPanelOpen = true;
-        IsActionBtnActive = false;
 
         lvlMngr.FadeLevel();
     }
@@ -321,10 +220,13 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
         return CharState != Consts.CharState.InAction && CharState != Consts.CharState.Saved;
     }
 
-    public void ReturnToNeutral() {
-        IsActionBtnActive = false;
+    public void ReturnToGameState() {
         IsCancelBtnActive = false;
         IsCommandPanelOpen = false;
+        actHold = false;
+    }
+    public void ReturnToNeutral() {
+        ReturnToGameState();
         CancelAction();
         ChangeMouseUpToDownLinks(true);
     }
@@ -378,8 +280,10 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
             activeChar = null;
         }
 
-        if(CharState != Consts.CharState.Saved)
+        if (CharState != Consts.CharState.Saved) {
             CharState = Consts.CharState.Default;
+            actHold = false;
+        }
 
         activeSkill = Consts.Skills.None;
     }
