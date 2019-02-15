@@ -7,7 +7,7 @@ public static class Consts {
     public const int LEVEL_SCENE_IDX_DIFF = 2;
     public const int LEVEL_DATA_IDX_DIFF = 1;
 
-    public const float CONT_AREA_BUFFER = 0.1f;
+    public const float CONT_AREA_BUFFER = 0.0f;
 
     public const float BOAT_LEDGE_FLOOR_DIFF = 0.2f;
     public const float ITEM_DROP_X_BUFF = 0.25f;
@@ -19,6 +19,9 @@ public static class Consts {
     public const float SCOOP_RATE = 200.0f;
     public const float DON_RATE = 250.0f;
     public const float REPAIR_RATE = 500.0f;
+
+    public const float TOSS_NOISE_MIN = -10.0f;
+    public const float TOSS_NOISE_MAX = 10.0f;
 
     public enum LeakTypesAndRates {
         Pinhole = 1,
@@ -68,11 +71,6 @@ public static class Consts {
         InAction,
         Dazed,
         Saved
-    }
-    public enum SpriteTossableState {
-        Default,
-        Held,
-        Tossed
     }
     public enum LevelState {
         Default,

@@ -17,7 +17,6 @@ MonoBehaviour:
   speed: 25
   timerBar: {fileID: 2440072281519575599}
   trans_ItemUseHand: {fileID: 0}
-  actionBtnObj: {fileID: 3013232751474710597}
   cancelBtnObj: {fileID: 9019597737129046725}
   commandPanel: {fileID: 1432641799337018720}
 --- !u!1001 &2385918793347354510
@@ -87,41 +86,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 8876014348971306236, guid: d8036ebce40e6e049a18611bc3326581,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.55
-      objectReference: {fileID: 0}
-    - target: {fileID: 2031778639482237212, guid: d8036ebce40e6e049a18611bc3326581,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.55
-      objectReference: {fileID: 0}
-    - target: {fileID: 4378307273889770043, guid: d8036ebce40e6e049a18611bc3326581,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.55
-      objectReference: {fileID: 0}
-    - target: {fileID: 5195327199433342150, guid: d8036ebce40e6e049a18611bc3326581,
-        type: 3}
-      propertyPath: width
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5195327199433342150, guid: d8036ebce40e6e049a18611bc3326581,
-        type: 3}
-      propertyPath: height
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5195327199433342150, guid: d8036ebce40e6e049a18611bc3326581,
-        type: 3}
-      propertyPath: offsetY
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6903331878907562231, guid: d8036ebce40e6e049a18611bc3326581,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 7638725610537301241, guid: d8036ebce40e6e049a18611bc3326581,
         type: 3}
       propertyPath: m_Sprite
@@ -140,6 +104,41 @@ PrefabInstance:
     - target: {fileID: 7638725610537301241, guid: d8036ebce40e6e049a18611bc3326581,
         type: 3}
       propertyPath: m_SortingLayer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5195327199433342150, guid: d8036ebce40e6e049a18611bc3326581,
+        type: 3}
+      propertyPath: width
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5195327199433342150, guid: d8036ebce40e6e049a18611bc3326581,
+        type: 3}
+      propertyPath: height
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5195327199433342150, guid: d8036ebce40e6e049a18611bc3326581,
+        type: 3}
+      propertyPath: offsetY
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2031778639482237212, guid: d8036ebce40e6e049a18611bc3326581,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.55
+      objectReference: {fileID: 0}
+    - target: {fileID: 8876014348971306236, guid: d8036ebce40e6e049a18611bc3326581,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.55
+      objectReference: {fileID: 0}
+    - target: {fileID: 4378307273889770043, guid: d8036ebce40e6e049a18611bc3326581,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6903331878907562231, guid: d8036ebce40e6e049a18611bc3326581,
+        type: 3}
+      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 634263974222550987, guid: d8036ebce40e6e049a18611bc3326581,
@@ -188,12 +187,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4b8005e97937f740aab27ca6ed9ebe1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1 &3013232751474710597 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 634263974222550987, guid: d8036ebce40e6e049a18611bc3326581,
-    type: 3}
-  m_PrefabInstance: {fileID: 2385918793347354510}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &9019597737129046725 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6642933536239893835, guid: d8036ebce40e6e049a18611bc3326581,

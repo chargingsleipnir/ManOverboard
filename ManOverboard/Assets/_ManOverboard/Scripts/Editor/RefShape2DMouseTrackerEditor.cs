@@ -11,6 +11,7 @@ public class RefShape2DMouseTrackerEditor : Editor {
 
     SerializedProperty mouseDownEvent;
     SerializedProperty mouseUpEvent;
+    SerializedProperty mouseMoveEvent;
     SerializedProperty mouseEnterEvent;
     SerializedProperty mouseExitEvent;
 
@@ -24,6 +25,7 @@ public class RefShape2DMouseTrackerEditor : Editor {
 
         mouseDownEvent = serializedObject.FindProperty("mouseDownEvent");
         mouseUpEvent = serializedObject.FindProperty("mouseUpEvent");
+        mouseMoveEvent = serializedObject.FindProperty("mouseMoveEvent");
         mouseEnterEvent = serializedObject.FindProperty("mouseEnterEvent");
         mouseExitEvent = serializedObject.FindProperty("mouseExitEvent");
 
@@ -47,6 +49,7 @@ public class RefShape2DMouseTrackerEditor : Editor {
         if (useEvents) {
             EditorGUILayout.PropertyField(mouseDownEvent);
             EditorGUILayout.PropertyField(mouseUpEvent);
+            EditorGUILayout.PropertyField(mouseMoveEvent);
             EditorGUILayout.PropertyField(mouseEnterEvent);
             EditorGUILayout.PropertyField(mouseExitEvent);
         }

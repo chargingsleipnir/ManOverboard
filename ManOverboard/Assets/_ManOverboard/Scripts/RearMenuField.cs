@@ -5,9 +5,9 @@ using UnityEngine.EventSystems;
 
 public class RearMenuField : SpriteBase, IMouseUpDetector {
 
-    public LevelManager Mngr { get; set; }
+    public LevelManager LvlMngr { get; set; }
 
     public void MouseUpCB() {
-        Mngr.ResetAll(); 
+        LvlMngr.ResetAll(); 
     }
 }

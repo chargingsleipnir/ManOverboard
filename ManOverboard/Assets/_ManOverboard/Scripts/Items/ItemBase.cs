@@ -42,14 +42,8 @@ public class ItemBase : SpriteTossable {
         base.MouseDownCB();
     }
 
-    public override void MouseUpCB() {
-        if (InUse)
-            return;
-
-        if (selectable)
-            lvlMngr.OnSelection(this);
-        else
-            base.MouseUpCB();
+    protected override bool CheckImmExit() {
+        return base.CheckImmExit() || InUse;
     }
 
     public override void HighlightToSelect() {

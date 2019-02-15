@@ -183,7 +183,7 @@ public class Boat : MonoBehaviour {
 
     private void CheckHolesBoatRaised() {
         // TODO: When data is first read, have the holes organized in these lists, so the closest holes are always at the end of the list, furthest at the beginning.
-        for (var i = 0; i < holesSubm.Count; i++) {
+        for (var i = holesSubm.Count - 1; i > -1; i--) {
             if (holesSubm[i].transform.position.y > waterSurfaceYPos) {
                 // TODO: Do something with hole.obj reference - change animation to show it's no longer taking in water (change obj reference to a script reference if needed)
                 holesSurf.Add(holesSubm[i]);

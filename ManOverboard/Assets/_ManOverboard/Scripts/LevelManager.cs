@@ -11,6 +11,7 @@ public class LevelManager : MonoBehaviour {
     private GameCtrl gameCtrl;
 
     Consts.LevelState levelState;
+    private bool prepTossCalc;
 
     [SerializeField]
     private GameObject waterObj;
@@ -47,7 +48,6 @@ public class LevelManager : MonoBehaviour {
     // Presuming only one item can be selected at a time for now.
     private ItemBase selectedItem;
 
-    private GameObject heldObj;
     private SpriteTossable heldSpriteTossable;
     private CharBase heldChar;
 
@@ -55,8 +55,8 @@ public class LevelManager : MonoBehaviour {
 
     private ScriptableInt holdWeight;
 
-    public GameObject charContAreaPrefab;
-    private CharContArea charContAreaScpt;
+    public GameObject spriteMouseRespPrefab;
+    private SpriteMouseRespHdlr spriteMouseRespScpt;
 
     // Mouse tracking
     private ScriptableVector2 mousePos;
@@ -70,7 +70,7 @@ public class LevelManager : MonoBehaviour {
     // Level over event
     private StringParamEvent levelMsg;
 
-    private Vector3 grabPos;    
+    private Vector3 grabPosLocal;    
 
     private void Awake() {
         // ! gameCtrl.Init is just here while building levels, so we don't need to go through PreGame during testing.
@@ -112,18 +112,16 @@ public class LevelManager : MonoBehaviour {
 
         charSetStartCount = characterSet.Count;
 
-        levelState = Consts.LevelState.Default;
         holdWeight.CurrentValue = 0;
         uiUpdate.RaiseEvent();
 
-        GameObject charContArea = Instantiate(charContAreaPrefab) as GameObject;
-        charContAreaScpt = charContArea.GetComponent<CharContArea>();
-        charContAreaScpt.SetMouseCBs(MouseEnterCharContArea, MouseExitCharContArea);
-        charContAreaScpt.gameObject.SetActive(false);
+        spriteMouseRespScpt = (Instantiate(spriteMouseRespPrefab) as GameObject).GetComponent<SpriteMouseRespHdlr>();
+        spriteMouseRespScpt.LvlMngr = this;
+        spriteMouseRespScpt.Init();
 
         rearMenuFieldObj = Instantiate(rearMenuFieldPrefab) as GameObject;
         RearMenuField menuFieldScpt = rearMenuFieldObj.GetComponent<RearMenuField>();
-        menuFieldScpt.Mngr = this;
+        menuFieldScpt.LvlMngr = this;
 
         rearMenuFieldObj.SetActive(false);
 
@@ -151,10 +149,26 @@ public class LevelManager : MonoBehaviour {
 
         levelActive = true;
         levelPaused = false;
+        prepTossCalc = false;
 
         if (shipSinkCoroutine != null)
             StopCoroutine(shipSinkCoroutine);
         shipSinkCoroutine = StartCoroutine(SinkShipInterval());
+    }
+
+    private void Update() {
+        if (levelActive == false || prepTossCalc == false)
+            return;
+
+        heldSpriteTossable.MoveRigidbody();
+        mouseDelta = mousePos.CurrentValue - mouseLastPos;
+        mouseLastPos = mousePos.CurrentValue;
+    }
+
+    private void OnDestroy() {
+        DrawLayerMngr.ClearSpriteRef();
+        spriteTossableSet.Clear();
+        items.Clear();
     }
 
     public bool CheckCanDonLifeJacketChildren() {
@@ -189,42 +203,14 @@ public class LevelManager : MonoBehaviour {
         return usefullRepairKits > 0 && holesNotInRepair > 0;
     }
 
-    private void Update() {
-        if (levelState == Consts.LevelState.SpriteHeldToToss) {
-            heldSpriteTossable.MoveRigidbody();
-            mouseDelta = mousePos.CurrentValue - mouseLastPos;
-            mouseLastPos = mousePos.CurrentValue;
-        }        
-    }
-
-    private void OnDestroy() {
-        DrawLayerMngr.ClearSpriteRef();
-        spriteTossableSet.Clear();
-        items.Clear();
-    }
-
-    private void MouseEnterCharContArea() {
-        levelState = Consts.LevelState.Default;
-        heldObj.transform.position = grabPos;
-        heldSpriteTossable.OnContAreaMouseEnter();
-    }
-
-    private void MouseExitCharContArea() {
-        levelState = Consts.LevelState.SpriteHeldToToss;
-        heldSpriteTossable.OnContAreaMouseExit();
-    }
-
-    private void CheckLevelEndResult() {
-        gameCtrl.GetCurrLevel();
-    }
-
     public void OnSpriteMouseDown(GameObject spriteObj) {
         if (!levelActive)
             return;
 
-        heldObj = spriteObj;
         heldSpriteTossable = spriteObj.GetComponent<SpriteTossable>();
-        if(heldSpriteTossable is CharBase)
+        grabPosLocal = heldSpriteTossable.transform.localPosition; // maintain copy of character's position where grabbed, relative to the boat
+
+        if (heldSpriteTossable is CharBase)
             heldChar = spriteObj.GetComponent<CharBase>();
         else
             heldChar = null;
@@ -232,61 +218,59 @@ public class LevelManager : MonoBehaviour {
         // Bring character to focus, in front of everything.
         heldSpriteTossable.SortCompLayerChange(Consts.DrawLayers.FrontOfLevel3, null);
 
-        // maintain copy of character's position where grabbed
-        grabPos = spriteObj.transform.position;
-
-        charContAreaScpt.gameObject.SetActive(true);
-        heldSpriteTossable.ApplyTransformToContArea(charContAreaScpt.gameObject, true);
-        charContAreaScpt.MouseEnterCB();
-
         holdWeight.CurrentValue = heldSpriteTossable.Weight;
         uiUpdate.RaiseEvent();
 
-        PauseLevel();
+        spriteMouseRespScpt.SetActive(true);
+    }
+    public void HeldSpriteClick() {
+        heldSpriteTossable.OnClick();
+        FadeLevel();
     }
 
-    public void OnSpriteMouseUp() {
-        if (!levelActive)
-            return;
+    public void HeldSpriteRelease() {
+        prepTossCalc = false;
+        UnfadeLevel();
+        ResetHeld();        
+    }
+    public void HeldSpriteEnterTossArea() {
+        prepTossCalc = true;
+    }
+    public void HeldSpriteToss() {
+        spriteMouseRespScpt.SetActive(false);
 
-        charContAreaScpt.gameObject.SetActive(false);
+        // TODO: Top out the toss speed to something not TOO unreasonable
+        //Vector2 tossDir = mouseDelta.normalized;
+        float tossSpeed = mouseDelta.magnitude / Time.deltaTime;
 
-        if (levelState == Consts.LevelState.SpriteHeldToToss) {
 
-            if (heldSpriteTossable is ItemBase)
-                RemoveItem(heldSpriteTossable as ItemBase);
-            else {
-                CharBase c = heldSpriteTossable as CharBase;
+        if (heldSpriteTossable is ItemBase) {
+            RemoveItem(heldSpriteTossable as ItemBase);
+            heldSpriteTossable.Toss(mouseDelta * tossSpeed);
+        }
+        else {
+            CharBase c = heldSpriteTossable as CharBase;
 
-                // Presuming we're only in this function because character was tossed.
-                if (c.IsWearingLifeJacket) {
-                    charsTossedWithLifeJackets++;
-                    c.SetStateSaved();
-                }
-
-                RemoveCharacter(c);
+            // Presuming we're only in this function because character was tossed.
+            if (c.IsWearingLifeJacket) {
+                charsTossedWithLifeJackets++;
+                c.SetStateSaved();
             }
 
-            // TODO: Top out the toss speed to something not TOO unreasonable
-            float tossSpeed = mouseDelta.magnitude / Time.deltaTime;
+            RemoveCharacter(c);
 
-            // TODO: Consider that when a character is holding 1 or more items, they should maybe be unparented and given varying trajectories upon being tossed.
-            // Lifejacket donned would be exeption to this, being worn, not held.
-            // Takes care of set removal
-            heldSpriteTossable.Toss(mouseDelta * tossSpeed);
+            if (c.ItemHeld != null)
+                c.ItemHeld.Toss(Utility.AddNoiseDeg(mouseDelta, Consts.TOSS_NOISE_MIN, Consts.TOSS_NOISE_MAX) * tossSpeed);
 
-            heldObj.layer = 9; // tossed objects
+            c.Toss(mouseDelta * tossSpeed);
+        }         
 
-            // Change weight in boat
-            boat.RemoveLoad(holdWeight.CurrentValue);
+        // Change weight in boat
+        boat.RemoveLoad(holdWeight.CurrentValue);
 
-            heldChar = null;
-            heldSpriteTossable = null;
-        }
-        else
-            heldSpriteTossable.ReturnToBoat();
-
-        levelState = Consts.LevelState.Default;
+        prepTossCalc = false;
+        heldChar = null;
+        heldSpriteTossable = null;        
 
         holdWeight.CurrentValue = 0;
         uiUpdate.RaiseEvent();
@@ -294,11 +278,8 @@ public class LevelManager : MonoBehaviour {
         UnPauseLevel();
     }
 
-    
-
-    // TODO: need to find a better way to dynamically select item types. Passing raw ints in the inspector is insufficient
-    public void ToState(Consts.LevelState state) {
-        levelState = state;
+    private void CheckLevelEndResult() {
+        gameCtrl.GetCurrLevel();
     }
 
     public void NumLeaks(int numLeaks) {
@@ -321,7 +302,6 @@ public class LevelManager : MonoBehaviour {
             }
 
             levelActive = false;
-            levelState = Consts.LevelState.Default;
 
             foreach (CharBase c in characterSet) {
                 c.SetStateSaved();
@@ -330,7 +310,6 @@ public class LevelManager : MonoBehaviour {
     }
 
     public void HighlightToSelect(Consts.HighlightGroupType groupType, SelectionCallback CB) {
-        levelState = Consts.LevelState.ObjectSelection;
         currGroupsLit.Add(groupType);
 
         SelectionCB = CB;
@@ -362,8 +341,6 @@ public class LevelManager : MonoBehaviour {
     }
     // BOOKMARK
     public void UnHighlight() {
-        levelState = Consts.LevelState.Default;
-
         foreach (ItemCanScoop itemCS in itemsCanScoop)
             itemCS.UnHighlight();
         foreach (LifeJacket itemLJ in lifeJacketsChild)
@@ -380,8 +357,6 @@ public class LevelManager : MonoBehaviour {
         currGroupsLit.Clear();
     }
     public void UnHighlight(Consts.HighlightGroupType groupType) {
-        levelState = Consts.LevelState.Default;
-
         if (groupType == Consts.HighlightGroupType.Scooping) {
             foreach (ItemCanScoop itemCS in itemsCanScoop)
                 itemCS.UnHighlight();
@@ -456,7 +431,7 @@ public class LevelManager : MonoBehaviour {
             numElders--;
         }
     }
-    private void RemoveItem(ItemBase item) {
+    public void RemoveItem(ItemBase item) {
         if (item is LifeJacket) {
             lifeJacketsChild.Remove(item as LifeJacket);
             lifeJacketsAdult.Remove(item as LifeJacket);
@@ -509,9 +484,8 @@ public class LevelManager : MonoBehaviour {
     private void PauseLevel() {
         levelPaused = true;
 
-        foreach (CharBase character in characterSet) {
-            if (character != heldChar)
-                character.Paused = true;
+        foreach (SpriteTossable st in spriteTossableSet) {
+            st.Paused = true;
         }
     }
     private void UnPauseLevel() {
@@ -520,39 +494,41 @@ public class LevelManager : MonoBehaviour {
 
         levelPaused = false;
 
-        foreach (CharBase character in characterSet) {
-            if (character != heldChar)
-                character.Paused = false;
+        foreach (SpriteTossable st in spriteTossableSet) {
+            st.Paused = false;
         }
     }
     public void FadeLevel() {
-        charContAreaScpt.gameObject.SetActive(false);
+        spriteMouseRespScpt.SetActive(false);
         rearMenuFieldObj.SetActive(true);
         PauseLevel();
     }
     public void UnfadeLevel() {
-        charContAreaScpt.gameObject.SetActive(false);
+        spriteMouseRespScpt.SetActive(false);
         rearMenuFieldObj.SetActive(false);
         UnPauseLevel();
         holdWeight.CurrentValue = 0;
         uiUpdate.RaiseEvent();
-        heldObj = null;
     }
     public void ResetEnvir() {
         UnfadeLevel();
         for(int i = currGroupsLit.Count - 1; i >= 0; i--)
             UnHighlight(currGroupsLit[i]);
+
         selectedItem = null;
-        levelState = Consts.LevelState.Default;
+    }
+    public void ResetHeld() {
+        if (heldChar != null)
+            heldChar.ReturnToGameState();
+
+        if (heldSpriteTossable != null) {
+            heldSpriteTossable.ReturnToBoat();
+            heldSpriteTossable.transform.localPosition = grabPosLocal;
+        }
     }
     // Called by RearMenuField when field is clicked, so as to cancel current selection process.
     public void ResetAll() {
-        if (heldChar != null)
-            heldChar.ReturnToNeutral();
-
-        if(heldSpriteTossable != null)
-            heldSpriteTossable.ReturnToBoat();
-
+        ResetHeld();
         ResetEnvir();
     }
 }

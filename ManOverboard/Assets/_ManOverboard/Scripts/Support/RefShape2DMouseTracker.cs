@@ -20,6 +20,7 @@ public class RefShape2DMouseTracker : MonoBehaviour {
     private RefShape2DMouseTrackerSet mouseTrackerLinkedSet;
 
     delegate void MouseEventsDel();
+    MouseEventsDel MouseMoveCalls;
     MouseEventsDel MouseEnterCalls;
     MouseEventsDel MouseExitCalls;
     MouseEventsDel MouseDownCalls;
@@ -42,12 +43,15 @@ public class RefShape2DMouseTracker : MonoBehaviour {
     [SerializeField]
     private UnityEvent mouseUpEvent;
     [SerializeField]
+    private UnityEvent mouseMoveEvent;
+    [SerializeField]
     private UnityEvent mouseEnterEvent;
     [SerializeField]
     private UnityEvent mouseExitEvent;
 
     private IMouseDownDetector[] mouseDownScripts;
     private IMouseUpDetector[] mouseUpScripts;
+    private IMouseMoveDetector[] mouseMoveScripts;
     private IMouseEnterDetector[] mouseEnterScripts;
     private IMouseExitDetector[] mouseExitScripts;
 
@@ -79,6 +83,7 @@ public class RefShape2DMouseTracker : MonoBehaviour {
 
         mouseDownScripts = GetComponents<IMouseDownDetector>();
         mouseUpScripts = GetComponents<IMouseUpDetector>();
+        mouseMoveScripts = GetComponents<IMouseMoveDetector>();
         mouseEnterScripts = GetComponents<IMouseEnterDetector>();
         mouseExitScripts = GetComponents<IMouseExitDetector>();
 
@@ -200,6 +205,14 @@ public class RefShape2DMouseTracker : MonoBehaviour {
         }
     }
 
+    private void UseMouseMoveDelegate() {
+        MouseMoveCalls = null;
+        for (int i = 0; i < mouseMoveScripts.Length; i++)
+            MouseMoveCalls += mouseMoveScripts[i].MouseMoveCB;
+
+        if (MouseMoveCalls != null)
+            MouseMoveCalls();
+    }
     private void UseMouseEnterDelegate() {
         MouseEnterCalls = null;
         for (int i = 0; i < mouseEnterScripts.Length; i++)
@@ -234,16 +247,23 @@ public class RefShape2DMouseTracker : MonoBehaviour {
     }
 
     public void MouseMoveCB(Vector2 mousePos) {
+        // Double conditions switching containsMousePoint boolean to catch enter and exit. Within those, mouseMove is launched, only within refShape of course.
         if (!containsMousePoint) {
             if (refShape.ContainsPoint(mousePos)) {
-                UseMouseEnterDelegate();
+                UseMouseMoveDelegate();
+                mouseMoveEvent.Invoke();
+                UseMouseEnterDelegate();                
                 mouseEnterEvent.Invoke();
                 containsMousePoint = true;
                 ResetEnteredSet(); // TODO: Find a more efficient way to add "this" to entered list at this point
             }
         }
         else {
-            if (!refShape.ContainsPoint(mousePos)) {
+            if (refShape.ContainsPoint(mousePos)) {
+                UseMouseMoveDelegate();
+                mouseMoveEvent.Invoke();
+            }
+            else {
                 UseMouseExitDelegate();
                 mouseExitEvent.Invoke();
                 containsMousePoint = false;
