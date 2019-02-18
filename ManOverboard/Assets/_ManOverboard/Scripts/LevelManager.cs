@@ -29,10 +29,11 @@ public class LevelManager : MonoBehaviour {
 
     private SpriteTossableSet spriteTossableSet;
 
-    private List<CharBase> characterSet;
+    private List<CharBase> charsInPlay;
     private List<CharChild> children;
     private int charSetStartCount;
-    private int charsTossedWithLifeJackets;
+    private int charsSaved;
+    private int charsKilled;
     private int numChildren = 0;
     private int numElders = 0;
 
@@ -93,14 +94,15 @@ public class LevelManager : MonoBehaviour {
         boat.Start();
 
         charSetStartCount = 0;
-        charsTossedWithLifeJackets = 0;
+        charsSaved = 0;
+        charsKilled = 0;
 
-        characterSet = new List<CharBase>();
+        charsInPlay = new List<CharBase>();
         children = new List<CharChild>();
         for (int i = 0; i < spriteTossableSet.Count; i++) {
             spriteTossableSet[i].LvlMngr = this;
             if (spriteTossableSet[i] is CharBase) {
-                characterSet.Add(spriteTossableSet[i] as CharBase);
+                charsInPlay.Add(spriteTossableSet[i] as CharBase);
                 if (spriteTossableSet[i] is CharAdult)
                     numElders++;
                 else if (spriteTossableSet[i] is CharChild) {
@@ -110,7 +112,7 @@ public class LevelManager : MonoBehaviour {
             }
         }
 
-        charSetStartCount = characterSet.Count;
+        charSetStartCount = charsInPlay.Count;
 
         holdWeight.CurrentValue = 0;
         uiUpdate.RaiseEvent();
@@ -137,7 +139,7 @@ public class LevelManager : MonoBehaviour {
             ReturnItem(item);
         }
 
-        foreach (CharBase character in characterSet)
+        foreach (CharBase character in charsInPlay)
             character.SetActionBtns();
 
         // Check if children will be highlightable/selectable
@@ -251,14 +253,6 @@ public class LevelManager : MonoBehaviour {
         else {
             CharBase c = heldSpriteTossable as CharBase;
 
-            // Presuming we're only in this function because character was tossed.
-            if (c.IsWearingLifeJacket) {
-                charsTossedWithLifeJackets++;
-                c.SetStateSaved();
-            }
-
-            RemoveCharacter(c);
-
             if (c.ItemHeld != null)
                 c.ItemHeld.Toss(Utility.AddNoiseDeg(mouseDelta, Consts.TOSS_NOISE_MIN, Consts.TOSS_NOISE_MAX) * tossSpeed);
 
@@ -278,35 +272,71 @@ public class LevelManager : MonoBehaviour {
         UnPauseLevel();
     }
 
-    private void CheckLevelEndResult() {
-        gameCtrl.GetCurrLevel();
+    public void CharSaved(CharBase character) {
+        charsSaved++;
+        RemoveCharacter(character);
+        CheckLevelEnd();
+    }
+    public void CharKilled(CharBase character) {
+        charsKilled++;
+        RemoveCharacter(character);
+        CheckLevelEnd();
+    }
+    public void RemoveCharacter(CharBase character) {
+        charsInPlay.Remove(character);
+        if (character is CharChild) {
+            children.Remove(character as CharChild);
+            numChildren--;
+        }
+        else
+            numElders--;        
     }
 
-    public void NumLeaks(int numLeaks) {
-        // TODO: Have the number of leaks on the gui somewhere?
-        if(numLeaks == 0) {
-            // level over
-            int charLoss = charSetStartCount - characterSet.Count - charsTossedWithLifeJackets;
+    // TODO: Last thing I'll need is control/check on charaters tossed super far away, in case they don't make contact with water at some point.
+    // Maybe just a check for when their y is below the top of the water even if they haven't touched anything.
 
-            if (charLoss <= gameCtrl.GetLevelMaxCharLoss(3)) {
-                levelMsg.RaiseEvent("You a winner! 3 star play!");
-            }
-            else if (charLoss <= gameCtrl.GetLevelMaxCharLoss(2)) {
-                levelMsg.RaiseEvent("You a winner! 2 star play!");
-            }
-            else if (charLoss <= gameCtrl.GetLevelMaxCharLoss(1)) {
-                levelMsg.RaiseEvent("You a winner! 1 star play!");
-            }
-            else {
-                levelMsg.RaiseEvent("Too many people died!");
+    public void CheckLevelEnd() {
+        bool charsDone = charsSaved + charsKilled == charSetStartCount;
+        bool holesDone = boat.HolesSubmCount == 0;
+
+        if (charsDone == false && holesDone == false)
+            return;
+
+        if(holesDone) {
+            bool charInAir = false;
+            for(int i = charsInPlay.Count - 1; i > -1; i--) {
+                // Still not sure if they'll live or die - wait to determine
+                if (charsInPlay[i].Airborne)
+                    charInAir = true;
+                else {
+                    charsInPlay[i].SetStateSaved();
+                    charsSaved++;
+                    RemoveCharacter(charsInPlay[i]);
+                }
             }
 
-            levelActive = false;
-
-            foreach (CharBase c in characterSet) {
-                c.SetStateSaved();
-            }
+            if (charInAir)
+                return;                
         }
+
+        LevelEnd(charsKilled);
+    }
+
+    private void LevelEnd(int charLoss) {
+        if (charLoss <= gameCtrl.GetLevelMaxCharLoss(3)) {
+            levelMsg.RaiseEvent("You a winner! 3 star play!");
+        }
+        else if (charLoss <= gameCtrl.GetLevelMaxCharLoss(2)) {
+            levelMsg.RaiseEvent("You a winner! 2 star play!");
+        }
+        else if (charLoss <= gameCtrl.GetLevelMaxCharLoss(1)) {
+            levelMsg.RaiseEvent("You a winner! 1 star play!");
+        }
+        else {
+            levelMsg.RaiseEvent("Too many people died!");
+        }
+
+        levelActive = false;
     }
 
     public void HighlightToSelect(Consts.HighlightGroupType groupType, SelectionCallback CB) {
@@ -420,16 +450,6 @@ public class LevelManager : MonoBehaviour {
     public void OnDeselection(SpriteBase sprite) {
         if (sprite is ItemBase)
             ReturnItem(sprite as ItemBase);
-    }
-    private void RemoveCharacter(CharBase character) {
-        characterSet.Remove(character);
-        if (character is CharChild) {
-            children.Remove(character as CharChild);
-            numChildren--;
-        }
-        else {
-            numElders--;
-        }
     }
     public void RemoveItem(ItemBase item) {
         if (item is LifeJacket) {

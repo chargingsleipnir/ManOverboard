@@ -16,7 +16,7 @@ TagManager:
   - 
   - PostProcessing
   - Tossed Object
-  - 
+  - Environment
   - 
   - 
   - 
@@ -47,6 +47,9 @@ TagManager:
     locked: 0
   - name: Background1
     uniqueID: 1523859595
+    locked: 0
+  - name: BehindBoat
+    uniqueID: 4191230259
     locked: 0
   - name: BoatLevel1
     uniqueID: 2948417559

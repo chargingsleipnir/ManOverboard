@@ -39,6 +39,7 @@ public static class Consts {
         Default,
         Background2,
         Background1,
+        BehindBoat,
         BoatLevel1,
         BoatLevel1Contents,
         BoatLevel1FrontWall,
@@ -51,6 +52,13 @@ public static class Consts {
         FrontOfLevel3,
         FrontOfLevel4
     }
+
+    public enum UnityLayers {
+        Water = 4,
+        TossedObj = 9,
+        Envir = 10
+    }
+
     public static int LAYER_COUNT { get; private set; }
     public static void Init() {
         LAYER_COUNT = Enum.GetValues(typeof(DrawLayers)).Length;
@@ -70,6 +78,7 @@ public static class Consts {
         InMenu,
         InAction,
         Dazed,
+        Dead,
         Saved
     }
     public enum LevelState {

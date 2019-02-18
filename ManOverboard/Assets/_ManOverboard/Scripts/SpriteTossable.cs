@@ -4,7 +4,7 @@ using ZeroProgress.Common;
 
 public class SpriteTossable : SpriteBase, IMouseDownDetector, IMouseUpDetector {
 
-    private bool tossed;
+    public bool Airborne { get; protected set; }
 
     protected LevelManager lvlMngr;
     public LevelManager LvlMngr { set { lvlMngr = value; } }
@@ -45,7 +45,7 @@ public class SpriteTossable : SpriteBase, IMouseDownDetector, IMouseUpDetector {
         // (Could use posiiton constraints instead)
         rb.isKinematic = true;
         bc.enabled = false;
-        tossed = false;
+        Airborne = false;
     }
 
     public virtual void MouseDownCB() {
@@ -65,7 +65,7 @@ public class SpriteTossable : SpriteBase, IMouseDownDetector, IMouseUpDetector {
     }
 
     protected virtual bool CheckImmExit() {
-        return tossed || Paused;
+        return Airborne || Paused;
     }
 
     public void MoveRigidbody() {
@@ -77,14 +77,13 @@ public class SpriteTossable : SpriteBase, IMouseDownDetector, IMouseUpDetector {
     public virtual void Toss(Vector2 vel) {
         set.Remove(this);
 
-        tossed = true;
-
         // Move in front of all other non-water objects
         SortCompLayerChange(Consts.DrawLayers.BehindWater, null);
         rb.isKinematic = false;
         rb.velocity = vel;
         bc.enabled = true;
-        gameObject.layer = 9;
+        gameObject.layer = (int)Consts.UnityLayers.TossedObj;
+        Airborne = true;
 
         RefShape2DMouseTracker[] trackers = GetComponents<RefShape2DMouseTracker>();
         for (int i = 0; i < trackers.Length; i++)

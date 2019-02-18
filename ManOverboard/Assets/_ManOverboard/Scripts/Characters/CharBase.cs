@@ -148,7 +148,10 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
     }
 
     protected override bool CheckImmExit() {
-        return base.CheckImmExit() || CharState == Consts.CharState.Saved || CharState == Consts.CharState.Dazed;
+        return base.CheckImmExit() || CheckNonFuncStates();
+    }
+    private bool CheckNonFuncStates() {
+        return CharState == Consts.CharState.Saved || CharState == Consts.CharState.Dazed || CharState == Consts.CharState.Dead;
     }
 
     public void WearItem(ItemBase item) {
@@ -212,7 +215,7 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
         this.activeSkill = activeSkill;
     }
     public bool CheckAvailToAct() {
-        return CharState != Consts.CharState.InAction && CharState != Consts.CharState.Saved;
+        return CharState != Consts.CharState.InAction && !CheckNonFuncStates();
     }
 
     public void ReturnToGameState() {
@@ -296,5 +299,33 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
     public void SetStateSaved() {
         CancelAction();
         CharState = Consts.CharState.Saved;
+    }
+
+    private void OnTriggerEnter2D(Collider2D collider) {
+        if(collider.gameObject.layer == (int)Consts.UnityLayers.Water) {
+            if (IsWearingLifeJacket) {
+                SetStateSaved();
+                lvlMngr.CharSaved(this);
+            }
+            else {
+                // TODO: This might need a small delay to see if within a moment the character comes into contact with a ring buoy
+                CharState = Consts.CharState.Dead;
+                lvlMngr.CharKilled(this);
+            }
+            Airborne = false;
+        }
+        else if (collider.gameObject.layer == (int)Consts.UnityLayers.Envir) {
+            ClingableSurface cs = collider.GetComponent<ClingableSurface>();
+            if(cs.Cling(this)) {
+                // TODO: Some of this will not be true in all cases, such as "SetStateSaved();" - this applies to cave stalactites, but in other situations might not.
+                SortCompLayerChange(Consts.DrawLayers.BehindBoat, null);
+                rb.isKinematic = true;
+                rb.velocity = Vector2.zero;
+                bc.enabled = false;
+                Airborne = false;
+                SetStateSaved();
+                lvlMngr.CharSaved(this);
+            }
+        }
     }
 }

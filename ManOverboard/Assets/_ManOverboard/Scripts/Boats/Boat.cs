@@ -49,6 +49,7 @@ public class Boat : MonoBehaviour {
     public HoleData[] holeDataSet;
 
     private List<Hole> holesSubm;
+    public int HolesSubmCount { get { return holesSubm.Count; } }
     private List<Hole> holesSurf;
     public List<Hole> Pinholes { get; private set; }
 
@@ -188,7 +189,7 @@ public class Boat : MonoBehaviour {
                 // TODO: Do something with hole.obj reference - change animation to show it's no longer taking in water (change obj reference to a script reference if needed)
                 holesSurf.Add(holesSubm[i]);
                 holesSubm.RemoveAt(i);
-                lvlMngr.NumLeaks(holesSubm.Count);
+                lvlMngr.CheckLevelEnd();
             }
         }
     }
@@ -253,7 +254,7 @@ public class Boat : MonoBehaviour {
                 holesSubm.Remove(h);
                 AllLeaksToWaterUIUpdate();
                 uiUpdate.RaiseEvent();
-                lvlMngr.NumLeaks(holesSubm.Count);                
+                lvlMngr.CheckLevelEnd();          
                 return;
             }
         }
