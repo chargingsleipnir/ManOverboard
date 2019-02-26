@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using ZeroProgress.Common;
 using ZeroProgress.Common.Collections;
+using Game2DWaterKit;
 
 public class LevelManager : MonoBehaviour {
 
@@ -15,6 +16,8 @@ public class LevelManager : MonoBehaviour {
 
     [SerializeField]
     private GameObject waterObj;
+    public float WaterSurfaceYPos { get; private set; }
+
     [SerializeField]
     private GameObject rearMenuFieldPrefab;
     private GameObject rearMenuFieldObj;
@@ -83,6 +86,8 @@ public class LevelManager : MonoBehaviour {
         mousePos = Resources.Load<ScriptableVector2>("ScriptableObjects/v2_mouseWorldPos");
 
         levelMsg = Resources.Load<StringParamEvent>("ScriptableObjects/Events/WithParam/Str_AnyMsg");
+
+        WaterSurfaceYPos = (waterObj.transform.position.y + (waterObj.GetComponent<Game2DWater>().WaterSize.y * 0.5f));
 
         gameCtrl.Init();
     }
@@ -292,9 +297,6 @@ public class LevelManager : MonoBehaviour {
             numElders--;        
     }
 
-    // TODO: Last thing I'll need is control/check on charaters tossed super far away, in case they don't make contact with water at some point.
-    // Maybe just a check for when their y is below the top of the water even if they haven't touched anything.
-
     public void CheckLevelEnd() {
         bool charsDone = charsSaved + charsKilled == charSetStartCount;
         bool holesDone = boat.HolesSubmCount == 0;
@@ -415,18 +417,6 @@ public class LevelManager : MonoBehaviour {
         currGroupsLit.Remove(groupType);
     }
 
-    // BOOKMARK
-
-    // TODO:
-    /*
-     * 
-     * Itembase calling this from ConfirmSelections, AFTER itemheld set in place? No, items need to be removed first, then placed next.
-     public void RemoveFromChar() {
-        if (CharHeldBy != null)
-            CharHeldBy.LoseItem(this);
-    }
-     */
-
     public void ConfirmSelections(CharBase charToAct) {
         if (selectedItem != null) {
             selectedItem.RemoveFromChar();
@@ -546,6 +536,7 @@ public class LevelManager : MonoBehaviour {
             heldSpriteTossable.transform.localPosition = grabPosLocal;
         }
     }
+
     // Called by RearMenuField when field is clicked, so as to cancel current selection process.
     public void ResetAll() {
         ResetHeld();

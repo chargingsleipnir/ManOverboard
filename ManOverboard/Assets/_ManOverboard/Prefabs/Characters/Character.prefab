@@ -357,7 +357,7 @@ SortingGroup:
   m_GameObject: {fileID: 7481352806194402557}
   m_Enabled: 1
   m_SortingLayerID: 1982025277
-  m_SortingLayer: 4
+  m_SortingLayer: 5
   m_SortingOrder: 0
 --- !u!50 &8650496246139267460
 Rigidbody2D:

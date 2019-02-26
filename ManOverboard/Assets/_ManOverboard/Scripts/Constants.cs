@@ -23,6 +23,8 @@ public static class Consts {
     public const float TOSS_NOISE_MIN = -10.0f;
     public const float TOSS_NOISE_MAX = 10.0f;
 
+    public const float OFFSCREEN_CATCH_BUFF = 5.0f;
+
     public enum LeakTypesAndRates {
         Pinhole = 1,
         Bullet = 3,
@@ -40,9 +42,9 @@ public static class Consts {
         Background2,
         Background1,
         BehindBoat,
-        BoatLevel1,
-        BoatLevel1Contents,
-        BoatLevel1FrontWall,
+        BoatLevel1Rear,
+        BoatLevel1Mid,
+        BoatLevel1Front,
         BehindWater,
         Water,
         Foreground1,

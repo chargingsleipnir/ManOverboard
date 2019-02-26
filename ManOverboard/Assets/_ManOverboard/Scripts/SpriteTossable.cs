@@ -49,7 +49,7 @@ public class SpriteTossable : SpriteBase, IMouseDownDetector, IMouseUpDetector {
     }
 
     public virtual void MouseDownCB() {
-        if (CheckImmExit())
+        if (CheckImmExit() || Airborne)
             return;
 
         lvlMngr.OnSpriteMouseDown(gameObject);
@@ -57,15 +57,16 @@ public class SpriteTossable : SpriteBase, IMouseDownDetector, IMouseUpDetector {
     public virtual void OnClick() {}
 
     public void MouseUpCB() {
-        if (CheckImmExit())
+        if (CheckImmExit() || Airborne)
             return;
 
         if (selectable)
             lvlMngr.OnSelection(this);
     }
 
+    // Airborne not included here because derived class "Update" methods need to check for it.
     protected virtual bool CheckImmExit() {
-        return Airborne || Paused;
+        return Paused;
     }
 
     public void MoveRigidbody() {
@@ -88,6 +89,11 @@ public class SpriteTossable : SpriteBase, IMouseDownDetector, IMouseUpDetector {
         RefShape2DMouseTracker[] trackers = GetComponents<RefShape2DMouseTracker>();
         for (int i = 0; i < trackers.Length; i++)
             trackers[i].enabled = false;
+    }
+
+    protected void StopVel() {
+        rb.isKinematic = true;
+        rb.velocity = Vector2.zero;
     }
 
     public override void HighlightToSelect() {

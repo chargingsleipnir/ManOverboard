@@ -12,10 +12,6 @@ public class CharAdult : CharChild {
         Reset();
     }
 
-    protected override void Reset() {
-        base.Reset();
-    }
-
     public override void SetActionBtns() {
         commandPanel.InactiveAwake();
 

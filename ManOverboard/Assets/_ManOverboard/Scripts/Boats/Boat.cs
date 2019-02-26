@@ -32,8 +32,6 @@ public class Boat : MonoBehaviour {
     [SerializeField]
     protected Leak LeakPrefab;
 
-    public GameObject water;
-    private float waterSurfaceYPos;
     private RefRect2D SubmergableAreaRef;
 
     private StringParamEvent levelMsg;
@@ -97,7 +95,6 @@ public class Boat : MonoBehaviour {
             myColliders = GetComponentsInChildren<Collider2D>();
 
         SubmergableAreaRef = GetComponent<RefRect2D>();
-        waterSurfaceYPos = (water.transform.position.y + (water.GetComponent<Game2DWater>().WaterSize.y * 0.5f));
         holesSubm = new List<Hole>();
         holesSurf = new List<Hole>();
         Pinholes = new List<Hole>();
@@ -148,7 +145,7 @@ public class Boat : MonoBehaviour {
             Hole newHole = holeObj.GetComponent<Hole>();
             newHole.Init(lvlMngr, (int)holeDataSet[i].leakType, holeDataSet[i].yByBuoyancy);
 
-            if (yPos <= waterSurfaceYPos)
+            if (yPos <= lvlMngr.WaterSurfaceYPos)
                 holesSubm.Add(newHole);
             else
                 holesSurf.Add(newHole);
@@ -185,7 +182,7 @@ public class Boat : MonoBehaviour {
     private void CheckHolesBoatRaised() {
         // TODO: When data is first read, have the holes organized in these lists, so the closest holes are always at the end of the list, furthest at the beginning.
         for (var i = holesSubm.Count - 1; i > -1; i--) {
-            if (holesSubm[i].transform.position.y > waterSurfaceYPos) {
+            if (holesSubm[i].transform.position.y > lvlMngr.WaterSurfaceYPos) {
                 // TODO: Do something with hole.obj reference - change animation to show it's no longer taking in water (change obj reference to a script reference if needed)
                 holesSurf.Add(holesSubm[i]);
                 holesSubm.RemoveAt(i);
@@ -195,7 +192,7 @@ public class Boat : MonoBehaviour {
     }
     private void CheckHolesBoatLowered() {
         for (var i = 0; i < holesSurf.Count; i++) {
-            if (holesSurf[i].transform.position.y <= waterSurfaceYPos) {
+            if (holesSurf[i].transform.position.y <= lvlMngr.WaterSurfaceYPos) {
                 // TODO: Do something with hole.obj reference - change animation to show it's taking in water (change obj reference to a script reference if needed)
                 holesSubm.Add(holesSurf[i]);
                 holesSurf.RemoveAt(i);
@@ -204,7 +201,7 @@ public class Boat : MonoBehaviour {
     }
     protected void AdjustBoatDepth() {
         // Set the boat to where the top of the submergable area is directly on the water's surface, and raise by the buoyancy minus current weight
-        float newYPos = waterSurfaceYPos - (Mathf.Abs(transform.position.y - SubmergableAreaRef.YMax)) + (sinkHeightIncr * (buoyancy.CurrentValue - weightTotal.CurrentValue));
+        float newYPos = lvlMngr.WaterSurfaceYPos - (Mathf.Abs(transform.position.y - SubmergableAreaRef.YMax)) + (sinkHeightIncr * (buoyancy.CurrentValue - weightTotal.CurrentValue));
         transform.position = new Vector3(transform.position.x, newYPos, transform.position.z);
     }
 

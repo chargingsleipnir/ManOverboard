@@ -12,6 +12,21 @@ PrefabInstance:
       propertyPath: m_Name
       value: Adult_Male_180
       objectReference: {fileID: 0}
+    - target: {fileID: 3119671532120877028, guid: e51c7e9663db9b0449b6b9e0405649a5,
+        type: 3}
+      propertyPath: m_SortingLayerID
+      value: 1982025277
+      objectReference: {fileID: 0}
+    - target: {fileID: 3119671532120877028, guid: e51c7e9663db9b0449b6b9e0405649a5,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 279340563389323126, guid: e51c7e9663db9b0449b6b9e0405649a5,
+        type: 3}
+      propertyPath: weight
+      value: 180
+      objectReference: {fileID: 0}
     - target: {fileID: 9191943608723016714, guid: e51c7e9663db9b0449b6b9e0405649a5,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -66,11 +81,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 279340563389323126, guid: e51c7e9663db9b0449b6b9e0405649a5,
-        type: 3}
-      propertyPath: weight
-      value: 180
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e51c7e9663db9b0449b6b9e0405649a5, type: 3}
