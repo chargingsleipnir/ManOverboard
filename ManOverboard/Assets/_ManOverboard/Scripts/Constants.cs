@@ -25,6 +25,8 @@ public static class Consts {
 
     public const float OFFSCREEN_CATCH_BUFF = 5.0f;
 
+    public const float BUOY_ROT_SPEED = 270.0f; // Degrees per second
+
     public enum LeakTypesAndRates {
         Pinhole = 1,
         Bullet = 3,
@@ -58,7 +60,8 @@ public static class Consts {
     public enum UnityLayers {
         Water = 4,
         TossedObj = 9,
-        Envir = 10
+        Envir = 10,
+        FloatDev = 11,
     }
 
     public static int LAYER_COUNT { get; private set; }

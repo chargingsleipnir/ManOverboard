@@ -304,8 +304,18 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
         Airborne = false;
     }
 
+    private void LandedAndSaved() {
+        rb.isKinematic = true;
+        rb.velocity = Vector2.zero;
+        bc.enabled = false;
+        Airborne = false;
+        SetStateSaved();
+        lvlMngr.CharSaved(this);
+    }
+
     private void OnTriggerEnter2D(Collider2D collider) {
-        if(collider.gameObject.layer == (int)Consts.UnityLayers.Water) {
+
+        if (collider.gameObject.layer == (int)Consts.UnityLayers.Water) {
             WaterContact();
         }
         else if (collider.gameObject.layer == (int)Consts.UnityLayers.Envir) {
@@ -313,13 +323,18 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
             if(cs.Cling(this)) {
                 // TODO: Some of this will not be true in all cases, such as "SetStateSaved();" - this applies to cave stalactites, but in other situations might not.
                 SortCompLayerChange(Consts.DrawLayers.BehindBoat, null);
-                rb.isKinematic = true;
-                rb.velocity = Vector2.zero;
-                bc.enabled = false;
-                Airborne = false;
-                SetStateSaved();
-                lvlMngr.CharSaved(this);
+                LandedAndSaved();
             }
+        }
+    }
+
+    private void OnCollisionEnter2D(Collision2D collider) {
+        if (collider.gameObject.layer == (int)Consts.UnityLayers.FloatDev) {
+            // TODO: Something better than this - temporary setup.
+            transform.position = collider.transform.position;
+            transform.parent = collider.transform;
+
+            LandedAndSaved();
         }
     }
 }
