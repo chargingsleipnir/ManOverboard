@@ -7,27 +7,13 @@ using ZeroProgress.Common;
 using ZeroProgress.Common.Collections;
 
 
-/* TODO: Get rid of CharActionable - all characters will be potentially actionable at some point in some way. I'm better off to check what the scene is like
- * (what items are available, etc) and adjust each characters settings for that level at that point (like whether or not the action button will appear)
- * 
- * Have children be able to don their own life jackets at about 30 seconds, or click on any adult and change the amount of time. 5 secs for crewman, 10 secs for passenger, etc.
- * The click to have an adult do it should come from the adult themselves:
- * Click adult,
- * Click life jacket button, all life jackets highlight.
- * If adult jacket is clicked, it's donned. 
- * Maybe Clicking the life jacket button again will allow your own to be clicked to remove. Maybe a second hold & release button needs to be available for quicker doffing
- * If child jacket is clicked, kids are highlighted to put in on.
- * 
- * Show a meter at one side that’s like a close-up of the water level reaching the next hole or boat-level-ledge, as this is very hard to see as is, 
- * and once the water goes over, that level is flooded/lost, whatever exactly that means right now.
- * 
- * Need a better way to see items/characters:
+/*
+Need a better way to see items/characters:
 Translucent masking for items behind boat wall (bucket, life jacket, characters legs?) 
 
 OR
 
 Instead of masking, make is more general, and design the entire boat to be translucent anyway.
-
  */
 
 [RequireComponent(typeof(SpriteRenderer), typeof(Rigidbody2D), typeof(BoxCollider2D))]
@@ -84,6 +70,8 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
         }
     }
 
+    Enemy enemy;
+
     protected override void Awake() {
         base.Awake();
 
@@ -102,6 +90,7 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
     protected override void Start () {
         strength = 0;
         speed = 0;
+
         Reset();
     }
 
@@ -118,7 +107,7 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
         activityCounter = 0.0f;
         activityInterval = 0.0f;
 
-        SortCompLayerChange(Consts.DrawLayers.BoatLevel1Contents);
+        SortCompLayerChange(Consts.DrawLayers.BoatLevel1Mid);
     }
 
     protected override void Update() {
@@ -135,6 +124,13 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
                 ActionComplete();
             }
         }
+        else if(Airborne) {
+            if (transform.position.y <= lvlMngr.WaterSurfaceYPos - Consts.OFFSCREEN_CATCH_BUFF) {
+                WaterContact();
+                Utility.RepositionY(transform, lvlMngr.WaterSurfaceYPos - Consts.OFFSCREEN_CATCH_BUFF);
+                StopVel();
+            }
+        }
     }
 
     public override void OnClick() {
@@ -148,7 +144,10 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
     }
 
     protected override bool CheckImmExit() {
-        return base.CheckImmExit() || CharState == Consts.CharState.Saved || CharState == Consts.CharState.Dazed;
+        return base.CheckImmExit() || CheckNonFuncStates();
+    }
+    private bool CheckNonFuncStates() {
+        return CharState == Consts.CharState.Saved || CharState == Consts.CharState.Dazed || CharState == Consts.CharState.Dead;
     }
 
     public void WearItem(ItemBase item) {
@@ -185,8 +184,18 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
         base.Toss(vel);
     }
 
-    // TODO: Check if given commands are available, and disable buttons if not.
-    // In the case of crewman, the button for scooping water should be disabled if no scooping items are available.
+    private void Attack(Enemy e) {
+        enemy = e;
+        if(e is SeaSerpent) {
+            activityCounter = activityInterval = Consts.ATTACK_RATE;
+            ActionComplete = DamageEnemy;
+            TakeAction();
+        }
+    }
+
+    private void DamageEnemy() {
+        enemy.TakeDamage(strength);
+    }
 
     public virtual void SetActionBtns() { }
     public virtual void CheckActions() { }
@@ -212,7 +221,7 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
         this.activeSkill = activeSkill;
     }
     public bool CheckAvailToAct() {
-        return CharState != Consts.CharState.InAction && CharState != Consts.CharState.Saved;
+        return CharState != Consts.CharState.InAction && !CheckNonFuncStates();
     }
 
     public void ReturnToGameState() {
@@ -242,7 +251,7 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
         EndAction();
         lvlMngr.UnfadeLevel();
     }
-    // BOOKMARK
+
     public virtual void DropItemHeld() {
         if (ItemHeld == null)
             return;
@@ -296,5 +305,69 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
     public void SetStateSaved() {
         CancelAction();
         CharState = Consts.CharState.Saved;
+    }
+
+    private void WaterContact() {
+        if (IsWearingLifeJacket) {
+            SetStateSaved();
+            lvlMngr.CharSaved(this);
+        }
+        else {
+            // TODO: This might need a small delay to see if within a moment the character comes into contact with a ring buoy
+            CharState = Consts.CharState.Dead;
+            lvlMngr.CharKilled(this);
+        }
+        Airborne = false;
+    }
+
+    private void Landed() {
+        rb.isKinematic = true;
+        rb.velocity = Vector2.zero;
+        bc.enabled = false;
+        Airborne = false;
+    }
+    private void LandedAndSaved() {
+        Landed();
+        SetStateSaved();
+        lvlMngr.CharSaved(this);
+    }
+
+    private void OnTriggerEnter2D(Collider2D collider) {
+        if (CheckImmExit())
+            return;
+
+        if (collider.gameObject.layer == (int)Consts.UnityLayers.Water) {
+            WaterContact();
+        }
+        else if (collider.gameObject.layer == (int)Consts.UnityLayers.Envir) {
+            ClingableSurface cs = collider.GetComponent<ClingableSurface>();
+            if(cs.Cling(this)) {
+                // TODO: Some of this will not be true in all cases, such as "SetStateSaved();" - this applies to cave stalactites, but in other situations might not.
+                SortCompLayerChange(Consts.DrawLayers.BehindBoat, null);
+                LandedAndSaved();
+            }
+        }
+        else if (collider.gameObject.layer == (int)Consts.UnityLayers.Enemy) {
+            // This is presuming enemy has/is clingable surface
+            ClingableSurface cs = collider.GetComponent<ClingableSurface>();
+            // TODO: Clinging allows for timed/sustained attack (5 seconds, 1 hit per second, for example), while not cliniging results in single impact damage
+            if (cs.Cling(this)) {
+                Landed();
+                Attack(collider.GetComponent<Enemy>());
+            }
+        }
+    }
+
+    private void OnCollisionEnter2D(Collision2D collider) {
+        if (CheckImmExit())
+            return;
+
+        if (collider.gameObject.layer == (int)Consts.UnityLayers.FloatDev) {
+            // TODO: Something better than this - temporary setup.
+            transform.position = collider.transform.position;
+            transform.parent = collider.transform;
+
+            LandedAndSaved();
+        }
     }
 }

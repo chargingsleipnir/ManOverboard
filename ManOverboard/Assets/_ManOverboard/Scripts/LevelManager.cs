@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using ZeroProgress.Common;
 using ZeroProgress.Common.Collections;
+using Game2DWaterKit;
 
 public class LevelManager : MonoBehaviour {
 
@@ -15,6 +16,8 @@ public class LevelManager : MonoBehaviour {
 
     [SerializeField]
     private GameObject waterObj;
+    public float WaterSurfaceYPos { get; private set; }
+
     [SerializeField]
     private GameObject rearMenuFieldPrefab;
     private GameObject rearMenuFieldObj;
@@ -29,10 +32,11 @@ public class LevelManager : MonoBehaviour {
 
     private SpriteTossableSet spriteTossableSet;
 
-    private List<CharBase> characterSet;
+    private List<CharBase> charsInPlay;
     private List<CharChild> children;
     private int charSetStartCount;
-    private int charsTossedWithLifeJackets;
+    private int charsSaved;
+    private int charsKilled;
     private int numChildren = 0;
     private int numElders = 0;
 
@@ -41,6 +45,8 @@ public class LevelManager : MonoBehaviour {
     private List<LifeJacket> lifeJacketsAdult;
     private List<LifeJacket> lifeJacketsChild;
     private List<RepairKit> repairKits;
+
+    private EnemySet enemies;
 
     public delegate void SelectionCallback(SpriteBase spriteSelected);
     SelectionCallback SelectionCB;
@@ -76,12 +82,15 @@ public class LevelManager : MonoBehaviour {
         // ! gameCtrl.Init is just here while building levels, so we don't need to go through PreGame during testing.
         // Once game is ready to ship, delete it.
         items = Resources.Load<ItemBaseSet>("ScriptableObjects/SpriteSets/ItemBaseSet");
+        enemies = Resources.Load<EnemySet>("ScriptableObjects/SpriteSets/EnemySet");
         spriteTossableSet = Resources.Load<SpriteTossableSet>("ScriptableObjects/SpriteSets/SpriteTossableSet");
 
         holdWeight = Resources.Load<ScriptableInt>("ScriptableObjects/weightHeldObj");
         mousePos = Resources.Load<ScriptableVector2>("ScriptableObjects/v2_mouseWorldPos");
 
         levelMsg = Resources.Load<StringParamEvent>("ScriptableObjects/Events/WithParam/Str_AnyMsg");
+
+        WaterSurfaceYPos = (waterObj.transform.position.y + (waterObj.GetComponent<Game2DWater>().WaterSize.y * 0.5f));
 
         gameCtrl.Init();
     }
@@ -93,14 +102,15 @@ public class LevelManager : MonoBehaviour {
         boat.Start();
 
         charSetStartCount = 0;
-        charsTossedWithLifeJackets = 0;
+        charsSaved = 0;
+        charsKilled = 0;
 
-        characterSet = new List<CharBase>();
+        charsInPlay = new List<CharBase>();
         children = new List<CharChild>();
         for (int i = 0; i < spriteTossableSet.Count; i++) {
             spriteTossableSet[i].LvlMngr = this;
             if (spriteTossableSet[i] is CharBase) {
-                characterSet.Add(spriteTossableSet[i] as CharBase);
+                charsInPlay.Add(spriteTossableSet[i] as CharBase);
                 if (spriteTossableSet[i] is CharAdult)
                     numElders++;
                 else if (spriteTossableSet[i] is CharChild) {
@@ -110,7 +120,10 @@ public class LevelManager : MonoBehaviour {
             }
         }
 
-        charSetStartCount = characterSet.Count;
+        for (int i = 0; i < enemies.Count; i++)
+            enemies[i].LvlMngr = this;
+
+        charSetStartCount = charsInPlay.Count;
 
         holdWeight.CurrentValue = 0;
         uiUpdate.RaiseEvent();
@@ -137,7 +150,7 @@ public class LevelManager : MonoBehaviour {
             ReturnItem(item);
         }
 
-        foreach (CharBase character in characterSet)
+        foreach (CharBase character in charsInPlay)
             character.SetActionBtns();
 
         // Check if children will be highlightable/selectable
@@ -251,14 +264,6 @@ public class LevelManager : MonoBehaviour {
         else {
             CharBase c = heldSpriteTossable as CharBase;
 
-            // Presuming we're only in this function because character was tossed.
-            if (c.IsWearingLifeJacket) {
-                charsTossedWithLifeJackets++;
-                c.SetStateSaved();
-            }
-
-            RemoveCharacter(c);
-
             if (c.ItemHeld != null)
                 c.ItemHeld.Toss(Utility.AddNoiseDeg(mouseDelta, Consts.TOSS_NOISE_MIN, Consts.TOSS_NOISE_MAX) * tossSpeed);
 
@@ -278,35 +283,79 @@ public class LevelManager : MonoBehaviour {
         UnPauseLevel();
     }
 
-    private void CheckLevelEndResult() {
-        gameCtrl.GetCurrLevel();
+    public void CharSaved(CharBase character) {
+        charsSaved++;
+        RemoveCharacter(character);
+        CheckLevelEnd();
+    }
+    public void CharKilled(CharBase character) {
+        charsKilled++;
+        RemoveCharacter(character);
+        CheckLevelEnd();
+    }
+    public void RemoveCharacter(CharBase character) {
+        charsInPlay.Remove(character);
+        if (character is CharChild) {
+            children.Remove(character as CharChild);
+            numChildren--;
+        }
+        else
+            numElders--;        
     }
 
-    public void NumLeaks(int numLeaks) {
-        // TODO: Have the number of leaks on the gui somewhere?
-        if(numLeaks == 0) {
-            // level over
-            int charLoss = charSetStartCount - characterSet.Count - charsTossedWithLifeJackets;
+    public void EnemyKilled(Enemy e) {
+        enemies.Remove(e);
+        if (enemies.Count <= 0)
+            CheckLevelEnd();
+    }
 
-            if (charLoss <= gameCtrl.GetLevelMaxCharLoss(3)) {
-                levelMsg.RaiseEvent("You a winner! 3 star play!");
-            }
-            else if (charLoss <= gameCtrl.GetLevelMaxCharLoss(2)) {
-                levelMsg.RaiseEvent("You a winner! 2 star play!");
-            }
-            else if (charLoss <= gameCtrl.GetLevelMaxCharLoss(1)) {
-                levelMsg.RaiseEvent("You a winner! 1 star play!");
-            }
-            else {
-                levelMsg.RaiseEvent("Too many people died!");
+    public void CheckLevelEnd() {
+
+        // TODO: Incorporate enemy count in meaningful way.
+        if (enemies.Count > 0)
+            return;
+
+        bool charsDone = charsSaved + charsKilled == charSetStartCount;
+        bool holesDone = boat.HolesSubmCount == 0;
+
+        if (charsDone == false && holesDone == false)
+            return;
+
+        if(holesDone) {
+            bool charInAir = false;
+            for(int i = charsInPlay.Count - 1; i > -1; i--) {
+                // Still not sure if they'll live or die - wait to determine
+                if (charsInPlay[i].Airborne)
+                    charInAir = true;
+                else {
+                    charsInPlay[i].SetStateSaved();
+                    charsSaved++;
+                    RemoveCharacter(charsInPlay[i]);
+                }
             }
 
-            levelActive = false;
-
-            foreach (CharBase c in characterSet) {
-                c.SetStateSaved();
-            }
+            if (charInAir)
+                return;                
         }
+
+        LevelEnd(charsKilled);
+    }
+
+    private void LevelEnd(int charLoss) {
+        if (charLoss <= gameCtrl.GetLevelMaxCharLoss(3)) {
+            levelMsg.RaiseEvent("You a winner! 3 star play!");
+        }
+        else if (charLoss <= gameCtrl.GetLevelMaxCharLoss(2)) {
+            levelMsg.RaiseEvent("You a winner! 2 star play!");
+        }
+        else if (charLoss <= gameCtrl.GetLevelMaxCharLoss(1)) {
+            levelMsg.RaiseEvent("You a winner! 1 star play!");
+        }
+        else {
+            levelMsg.RaiseEvent("Too many people died!");
+        }
+
+        levelActive = false;
     }
 
     public void HighlightToSelect(Consts.HighlightGroupType groupType, SelectionCallback CB) {
@@ -385,18 +434,6 @@ public class LevelManager : MonoBehaviour {
         currGroupsLit.Remove(groupType);
     }
 
-    // BOOKMARK
-
-    // TODO:
-    /*
-     * 
-     * Itembase calling this from ConfirmSelections, AFTER itemheld set in place? No, items need to be removed first, then placed next.
-     public void RemoveFromChar() {
-        if (CharHeldBy != null)
-            CharHeldBy.LoseItem(this);
-    }
-     */
-
     public void ConfirmSelections(CharBase charToAct) {
         if (selectedItem != null) {
             selectedItem.RemoveFromChar();
@@ -420,16 +457,6 @@ public class LevelManager : MonoBehaviour {
     public void OnDeselection(SpriteBase sprite) {
         if (sprite is ItemBase)
             ReturnItem(sprite as ItemBase);
-    }
-    private void RemoveCharacter(CharBase character) {
-        characterSet.Remove(character);
-        if (character is CharChild) {
-            children.Remove(character as CharChild);
-            numChildren--;
-        }
-        else {
-            numElders--;
-        }
     }
     public void RemoveItem(ItemBase item) {
         if (item is LifeJacket) {
@@ -526,6 +553,7 @@ public class LevelManager : MonoBehaviour {
             heldSpriteTossable.transform.localPosition = grabPosLocal;
         }
     }
+
     // Called by RearMenuField when field is clicked, so as to cancel current selection process.
     public void ResetAll() {
         ResetHeld();

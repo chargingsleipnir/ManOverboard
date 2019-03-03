@@ -16,9 +16,9 @@ TagManager:
   - 
   - PostProcessing
   - Tossed Object
-  - 
-  - 
-  - 
+  - Environment
+  - Floatation Device
+  - Enemy
   - 
   - 
   - 
@@ -48,13 +48,16 @@ TagManager:
   - name: Background1
     uniqueID: 1523859595
     locked: 0
-  - name: BoatLevel1
+  - name: BehindBoat
+    uniqueID: 4191230259
+    locked: 0
+  - name: BoatLevel1Rear
     uniqueID: 2948417559
     locked: 0
-  - name: BoatLevel1Contents
+  - name: BoatLevel1Mid
     uniqueID: 1982025277
     locked: 0
-  - name: BoatLevel1FrontWall
+  - name: BoatLevel1Front
     uniqueID: 174049011
     locked: 0
   - name: BehindWater

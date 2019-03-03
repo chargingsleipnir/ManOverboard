@@ -19,9 +19,14 @@ public static class Consts {
     public const float SCOOP_RATE = 200.0f;
     public const float DON_RATE = 250.0f;
     public const float REPAIR_RATE = 500.0f;
+    public const float ATTACK_RATE = 100.0f;
 
     public const float TOSS_NOISE_MIN = -10.0f;
     public const float TOSS_NOISE_MAX = 10.0f;
+
+    public const float OFFSCREEN_CATCH_BUFF = 5.0f;
+
+    public const float BUOY_ROT_SPEED = 270.0f; // Degrees per second
 
     public enum LeakTypesAndRates {
         Pinhole = 1,
@@ -39,9 +44,10 @@ public static class Consts {
         Default,
         Background2,
         Background1,
-        BoatLevel1,
-        BoatLevel1Contents,
-        BoatLevel1FrontWall,
+        BehindBoat,
+        BoatLevel1Rear,
+        BoatLevel1Mid,
+        BoatLevel1Front,
         BehindWater,
         Water,
         Foreground1,
@@ -51,6 +57,15 @@ public static class Consts {
         FrontOfLevel3,
         FrontOfLevel4
     }
+
+    public enum UnityLayers {
+        Water = 4,
+        TossedObj = 9,
+        Envir = 10,
+        FloatDev = 11,
+        Enemy = 12
+    }
+
     public static int LAYER_COUNT { get; private set; }
     public static void Init() {
         LAYER_COUNT = Enum.GetValues(typeof(DrawLayers)).Length;
@@ -70,6 +85,7 @@ public static class Consts {
         InMenu,
         InAction,
         Dazed,
+        Dead,
         Saved
     }
     public enum LevelState {

@@ -4,7 +4,7 @@ using ZeroProgress.Common;
 
 public class SpriteTossable : SpriteBase, IMouseDownDetector, IMouseUpDetector {
 
-    private bool tossed;
+    public bool Airborne { get; protected set; }
 
     protected LevelManager lvlMngr;
     public LevelManager LvlMngr { set { lvlMngr = value; } }
@@ -45,11 +45,11 @@ public class SpriteTossable : SpriteBase, IMouseDownDetector, IMouseUpDetector {
         // (Could use posiiton constraints instead)
         rb.isKinematic = true;
         bc.enabled = false;
-        tossed = false;
+        Airborne = false;
     }
 
     public virtual void MouseDownCB() {
-        if (CheckImmExit())
+        if (CheckImmExit() || Airborne)
             return;
 
         lvlMngr.OnSpriteMouseDown(gameObject);
@@ -57,15 +57,16 @@ public class SpriteTossable : SpriteBase, IMouseDownDetector, IMouseUpDetector {
     public virtual void OnClick() {}
 
     public void MouseUpCB() {
-        if (CheckImmExit())
+        if (CheckImmExit() || Airborne)
             return;
 
         if (selectable)
             lvlMngr.OnSelection(this);
     }
 
+    // Airborne not included here because derived class "Update" methods need to check for it.
     protected virtual bool CheckImmExit() {
-        return tossed || Paused;
+        return Paused;
     }
 
     public void MoveRigidbody() {
@@ -77,18 +78,22 @@ public class SpriteTossable : SpriteBase, IMouseDownDetector, IMouseUpDetector {
     public virtual void Toss(Vector2 vel) {
         set.Remove(this);
 
-        tossed = true;
-
         // Move in front of all other non-water objects
         SortCompLayerChange(Consts.DrawLayers.BehindWater, null);
         rb.isKinematic = false;
         rb.velocity = vel;
         bc.enabled = true;
-        gameObject.layer = 9;
+        gameObject.layer = (int)Consts.UnityLayers.TossedObj;
+        Airborne = true;
 
         RefShape2DMouseTracker[] trackers = GetComponents<RefShape2DMouseTracker>();
         for (int i = 0; i < trackers.Length; i++)
             trackers[i].enabled = false;
+    }
+
+    protected void StopVel() {
+        rb.isKinematic = true;
+        rb.velocity = Vector2.zero;
     }
 
     public override void HighlightToSelect() {

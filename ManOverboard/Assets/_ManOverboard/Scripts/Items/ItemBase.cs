@@ -24,6 +24,18 @@ public class ItemBase : SpriteTossable {
         InUse = false;
     }
 
+    protected override void Update() {
+        if (CheckImmExit())
+            return;
+
+        if (Airborne) {
+            if (transform.position.y <= lvlMngr.WaterSurfaceYPos - Consts.OFFSCREEN_CATCH_BUFF) {
+                Utility.RepositionY(transform, lvlMngr.WaterSurfaceYPos - Consts.OFFSCREEN_CATCH_BUFF);
+                StopVel();
+            }
+        }
+    }
+
     public override void Toss(Vector2 vel) {
         items.Remove(this);
 

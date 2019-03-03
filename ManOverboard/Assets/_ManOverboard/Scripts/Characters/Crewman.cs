@@ -25,10 +25,11 @@ public class Crewman : CharAdult {
     protected override void Start() {
         strength += 25;
         speed += 25;
+
         Reset();
 
         sailorCap.CharHeldBy = this;
-        WearItem(sailorCap);
+        WearItem(sailorCap);        
     }
 
     public override void SetActionBtns() {
