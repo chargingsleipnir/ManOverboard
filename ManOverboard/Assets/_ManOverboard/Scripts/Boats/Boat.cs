@@ -169,8 +169,11 @@ public class Boat : MonoBehaviour {
         }
         // In this case, not a "Leak" above, but rather, the edge of that given boat level. When this hits zero, the entire floor is lost (game over if it's the last/only floor)
         else {
-            levelMsg.RaiseEvent("Level Flood Imminent!");
             distLeakAbove.CurrentValue = buoyancy.CurrentValue - weightTotal.CurrentValue;
+            if(distLeakAbove.CurrentValue >= 0)
+                levelMsg.RaiseEvent("Level Flood Imminent!");
+            else
+                levelMsg.RaiseEvent("Level Lost!");
         }
 
         if (holesSubm.Count > 0)
@@ -201,7 +204,9 @@ public class Boat : MonoBehaviour {
     }
     protected void AdjustBoatDepth() {
         // Set the boat to where the top of the submergable area is directly on the water's surface, and raise by the buoyancy minus current weight
-        float newYPos = lvlMngr.WaterSurfaceYPos - (Mathf.Abs(transform.position.y - SubmergableAreaRef.YMax)) + (sinkHeightIncr * (buoyancy.CurrentValue - weightTotal.CurrentValue));
+        float newYPos = lvlMngr.WaterSurfaceYPos; // Starting with transform position at the water level
+        newYPos += (transform.position.y - SubmergableAreaRef.YMin); // Move up so bottom of the buoyancy reference area is there
+        newYPos -= sinkHeightIncr * weightTotal.CurrentValue; // And lower by the weight on the boat
         transform.position = new Vector3(transform.position.x, newYPos, transform.position.z);
     }
 

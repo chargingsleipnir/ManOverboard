@@ -19,6 +19,7 @@ public static class Consts {
     public const float SCOOP_RATE = 200.0f;
     public const float DON_RATE = 250.0f;
     public const float REPAIR_RATE = 500.0f;
+    public const float ATTACK_RATE = 100.0f;
 
     public const float TOSS_NOISE_MIN = -10.0f;
     public const float TOSS_NOISE_MAX = 10.0f;
@@ -62,6 +63,7 @@ public static class Consts {
         TossedObj = 9,
         Envir = 10,
         FloatDev = 11,
+        Enemy = 12
     }
 
     public static int LAYER_COUNT { get; private set; }

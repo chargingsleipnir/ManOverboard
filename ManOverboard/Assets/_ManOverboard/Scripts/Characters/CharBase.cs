@@ -70,6 +70,8 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
         }
     }
 
+    Enemy enemy;
+
     protected override void Awake() {
         base.Awake();
 
@@ -88,6 +90,7 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
     protected override void Start () {
         strength = 0;
         speed = 0;
+
         Reset();
     }
 
@@ -181,6 +184,19 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
         base.Toss(vel);
     }
 
+    private void Attack(Enemy e) {
+        enemy = e;
+        if(e is SeaSerpent) {
+            activityCounter = activityInterval = Consts.ATTACK_RATE;
+            ActionComplete = DamageEnemy;
+            TakeAction();
+        }
+    }
+
+    private void DamageEnemy() {
+        enemy.TakeDamage(strength);
+    }
+
     public virtual void SetActionBtns() { }
     public virtual void CheckActions() { }
 
@@ -235,7 +251,7 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
         EndAction();
         lvlMngr.UnfadeLevel();
     }
-    // BOOKMARK
+
     public virtual void DropItemHeld() {
         if (ItemHeld == null)
             return;
@@ -304,16 +320,21 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
         Airborne = false;
     }
 
-    private void LandedAndSaved() {
+    private void Landed() {
         rb.isKinematic = true;
         rb.velocity = Vector2.zero;
         bc.enabled = false;
         Airborne = false;
+    }
+    private void LandedAndSaved() {
+        Landed();
         SetStateSaved();
         lvlMngr.CharSaved(this);
     }
 
     private void OnTriggerEnter2D(Collider2D collider) {
+        if (CheckImmExit())
+            return;
 
         if (collider.gameObject.layer == (int)Consts.UnityLayers.Water) {
             WaterContact();
@@ -326,9 +347,21 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
                 LandedAndSaved();
             }
         }
+        else if (collider.gameObject.layer == (int)Consts.UnityLayers.Enemy) {
+            // This is presuming enemy has/is clingable surface
+            ClingableSurface cs = collider.GetComponent<ClingableSurface>();
+            // TODO: Clinging allows for timed/sustained attack (5 seconds, 1 hit per second, for example), while not cliniging results in single impact damage
+            if (cs.Cling(this)) {
+                Landed();
+                Attack(collider.GetComponent<Enemy>());
+            }
+        }
     }
 
     private void OnCollisionEnter2D(Collision2D collider) {
+        if (CheckImmExit())
+            return;
+
         if (collider.gameObject.layer == (int)Consts.UnityLayers.FloatDev) {
             // TODO: Something better than this - temporary setup.
             transform.position = collider.transform.position;

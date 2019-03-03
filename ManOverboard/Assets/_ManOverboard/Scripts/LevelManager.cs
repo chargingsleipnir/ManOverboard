@@ -46,6 +46,8 @@ public class LevelManager : MonoBehaviour {
     private List<LifeJacket> lifeJacketsChild;
     private List<RepairKit> repairKits;
 
+    private EnemySet enemies;
+
     public delegate void SelectionCallback(SpriteBase spriteSelected);
     SelectionCallback SelectionCB;
 
@@ -80,6 +82,7 @@ public class LevelManager : MonoBehaviour {
         // ! gameCtrl.Init is just here while building levels, so we don't need to go through PreGame during testing.
         // Once game is ready to ship, delete it.
         items = Resources.Load<ItemBaseSet>("ScriptableObjects/SpriteSets/ItemBaseSet");
+        enemies = Resources.Load<EnemySet>("ScriptableObjects/SpriteSets/EnemySet");
         spriteTossableSet = Resources.Load<SpriteTossableSet>("ScriptableObjects/SpriteSets/SpriteTossableSet");
 
         holdWeight = Resources.Load<ScriptableInt>("ScriptableObjects/weightHeldObj");
@@ -116,6 +119,9 @@ public class LevelManager : MonoBehaviour {
                 }
             }
         }
+
+        for (int i = 0; i < enemies.Count; i++)
+            enemies[i].LvlMngr = this;
 
         charSetStartCount = charsInPlay.Count;
 
@@ -297,7 +303,18 @@ public class LevelManager : MonoBehaviour {
             numElders--;        
     }
 
+    public void EnemyKilled(Enemy e) {
+        enemies.Remove(e);
+        if (enemies.Count <= 0)
+            CheckLevelEnd();
+    }
+
     public void CheckLevelEnd() {
+
+        // TODO: Incorporate enemy count in meaningful way.
+        if (enemies.Count > 0)
+            return;
+
         bool charsDone = charsSaved + charsKilled == charSetStartCount;
         bool holesDone = boat.HolesSubmCount == 0;
 
