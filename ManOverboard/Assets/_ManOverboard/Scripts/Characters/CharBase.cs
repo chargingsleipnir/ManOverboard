@@ -71,6 +71,7 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
     }
 
     Enemy enemy;
+    
 
     protected override void Awake() {
         base.Awake();
@@ -305,6 +306,7 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
     public void SetStateSaved() {
         CancelAction();
         CharState = Consts.CharState.Saved;
+        SetAnimBool("Saved", true);
     }
 
     private void WaterContact() {

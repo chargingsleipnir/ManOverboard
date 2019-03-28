@@ -14,6 +14,7 @@ public class SpriteTossable : SpriteBase, IMouseDownDetector, IMouseUpDetector {
 
     protected Rigidbody2D rb;
     protected BoxCollider2D bc;
+    protected Animator anim;
 
     public bool Paused { get; set; }
 
@@ -24,10 +25,17 @@ public class SpriteTossable : SpriteBase, IMouseDownDetector, IMouseUpDetector {
         set { weight = value; }
     }
 
+    protected void SetAnimBool(string animName, bool isTrue) {
+        // TODO: This will require greater conditioning
+        if (anim != null)
+            anim.SetBool(animName, isTrue);
+    }
+
     protected override void Awake() {
         base.Awake();
         rb = GetComponent<Rigidbody2D>();
         bc = GetComponent<BoxCollider2D>();
+        anim = GetComponent<Animator>();
 
         mousePos = Resources.Load<ScriptableVector2>("ScriptableObjects/v2_mouseWorldPos");
         set = Resources.Load<SpriteTossableSet>("ScriptableObjects/SpriteSets/SpriteTossableSet");
@@ -53,6 +61,8 @@ public class SpriteTossable : SpriteBase, IMouseDownDetector, IMouseUpDetector {
             return;
 
         lvlMngr.OnSpriteMouseDown(gameObject);
+
+        SetAnimBool("Held", true);
     }
     public virtual void OnClick() {}
 
@@ -103,5 +113,6 @@ public class SpriteTossable : SpriteBase, IMouseDownDetector, IMouseUpDetector {
 
     public void ReturnToBoat() {
         SortCompResetToBase();
+        SetAnimBool("Held", false);
     }
 }
