@@ -223,8 +223,9 @@ public class LevelManager : MonoBehaviour {
         heldSpriteTossable = spriteObj.GetComponent<SpriteTossable>();
         grabPosLocal = heldSpriteTossable.transform.localPosition; // maintain copy of character's position where grabbed, relative to the boat
 
-        if (heldSpriteTossable is CharBase)
+        if (heldSpriteTossable is CharBase) {
             heldChar = spriteObj.GetComponent<CharBase>();
+        }
         else
             heldChar = null;
 
@@ -244,10 +245,13 @@ public class LevelManager : MonoBehaviour {
     public void HeldSpriteRelease() {
         prepTossCalc = false;
         UnfadeLevel();
-        ResetHeld();        
+        ResetHeld();
     }
-    public void HeldSpriteEnterTossArea() {
+    public void HeldSpriteInsideTossArea() {
         prepTossCalc = true;
+
+        if (heldChar != null)
+            heldChar.IsHeld(true);
     }
     public void HeldSpriteToss() {
         spriteMouseRespScpt.SetActive(false);
@@ -263,6 +267,8 @@ public class LevelManager : MonoBehaviour {
         }
         else {
             CharBase c = heldSpriteTossable as CharBase;
+
+            // TODO: Character animation still set to Struggling? That's fine for now, but perhaps make something else for when airborne.
 
             if (c.ItemHeld != null)
                 c.ItemHeld.Toss(Utility.AddNoiseDeg(mouseDelta, Consts.TOSS_NOISE_MIN, Consts.TOSS_NOISE_MAX) * tossSpeed);
@@ -545,8 +551,9 @@ public class LevelManager : MonoBehaviour {
         selectedItem = null;
     }
     public void ResetHeld() {
-        if (heldChar != null)
+        if (heldChar != null) {
             heldChar.ReturnToGameState();
+        }
 
         if (heldSpriteTossable != null) {
             heldSpriteTossable.ReturnToBoat();

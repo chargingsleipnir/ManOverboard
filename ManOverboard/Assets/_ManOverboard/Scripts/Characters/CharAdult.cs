@@ -6,8 +6,9 @@ public class CharAdult : CharChild {
 
     protected bool canDonLifeJacketChild = false;
     protected bool canScoop = false;
-    int waterWeight = 0; 
+    int waterWeight = 0;
 
+    // Always being overridden without base reference. Use Reset() for base referencing
     protected override void Start() {
         Reset();
     }

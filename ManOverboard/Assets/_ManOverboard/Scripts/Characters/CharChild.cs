@@ -6,6 +6,7 @@ public class CharChild : CharBase {
 
     protected bool canDonLifeJacketSelf = false;
 
+    // Always being overridden without base reference. Use Reset() for base referencing
     protected override void Start() {
         strength = 25;
         speed = 25;

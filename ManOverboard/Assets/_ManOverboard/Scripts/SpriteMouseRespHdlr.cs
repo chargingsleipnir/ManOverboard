@@ -63,7 +63,7 @@ public class SpriteMouseRespHdlr : MonoBehaviour {
             dragRadSB.ChangeColour(null, null, null, 0.4f);
 
             state = SpriteMouseRespState.Toss;
-            lvlMngr.HeldSpriteEnterTossArea();
+            lvlMngr.HeldSpriteInsideTossArea();
         }
     }
 

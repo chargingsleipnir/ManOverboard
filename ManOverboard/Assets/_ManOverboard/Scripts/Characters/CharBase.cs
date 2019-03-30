@@ -1,10 +1,14 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEditor;
 using ZeroProgress.Common;
 using ZeroProgress.Common.Collections;
+using DragonBones;
+using Transform = UnityEngine.Transform;
+using Animation = DragonBones.Animation;
 
 
 /*
@@ -48,6 +52,11 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
     protected ProgressBar timerBar;
 
     [SerializeField]
+    protected GameObject armatureObj;
+    protected UnityArmatureComponent armaComp;
+    protected Animation anim;
+
+    [SerializeField]
     protected Transform trans_ItemUseHand;
 
     [SerializeField]
@@ -71,10 +80,23 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
     }
 
     Enemy enemy;
-    
 
     protected override void Awake() {
         base.Awake();
+
+
+        // Cannot serialize armature or animation components directly - must acquire through gameobject.
+        if (armatureObj != null) {
+            armaComp = armatureObj.GetComponent<UnityArmatureComponent>();
+            anim = armaComp.animation;
+        }
+
+        //try {
+        //    anim = armatureObj.GetComponent<UnityArmatureComponent>().animation;
+        //}
+        //catch(UnassignedReferenceException ure) {
+        //    Debug.Log("No armature component");
+        //}
 
         ActionStep = Action_Step;
         ActionComplete = Action_Complete;
@@ -88,6 +110,7 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
         cancelBtnTracker.AddMouseExitListener(MouseUpToDownLinksTrue);
     }
 
+    // Always being overridden without base reference. Use Reset() for base referencing
     protected override void Start () {
         strength = 0;
         speed = 0;
@@ -109,6 +132,8 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
         activityInterval = 0.0f;
 
         SortCompLayerChange(Consts.DrawLayers.BoatLevel1Mid);
+
+        PlayAnim("Idle");
     }
 
     protected override void Update() {
@@ -135,6 +160,8 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
     }
 
     public override void OnClick() {
+        PlayAnim("Idle");
+        Held = false;
         if (CharState == Consts.CharState.Default) {
             OpenCommandPanel();
         }
@@ -149,6 +176,24 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
     }
     private bool CheckNonFuncStates() {
         return CharState == Consts.CharState.Saved || CharState == Consts.CharState.Dazed || CharState == Consts.CharState.Dead;
+    }
+
+    protected void PlayAnim(string animation) {
+        if(anim != null) {
+            anim.Play(animation);
+        }
+    }
+    protected void GoToFrame(string animation, uint frame = 0) {
+        if (anim != null) {
+            anim.GotoAndStopByFrame(animation, frame);
+        }
+    }
+
+    public void IsHeld(bool held) {
+        if (!Held) {
+            Held = true;
+            PlayAnim("Struggle");
+        }
     }
 
     public void WearItem(ItemBase item) {
@@ -229,6 +274,8 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
         IsCancelBtnActive = false;
         IsCommandPanelOpen = false;
         actHold = false;
+        Held = false;
+        PlayAnim("Idle");
     }
     public void ReturnToNeutral() {
         ReturnToGameState();
@@ -306,7 +353,7 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
     public void SetStateSaved() {
         CancelAction();
         CharState = Consts.CharState.Saved;
-        SetAnimBool("Saved", true);
+        PlayAnim("Happy");
     }
 
     private void WaterContact() {
@@ -318,6 +365,7 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
             // TODO: This might need a small delay to see if within a moment the character comes into contact with a ring buoy
             CharState = Consts.CharState.Dead;
             lvlMngr.CharKilled(this);
+            GoToFrame("Dead");
         }
         Airborne = false;
     }
