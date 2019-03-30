@@ -9,6 +9,9 @@ public class Crewman : CharAdult {
     [SerializeField]
     protected ItemBase sailorCap;
 
+    [SerializeField]
+    protected Transform capParent;
+
     Vector3 capPosLocal;
     bool capDonned;
 
@@ -28,8 +31,7 @@ public class Crewman : CharAdult {
 
         Reset();
 
-        sailorCap.CharHeldBy = this;
-        WearItem(sailorCap);        
+        WearItem(sailorCap);
     }
 
     public override void SetActionBtns() {
@@ -99,8 +101,9 @@ public class Crewman : CharAdult {
         if (ItemHeld.name.Contains("SailorCap")) {
             if (!capDonned) {
                 sailorCap = ItemHeld;
-                sailorCap.SortCompResetToBase(transform);
+                sailorCap.SortCompResetToBase(capParent);
                 sailorCap.transform.localPosition = capPosLocal;
+                sailorCap.transform.rotation = Quaternion.identity;
                 sailorCap.CharHeldBy = this;
                 itemsWorn.Add(sailorCap);
                 capDonned = true;

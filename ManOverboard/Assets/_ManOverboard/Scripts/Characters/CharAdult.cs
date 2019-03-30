@@ -112,6 +112,9 @@ public class CharAdult : CharChild {
 
         activityCounter = activityInterval = Consts.SCOOP_RATE - (strength - heldWeight);
         ActionComplete = CompleteSingleScoop;
+
+        PlayAnim("Scoop");
+
         TakeAction();
     }
     private void CompleteSingleScoop() {

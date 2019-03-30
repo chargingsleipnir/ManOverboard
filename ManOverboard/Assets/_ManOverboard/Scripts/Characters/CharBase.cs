@@ -160,7 +160,7 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
     }
 
     public override void OnClick() {
-        PlayAnim("Idle");
+        PauseAnim(true);
         Held = false;
         if (CharState == Consts.CharState.Default) {
             OpenCommandPanel();
@@ -178,15 +178,21 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
         return CharState == Consts.CharState.Saved || CharState == Consts.CharState.Dazed || CharState == Consts.CharState.Dead;
     }
 
+    // Animation controls
     protected void PlayAnim(string animation) {
-        if(anim != null) {
+        if (anim != null)
             anim.Play(animation);
-        }
     }
     protected void GoToFrame(string animation, uint frame = 0) {
         if (anim != null) {
             anim.GotoAndStopByFrame(animation, frame);
         }
+    }
+    protected void PauseAnim(bool paused) {
+        if (anim == null) return;
+
+        if (paused) anim.Stop();
+        else anim.Play();
     }
 
     public void IsHeld(bool held) {
@@ -211,7 +217,7 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
 
         item.EnableMouseTracking(false);
         item.transform.position = trans_ItemUseHand.position;
-        item.transform.parent = transform;
+        item.transform.parent = trans_ItemUseHand.transform;
     }
     // BOOKMARK
     public virtual void LoseItem(ItemBase item) {
@@ -275,7 +281,7 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
         IsCommandPanelOpen = false;
         actHold = false;
         Held = false;
-        PlayAnim("Idle");
+        PauseAnim(false);
     }
     public void ReturnToNeutral() {
         ReturnToGameState();
@@ -334,6 +340,7 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
 
         if (CharState != Consts.CharState.Saved) {
             CharState = Consts.CharState.Default;
+            PlayAnim("Idle");
             actHold = false;
         }
 
