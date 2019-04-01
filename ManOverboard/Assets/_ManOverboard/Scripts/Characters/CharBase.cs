@@ -6,9 +6,6 @@ using UnityEngine.Events;
 using UnityEditor;
 using ZeroProgress.Common;
 using ZeroProgress.Common.Collections;
-using DragonBones;
-using Transform = UnityEngine.Transform;
-using Animation = DragonBones.Animation;
 
 
 /*
@@ -52,11 +49,6 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
     protected ProgressBar timerBar;
 
     [SerializeField]
-    protected GameObject armatureObj;
-    protected UnityArmatureComponent armaComp;
-    protected Animation anim;
-
-    [SerializeField]
     protected Transform trans_ItemUseHand;
 
     [SerializeField]
@@ -81,15 +73,20 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
 
     Enemy enemy;
 
+    protected Animator animator;
+
     protected override void Awake() {
         base.Awake();
 
 
         // Cannot serialize armature or animation components directly - must acquire through gameobject.
-        if (armatureObj != null) {
-            armaComp = armatureObj.GetComponent<UnityArmatureComponent>();
-            anim = armaComp.animation;
-        }
+        //if (armatureObj != null) {
+        //    armaComp = armatureObj.GetComponent<UnityArmatureComponent>();
+        //    anim = armaComp.animation;
+
+        //    Debug.Log(armaComp);
+        //    Debug.Log(anim);
+        //}
 
         //try {
         //    anim = armatureObj.GetComponent<UnityArmatureComponent>().animation;
@@ -97,6 +94,8 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
         //catch(UnassignedReferenceException ure) {
         //    Debug.Log("No armature component");
         //}
+
+        animator = GetComponent<Animator>();
 
         ActionStep = Action_Step;
         ActionComplete = Action_Complete;
@@ -132,8 +131,6 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
         activityInterval = 0.0f;
 
         SortCompLayerChange(Consts.DrawLayers.BoatLevel1Mid);
-
-        PlayAnim("Idle");
     }
 
     protected override void Update() {
@@ -160,7 +157,9 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
     }
 
     public override void OnClick() {
-        PauseAnim(true);
+        if (animator != null)
+            animator.speed = 0;
+
         Held = false;
         if (CharState == Consts.CharState.Default) {
             OpenCommandPanel();
@@ -179,26 +178,27 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
     }
 
     // Animation controls
-    protected void PlayAnim(string animation) {
-        if (anim != null)
-            anim.Play(animation);
-    }
-    protected void GoToFrame(string animation, uint frame = 0) {
-        if (anim != null) {
-            anim.GotoAndStopByFrame(animation, frame);
-        }
-    }
-    protected void PauseAnim(bool paused) {
-        if (anim == null) return;
+    //protected void PlayAnim(string animation) {
+    //    if (anim != null)
+    //        anim.Play(animation);
+    //}
+    //protected void GoToFrame(string animation, uint frame = 0) {
+    //    if (anim != null) {
+    //        anim.GotoAndStopByFrame(animation, frame);
+    //    }
+    //}
+    //protected void PauseAnim(bool paused) {
+    //    if (anim == null) return;
 
-        if (paused) anim.Stop();
-        else anim.Play();
-    }
+    //    if (paused) anim.Stop();
+    //    else anim.Play();
+    //}
 
-    public void IsHeld(bool held) {
+    public void IsHeld() {
         if (!Held) {
             Held = true;
-            PlayAnim("Struggle");
+            if (animator != null)
+                animator.SetBool("Held", true);
         }
     }
 
@@ -281,7 +281,9 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
         IsCommandPanelOpen = false;
         actHold = false;
         Held = false;
-        PauseAnim(false);
+
+        if (animator != null)
+            animator.speed = 1;
     }
     public void ReturnToNeutral() {
         ReturnToGameState();
@@ -340,7 +342,8 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
 
         if (CharState != Consts.CharState.Saved) {
             CharState = Consts.CharState.Default;
-            PlayAnim("Idle");
+            if (animator != null)
+                animator.SetBool("Held", false);
             actHold = false;
         }
 
@@ -360,7 +363,8 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
     public void SetStateSaved() {
         CancelAction();
         CharState = Consts.CharState.Saved;
-        PlayAnim("Happy");
+        if (animator != null)
+            animator.SetBool("Saved", true);
     }
 
     private void WaterContact() {
@@ -372,7 +376,10 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
             // TODO: This might need a small delay to see if within a moment the character comes into contact with a ring buoy
             CharState = Consts.CharState.Dead;
             lvlMngr.CharKilled(this);
-            GoToFrame("Dead");
+
+            /* BOOKMARK
+            if (animator != null)
+                animator.SetBool("Dead", false);*/
         }
         Airborne = false;
     }

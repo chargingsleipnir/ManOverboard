@@ -113,7 +113,9 @@ public class CharAdult : CharChild {
         activityCounter = activityInterval = Consts.SCOOP_RATE - (strength - heldWeight);
         ActionComplete = CompleteSingleScoop;
 
-        PlayAnim("Scoop");
+        /* TODO: It doesn't seem a bool would work very well in this case - triggers would be better so long as the animation goes into a loop state
+        if (animator != null)
+            animator.SetBool("Scoop", true);*/
 
         TakeAction();
     }

@@ -251,7 +251,7 @@ public class LevelManager : MonoBehaviour {
         prepTossCalc = true;
 
         if (heldChar != null)
-            heldChar.IsHeld(true);
+            heldChar.IsHeld();
     }
     public void HeldSpriteToss() {
         spriteMouseRespScpt.SetActive(false);
