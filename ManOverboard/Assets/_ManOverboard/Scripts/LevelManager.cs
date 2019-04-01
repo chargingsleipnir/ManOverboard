@@ -251,7 +251,7 @@ public class LevelManager : MonoBehaviour {
         prepTossCalc = true;
 
         if (heldChar != null)
-            heldChar.IsHeld();
+            heldChar.Grab();
     }
     public void HeldSpriteToss() {
         spriteMouseRespScpt.SetActive(false);
@@ -553,6 +553,7 @@ public class LevelManager : MonoBehaviour {
     public void ResetHeld() {
         if (heldChar != null) {
             heldChar.ReturnToGameState();
+            heldChar.Release();
         }
 
         if (heldSpriteTossable != null) {

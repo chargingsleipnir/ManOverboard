@@ -24,6 +24,15 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
     protected ActionCBs ActionStep;
     protected ActionCBs ActionComplete;
 
+    public override bool Paused {
+        get { return paused; }
+        set {
+            paused = value;
+            if (paused) AnimSpeed(0);
+            else AnimSpeed(1);
+        }
+    }
+
     public ItemBase ItemHeld { get; set; }
     protected CharBase activeChar;
     protected List<ItemBase> itemsWorn;
@@ -74,6 +83,7 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
     Enemy enemy;
 
     protected Animator animator;
+    protected string prevAnim;
 
     protected override void Awake() {
         base.Awake();
@@ -96,6 +106,7 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
         //}
 
         animator = GetComponent<Animator>();
+        prevAnim = "Idle";
 
         ActionStep = Action_Step;
         ActionComplete = Action_Complete;
@@ -157,8 +168,7 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
     }
 
     public override void OnClick() {
-        if (animator != null)
-            animator.speed = 0;
+        AnimSpeed(0);
 
         Held = false;
         if (CharState == Consts.CharState.Default) {
@@ -177,29 +187,27 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
         return CharState == Consts.CharState.Saved || CharState == Consts.CharState.Dazed || CharState == Consts.CharState.Dead;
     }
 
-    // Animation controls
-    //protected void PlayAnim(string animation) {
-    //    if (anim != null)
-    //        anim.Play(animation);
-    //}
-    //protected void GoToFrame(string animation, uint frame = 0) {
-    //    if (anim != null) {
-    //        anim.GotoAndStopByFrame(animation, frame);
-    //    }
-    //}
-    //protected void PauseAnim(bool paused) {
-    //    if (anim == null) return;
-
-    //    if (paused) anim.Stop();
-    //    else anim.Play();
-    //}
-
-    public void IsHeld() {
+    protected void AnimSpeed(float speed) {
+        if (animator != null)
+            animator.speed = speed;
+    }
+    protected void AnimTrigger(string animation) {
+        if (animator != null) {
+            prevAnim = animation;
+            animator.SetTrigger(animation);
+        }
+    }
+    public void Grab() {
         if (!Held) {
             Held = true;
+            actHold = true;
+            // Using this specifically so as NOT to record this animation, to easily go back to the previous one.
             if (animator != null)
-                animator.SetBool("Held", true);
+                animator.SetTrigger("Grabbed");
         }
+    }
+    public void Release() {
+        AnimTrigger(prevAnim);
     }
 
     public void WearItem(ItemBase item) {
@@ -214,10 +222,10 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
         ItemHeld = item;
         ItemWeight += item.Weight;
         item.InUse = true;
+        item.CharHeldBy = this;
 
         item.EnableMouseTracking(false);
-        item.transform.position = trans_ItemUseHand.position;
-        item.transform.parent = trans_ItemUseHand.transform;
+        item.MoveToCharHand(trans_ItemUseHand);
     }
     // BOOKMARK
     public virtual void LoseItem(ItemBase item) {
@@ -232,8 +240,8 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
     }
 
     public override void Toss(Vector2 vel) {
-        EndAction();
         base.Toss(vel);
+        EndAction();        
     }
 
     private void Attack(Enemy e) {
@@ -282,8 +290,7 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
         actHold = false;
         Held = false;
 
-        if (animator != null)
-            animator.speed = 1;
+        AnimSpeed(1);
     }
     public void ReturnToNeutral() {
         ReturnToGameState();
@@ -296,16 +303,18 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
         lvlMngr.ConfirmSelections(this);
         timerBar.IsActive = true;
         CharState = Consts.CharState.InAction;
+        AnimSpeed(1);
     }
     public virtual void CancelAction() {
         if (CharState != Consts.CharState.InAction)
             return;
 
         MouseUpToDownLinksTrue();
-        DropItemHeld();
         ReturnToBoat();
+        DropItemHeld();        
         EndAction();
         lvlMngr.UnfadeLevel();
+        AnimSpeed(1);
     }
 
     public virtual void DropItemHeld() {
@@ -342,8 +351,10 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
 
         if (CharState != Consts.CharState.Saved) {
             CharState = Consts.CharState.Default;
-            if (animator != null)
-                animator.SetBool("Held", false);
+
+            if(!Airborne)
+                AnimTrigger("Idle");
+
             actHold = false;
         }
 
@@ -361,10 +372,14 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
         }
     }
     public void SetStateSaved() {
-        CancelAction();
         CharState = Consts.CharState.Saved;
-        if (animator != null)
-            animator.SetBool("Saved", true);
+        ReturnToBoat();
+        DropItemHeld();        
+        EndAction();
+
+        // TODO: Need happy animation here that is not the same jumping up and down, doesn't quite work in the water
+        AnimSpeed(1);
+        AnimTrigger("Saved");
     }
 
     private void WaterContact() {
@@ -376,10 +391,7 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
             // TODO: This might need a small delay to see if within a moment the character comes into contact with a ring buoy
             CharState = Consts.CharState.Dead;
             lvlMngr.CharKilled(this);
-
-            /* BOOKMARK
-            if (animator != null)
-                animator.SetBool("Dead", false);*/
+            AnimTrigger("Died");
         }
         Airborne = false;
     }

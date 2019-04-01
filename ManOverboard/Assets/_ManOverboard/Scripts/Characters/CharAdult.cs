@@ -103,8 +103,7 @@ public class CharAdult : CharChild {
         sprite.EnableMouseTracking(false);
 
         // Logic for scooping wth item
-        sprite.transform.position = trans_ItemUseHand.position;
-        sprite.transform.parent = trans_ItemUseHand.parent;
+        (sprite as ItemBase).MoveToCharHand(trans_ItemUseHand);
 
         ItemCanScoop scoop = sprite as ItemCanScoop;
         waterWeight = scoop.capacity;
@@ -113,9 +112,7 @@ public class CharAdult : CharChild {
         activityCounter = activityInterval = Consts.SCOOP_RATE - (strength - heldWeight);
         ActionComplete = CompleteSingleScoop;
 
-        /* TODO: It doesn't seem a bool would work very well in this case - triggers would be better so long as the animation goes into a loop state
-        if (animator != null)
-            animator.SetBool("Scoop", true);*/
+        AnimTrigger("Scoop");
 
         TakeAction();
     }

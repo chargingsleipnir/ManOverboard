@@ -12,6 +12,9 @@ public class ItemBase : SpriteTossable {
 
     private ItemBaseSet items;
 
+    // Change on items that need a certain rotation, like buckets, should be facing down when held.
+    public Vector2 holdDirTopOfHand = Vector2.up;
+
     protected override void Awake() {
         base.Awake();
         items = Resources.Load<ItemBaseSet>("ScriptableObjects/SpriteSets/ItemBaseSet");
@@ -34,6 +37,18 @@ public class ItemBase : SpriteTossable {
                 StopVel();
             }
         }
+    }
+
+    public void MoveToCharHand(Transform charHandTrans) {
+        transform.position = charHandTrans.position;
+        transform.parent = charHandTrans.transform;
+
+        // Rotate so item "up" matches hand "up" (Set as if pointing out the top of a closed fist)
+        Vector3 dirToMatch = charHandTrans.rotation * Vector3.up;
+        transform.rotation = Quaternion.LookRotation(Vector3.forward, dirToMatch);
+        // From here, rotate based so holdDirTopOfHand vector points this way.
+        Vector3 dirToOrient = transform.rotation * new Vector3(holdDirTopOfHand.x, holdDirTopOfHand.y);
+        transform.rotation = Quaternion.LookRotation(Vector3.forward, dirToOrient);
     }
 
     public override void Toss(Vector2 vel) {

@@ -6,7 +6,11 @@ public class SpriteTossable : SpriteBase, IMouseDownDetector, IMouseUpDetector {
 
     public bool Held { get; protected set; }
     public bool Airborne { get; protected set; }
-    public bool Paused { get; set; }
+    protected bool paused;
+    public virtual bool Paused {
+        get { return paused; }
+        set { paused = value; }
+    }
 
     protected LevelManager lvlMngr;
     public LevelManager LvlMngr { set { lvlMngr = value; } }
