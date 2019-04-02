@@ -72,7 +72,11 @@ public class CharAdult : CharChild {
         activeChar.SetStateDazed(true);
 
         activityCounter = activityInterval = Consts.DON_RATE;
+        ActionStep = StepTimerBarFill;
         ActionComplete = CompleteDonLifeJacketChild;
+
+        AnimTrigger("DonLifeJacketChild");
+
         TakeAction();
     }
     private void CompleteDonLifeJacketChild() {
@@ -110,6 +114,7 @@ public class CharAdult : CharChild {
         float heldWeight = scoop.Weight + waterWeight;
 
         activityCounter = activityInterval = Consts.SCOOP_RATE - (strength - heldWeight);
+        ActionStep = StepTimerBarFill;
         ActionComplete = CompleteSingleScoop;
 
         AnimTrigger("Scoop");

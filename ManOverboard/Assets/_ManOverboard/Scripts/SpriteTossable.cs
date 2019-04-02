@@ -53,7 +53,7 @@ public class SpriteTossable : SpriteBase, IMouseDownDetector, IMouseUpDetector {
     }
 
     public virtual void MouseDownCB() {
-        if (CheckImmExit() || Airborne)
+        if (CheckImmExit() || Airborne || selectable)
             return;
 
         lvlMngr.OnSpriteMouseDown(gameObject);

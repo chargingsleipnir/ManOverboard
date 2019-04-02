@@ -38,13 +38,18 @@ public class CharChild : CharBase {
     }
     protected virtual void OnSelectionLifeJacket(SpriteBase sprite) {
         activityCounter = activityInterval = Consts.DON_RATE;
+        ActionStep = StepTimerBarFill;
         ActionComplete = CompleteDonLifeJacket;
+
+        AnimTrigger("DonLifeJacketSelf");
+
         TakeAction();
     }
     protected void CompleteDonLifeJacket() {
         // TODO: Just set in center of self for now, will need proper location around center of torso later
         ItemHeld.transform.position = transform.position;
         ItemHeld.transform.parent = transform;
+        ItemHeld.transform.rotation = Quaternion.identity;
 
         // Life jacket now permanently afixxed to the character
         itemsWorn.Add(ItemHeld);

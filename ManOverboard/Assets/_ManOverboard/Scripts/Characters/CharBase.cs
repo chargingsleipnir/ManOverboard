@@ -152,7 +152,7 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
             activityCounter -= Time.deltaTime * speed;
             float counterPct = 1.0f - (activityCounter / activityInterval);
             timerBar.Fill = counterPct;
-            //ActionStep(); <-- Simply nothing using it yet
+            ActionStep();
             if (activityCounter <= 0) {
                 activityCounter = activityInterval;
                 ActionComplete();
@@ -197,6 +197,27 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
             animator.SetTrigger(animation);
         }
     }
+    protected void SetFramePct(float pct) {
+        if(animator != null) {
+            animator.SetFloat("FramePct", pct);
+        }
+    }
+    protected void StepTimerBarFill() {
+        SetFramePct(timerBar.Fill);
+    }
+
+
+
+
+    // TODO: Walking animation to get to items, people, etc. Animation is complete, just needs to be implemented. Scale character x by -1 to walk left.
+
+
+
+
+
+
+
+
     public void Grab() {
         if (!Held) {
             Held = true;
