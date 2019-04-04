@@ -33,13 +33,13 @@ public class CharChild : CharBase {
     // Donning life jacket ===============================================================
 
     protected virtual void PrepDonLifeJacket() {
-        PrepAction(Consts.Skills.DonLifeJacket);
+        ActionQueueInit(Consts.Skills.DonLifeJacket);
         lvlMngr.HighlightToSelect(Consts.HighlightGroupType.LifeJacketChild, OnSelectionLifeJacket);
     }
     protected virtual void OnSelectionLifeJacket(SpriteBase sprite) {
-        activityCounter = activityInterval = Consts.DON_RATE;
-        ActionStep = StepTimerBarFill;
-        ActionComplete = CompleteDonLifeJacket;
+        taskCounter = taskInterval = Consts.DON_RATE;
+        TaskStep = StepTimerBarFill;
+        TaskComplete = CompleteDonLifeJacket;
 
         AnimTrigger("DonLifeJacketSelf");
 

@@ -48,7 +48,7 @@ public class CharAdult : CharChild {
     // Donning life jacket ===============================================================
 
     protected override void PrepDonLifeJacket() {
-        PrepAction(Consts.Skills.DonLifeJacket);
+        ActionQueueInit(Consts.Skills.DonLifeJacket);
         if(canDonLifeJacketChild)
             lvlMngr.HighlightToSelect(Consts.HighlightGroupType.LifeJacketChild, OnSelectionLifeJacket);
         if (canDonLifeJacketSelf)
@@ -71,9 +71,9 @@ public class CharAdult : CharChild {
         activeChar = sprite as CharChild;
         activeChar.SetStateDazed(true);
 
-        activityCounter = activityInterval = Consts.DON_RATE;
-        ActionStep = StepTimerBarFill;
-        ActionComplete = CompleteDonLifeJacketChild;
+        taskCounter = taskInterval = Consts.DON_RATE;
+        TaskStep = StepTimerBarFill;
+        TaskComplete = CompleteDonLifeJacketChild;
 
         AnimTrigger("DonLifeJacketChild");
 
@@ -100,7 +100,7 @@ public class CharAdult : CharChild {
     // Scooping Water ===============================================================
 
     public void PrepScoop() {
-        PrepAction(Consts.Skills.ScoopWater);
+        ActionQueueInit(Consts.Skills.ScoopWater);
         lvlMngr.HighlightToSelect(Consts.HighlightGroupType.Scooping, OnSelectionScoop);
     }
     protected virtual void OnSelectionScoop(SpriteBase sprite) {
@@ -113,9 +113,9 @@ public class CharAdult : CharChild {
         waterWeight = scoop.capacity;
         float heldWeight = scoop.Weight + waterWeight;
 
-        activityCounter = activityInterval = Consts.SCOOP_RATE - (strength - heldWeight);
-        ActionStep = StepTimerBarFill;
-        ActionComplete = CompleteSingleScoop;
+        taskCounter = taskInterval = Consts.SCOOP_RATE - (strength - heldWeight);
+        TaskStep = StepTimerBarFill;
+        TaskComplete = CompleteSingleScoop;
 
         AnimTrigger("Scoop");
 

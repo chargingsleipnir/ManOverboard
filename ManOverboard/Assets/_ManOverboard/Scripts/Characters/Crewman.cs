@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
 using ZeroProgress.Common.Collections;
 
 public class Crewman : CharAdult {
@@ -56,7 +55,7 @@ public class Crewman : CharAdult {
         }
         if(canRepair) {
             canAct = true;
-            commandPanel.PrepBtn(Consts.Skills.RepairPinhole, PrepRepair);
+            commandPanel.PrepBtn(Consts.Skills.RepairPinhole, RepairPinhole);
         }
 
         commandPanel.SetBtns();
@@ -127,34 +126,44 @@ public class Crewman : CharAdult {
         base.OnSelectionScoop(sprite);
     }
 
-    public void PrepRepair() {
-        PrepAction(Consts.Skills.RepairPinhole);
-        lvlMngr.HighlightToSelect(Consts.HighlightGroupType.RepairKits, OnSelectionRepairKit);
-    }
-    private void OnSelectionRepairKit(SpriteBase sprite) {
-        lvlMngr.HighlightToSelect(Consts.HighlightGroupType.PinHoles, OnSelectionPinhole);
-    }
-    private void OnSelectionPinhole(SpriteBase sprite) {
-        holeToRepair = sprite as Hole;
 
-        holeToRepair.InRepair = true;
-        activityCounter = activityInterval = Consts.REPAIR_RATE;
-        ActionComplete = CompleteRepair;
-        TakeAction();
-    }
-    private void CompleteRepair() {
-        (ItemHeld as RepairKit).uses -= 1;
-        // TODO: Does the weight simply disappear? Add it to the boat by reducing it's buoyancy?
-        // But repairing a hole would increase the buoyancy anyway, so reduce this weight and call it even?
-        ItemHeld.Weight -= 2;
+    public void RepairPinhole() {
+        ActionQueueInit(Consts.Skills.RepairPinhole);
 
-        lvlMngr.RepairBoat(holeToRepair);
-        holeToRepair = null;
+        ActionQueueAdd(Consts.HighlightGroupType.RepairKits, true, Consts.MIN_SEL_REACH_DIST, (SpriteBase sprite) => {
+            ItemBase item = sprite as ItemBase;
+            lvlMngr.ConfirmItemSelection(this, item);
+            HoldItem(item);
+        });
 
-        EndAction();
-        DropItemHeld();
-        
+        ActionQueueAdd(Consts.HighlightGroupType.PinHoles, true, 0, (SpriteBase sprite) => {
+            holeToRepair = sprite as Hole;
+            holeToRepair.InRepair = true;
+
+            // TODO: Hole repair animation right here.
+
+            // TODO: Can't seem to repair next hole after this runs through (repair kit highlights, but remaining hole does not.
+
+            // TODO: Interupt walking by grabbing character as various stages, and:
+            // cancel action,
+            // make him squirm,
+            // toss him
+        });
+
+        ActionQueueRun(Consts.REPAIR_RATE, null, () => {
+            (ItemHeld as RepairKit).uses -= 1;
+            // TODO: Does the weight simply disappear? Add it to the boat by reducing it's buoyancy?
+            // But repairing a hole would increase the buoyancy anyway, so reduce this weight and call it even?
+            ItemHeld.Weight -= 2;
+
+            lvlMngr.RepairBoat(holeToRepair);
+            holeToRepair = null;
+
+            EndAction();
+            DropItemHeld();
+        });
     }
+
 
     public void LowerAnchor() {
 

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
@@ -48,8 +49,7 @@ public class LevelManager : MonoBehaviour {
 
     private EnemySet enemies;
 
-    public delegate void SelectionCallback(SpriteBase spriteSelected);
-    SelectionCallback SelectionCB;
+    private Action<SpriteBase> selectionCB;
 
     // Presuming only one item can be selected at a time for now.
     private ItemBase selectedItem;
@@ -364,10 +364,10 @@ public class LevelManager : MonoBehaviour {
         levelActive = false;
     }
 
-    public void HighlightToSelect(Consts.HighlightGroupType groupType, SelectionCallback CB) {
+    public void HighlightToSelect(Consts.HighlightGroupType groupType, Action<SpriteBase> CB) {
         currGroupsLit.Add(groupType);
 
-        SelectionCB = CB;
+        selectionCB = CB;
 
         if (groupType == Consts.HighlightGroupType.Scooping) {
             foreach (ItemCanScoop itemCS in itemsCanScoop)
@@ -446,8 +446,11 @@ public class LevelManager : MonoBehaviour {
             RemoveItem(selectedItem);
             charToAct.HoldItem(selectedItem);
         }
-
-        ResetEnvir();
+        selectedItem = null;
+    }
+    public void ConfirmItemSelection(CharBase charToAct, ItemBase item) {
+        item.RemoveFromChar();
+        RemoveItem(item);
     }
     public void OnSelection(SpriteBase sprite) {
         for (int i = currGroupsLit.Count - 1; i >= 0; i--)
@@ -458,7 +461,7 @@ public class LevelManager : MonoBehaviour {
         if (sprite is ItemBase)
             selectedItem = sprite as ItemBase;
 
-        SelectionCB(sprite);
+        selectionCB(sprite);
     }
     public void OnDeselection(SpriteBase sprite) {
         if (sprite is ItemBase)
@@ -547,8 +550,6 @@ public class LevelManager : MonoBehaviour {
         UnfadeLevel();
         for(int i = currGroupsLit.Count - 1; i >= 0; i--)
             UnHighlight(currGroupsLit[i]);
-
-        selectedItem = null;
     }
     public void ResetHeld() {
         if (heldChar != null) {

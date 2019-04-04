@@ -20,9 +20,9 @@ Instead of masking, make is more general, and design the entire boat to be trans
 [RequireComponent(typeof(SpriteRenderer), typeof(Rigidbody2D), typeof(BoxCollider2D))]
 public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
 
-    protected delegate void ActionCBs();
-    protected ActionCBs ActionStep;
-    protected ActionCBs ActionComplete;
+    
+    protected Action TaskStep;
+    protected Action TaskComplete;
 
     public override bool Paused {
         get { return paused; }
@@ -50,9 +50,10 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
 
     public int strength;
     public int speed;
+    protected int moveDir;
 
-    protected float activityCounter;
-    protected float activityInterval;
+    protected float taskCounter;
+    protected float taskInterval;
 
     [SerializeField]
     protected ProgressBar timerBar;
@@ -88,28 +89,12 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
     protected override void Awake() {
         base.Awake();
 
-
-        // Cannot serialize armature or animation components directly - must acquire through gameobject.
-        //if (armatureObj != null) {
-        //    armaComp = armatureObj.GetComponent<UnityArmatureComponent>();
-        //    anim = armaComp.animation;
-
-        //    Debug.Log(armaComp);
-        //    Debug.Log(anim);
-        //}
-
-        //try {
-        //    anim = armatureObj.GetComponent<UnityArmatureComponent>().animation;
-        //}
-        //catch(UnassignedReferenceException ure) {
-        //    Debug.Log("No armature component");
-        //}
-
         animator = GetComponent<Animator>();
         prevAnim = "Idle";
 
-        ActionStep = Action_Step;
-        ActionComplete = Action_Complete;
+        
+        TaskStep = Action_Step;
+        TaskComplete = Action_Complete;
 
         activeSkill = Consts.Skills.None;
 
@@ -124,6 +109,7 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
     protected override void Start () {
         strength = 0;
         speed = 0;
+        moveDir = 1;
 
         Reset();
     }
@@ -138,8 +124,8 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
 
         ItemWeight = 0;
         timerBar.Fill = 0;
-        activityCounter = 0.0f;
-        activityInterval = 0.0f;
+        taskCounter = 0.0f;
+        taskInterval = 0.0f;
 
         SortCompLayerChange(Consts.DrawLayers.BoatLevel1Mid);
     }
@@ -148,22 +134,83 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
         if (CheckImmExit())
             return;
 
-        if (!actHold && CharState == Consts.CharState.InAction) {
-            activityCounter -= Time.deltaTime * speed;
-            float counterPct = 1.0f - (activityCounter / activityInterval);
-            timerBar.Fill = counterPct;
-            ActionStep();
-            if (activityCounter <= 0) {
-                activityCounter = activityInterval;
-                ActionComplete();
+        if (!actHold) {
+            if (CharState == Consts.CharState.Walking) {
+                // Walking update code specific to selection process
+                float moveStepDist = (speed * Consts.MOVE_SPEED_REDUC) * Time.deltaTime;
+                float posDelta = Math.Abs(transform.position.x - steps[0].sprite.transform.position.x);
+
+                // In case the contact range could be overstepped (smaller than the step size)
+                if (moveStepDist > steps[0].minSelReachDist) {
+                    // If a full step can still be taken, take it.
+                    if (moveStepDist < posDelta + steps[0].minSelReachDist)
+                        Utility.RepositionX(transform, transform.position.x + (moveStepDist * moveDir));
+                    // Otherwise go straight to the target
+                    else
+                        Utility.RepositionX(transform, steps[0].sprite.transform.position.x);
+                }
+                else
+                    Utility.RepositionX(transform, transform.position.x + (moveStepDist * moveDir));
+
+                if (CheckSpriteContact())
+                    OnSpriteContact();
+            }
+            else if (CharState == Consts.CharState.InAction) {
+                taskCounter -= Time.deltaTime * speed;
+                float counterPct = 1.0f - (taskCounter / taskInterval);
+                timerBar.Fill = counterPct;
+                TaskStep();
+                if (taskCounter <= 0) {
+                    taskCounter = taskInterval;
+                    TaskComplete();
+                }
             }
         }
-        else if(Airborne) {
+        else if (Airborne) {
             if (transform.position.y <= lvlMngr.WaterSurfaceYPos - Consts.OFFSCREEN_CATCH_BUFF) {
                 WaterContact();
                 Utility.RepositionY(transform, lvlMngr.WaterSurfaceYPos - Consts.OFFSCREEN_CATCH_BUFF);
                 StopVel();
             }
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D collider) {
+        if (CheckImmExit())
+            return;
+
+        if (collider.gameObject.layer == (int)Consts.UnityLayers.Water) {
+            WaterContact();
+        }
+        else if (collider.gameObject.layer == (int)Consts.UnityLayers.Envir) {
+            ClingableSurface cs = collider.GetComponent<ClingableSurface>();
+            if (cs.Cling(this)) {
+                // TODO: Some of this will not be true in all cases, such as "SetStateSaved();" - this applies to cave stalactites, but in other situations might not.
+                SortCompLayerChange(Consts.DrawLayers.BehindBoat, null);
+                LandedAndSaved();
+            }
+        }
+        else if (collider.gameObject.layer == (int)Consts.UnityLayers.Enemy) {
+            // This is presuming enemy has/is clingable surface
+            ClingableSurface cs = collider.GetComponent<ClingableSurface>();
+            // TODO: Clinging allows for timed/sustained attack (5 seconds, 1 hit per second, for example), while not cliniging results in single impact damage
+            if (cs.Cling(this)) {
+                Landed();
+                Attack(collider.GetComponent<Enemy>());
+            }
+        }
+    }
+
+    private void OnCollisionEnter2D(Collision2D collider) {
+        if (CheckImmExit())
+            return;
+
+        if (collider.gameObject.layer == (int)Consts.UnityLayers.FloatDev) {
+            // TODO: Something better than this - temporary setup.
+            transform.position = collider.transform.position;
+            transform.parent = collider.transform;
+
+            LandedAndSaved();
         }
     }
 
@@ -205,18 +252,6 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
     protected void StepTimerBarFill() {
         SetFramePct(timerBar.Fill);
     }
-
-
-
-
-    // TODO: Walking animation to get to items, people, etc. Animation is complete, just needs to be implemented. Scale character x by -1 to walk left.
-
-
-
-
-
-
-
 
     public void Grab() {
         if (!Held) {
@@ -268,8 +303,8 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
     private void Attack(Enemy e) {
         enemy = e;
         if(e is SeaSerpent) {
-            activityCounter = activityInterval = Consts.ATTACK_RATE;
-            ActionComplete = DamageEnemy;
+            taskCounter = taskInterval = Consts.ATTACK_RATE;
+            TaskComplete = DamageEnemy;
             TakeAction();
         }
     }
@@ -296,11 +331,6 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
 
         lvlMngr.FadeLevel();
     }
-    protected void PrepAction(Consts.Skills activeSkill) {
-        IsCommandPanelOpen = false;
-        ReturnToBoat();
-        this.activeSkill = activeSkill;
-    }
     public bool CheckAvailToAct() {
         return CharState != Consts.CharState.InAction && !CheckNonFuncStates();
     }
@@ -322,6 +352,7 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
     protected void TakeAction() {
         // Remove removable items (tools, small objects) from scene lists
         lvlMngr.ConfirmSelections(this);
+        lvlMngr.ResetEnvir();
         timerBar.IsActive = true;
         CharState = Consts.CharState.InAction;
         AnimSpeed(1);
@@ -359,7 +390,7 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
     }
 
     public virtual void EndAction() {
-        activityCounter = activityInterval = 0;
+        taskCounter = taskInterval = 0;
         timerBar.IsActive = false;
         IsCancelBtnActive = false;
         
@@ -429,42 +460,101 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
         lvlMngr.CharSaved(this);
     }
 
-    private void OnTriggerEnter2D(Collider2D collider) {
-        if (CheckImmExit())
-            return;
+    // =====================  ACTION/TASK SEQUENCE  ===================== //
 
-        if (collider.gameObject.layer == (int)Consts.UnityLayers.Water) {
-            WaterContact();
+    private class ActionStep {
+        public Consts.HighlightGroupType selectable;
+        public SpriteBase sprite;
+        public bool walkTo;
+        public float minSelReachDist;
+        public Action<SpriteBase> OnSelContact;
+    }
+
+    List<ActionStep> steps = new List<ActionStep>();
+    int stepIdx = 0;
+
+    protected void ActionQueueInit(Consts.Skills skill) {
+        steps.Clear();
+        stepIdx = 0;
+        IsCommandPanelOpen = false;
+        ReturnToBoat();
+        this.activeSkill = skill;
+    }
+
+    private void RecordSelectedSprite(SpriteBase sprite) {
+        steps[stepIdx].sprite = sprite;
+
+        if (stepIdx == steps.Count - 1) {
+            stepIdx = 0;
+            lvlMngr.ResetEnvir();
+            GatherSelected();
         }
-        else if (collider.gameObject.layer == (int)Consts.UnityLayers.Envir) {
-            ClingableSurface cs = collider.GetComponent<ClingableSurface>();
-            if(cs.Cling(this)) {
-                // TODO: Some of this will not be true in all cases, such as "SetStateSaved();" - this applies to cave stalactites, but in other situations might not.
-                SortCompLayerChange(Consts.DrawLayers.BehindBoat, null);
-                LandedAndSaved();
+        else {
+            stepIdx++;
+            lvlMngr.HighlightToSelect(steps[stepIdx].selectable, RecordSelectedSprite);
+        }            
+    }
+
+    private void GatherSelected() {
+        if(steps[0].walkTo) {
+            // If walking to selected sprite, check to see we're not already touching it. If not, start walking to it.
+            if (!CheckSpriteContact()) {
+                // Walk animation deisgned to go right, so flip left if target sprite is to the left
+                if (steps[0].sprite.transform.position.x < transform.position.x) {
+                    Utility.Scale(transform, -1, null, null);
+                    moveDir = -1;
+                }
+                else {
+                    Utility.Scale(transform, 1, null, null);
+                    moveDir = 1;
+                }
+                AnimSpeed(1);
+                AnimTrigger("Walk");
+                CharState = Consts.CharState.Walking;
+                return;
             }
         }
-        else if (collider.gameObject.layer == (int)Consts.UnityLayers.Enemy) {
-            // This is presuming enemy has/is clingable surface
-            ClingableSurface cs = collider.GetComponent<ClingableSurface>();
-            // TODO: Clinging allows for timed/sustained attack (5 seconds, 1 hit per second, for example), while not cliniging results in single impact damage
-            if (cs.Cling(this)) {
-                Landed();
-                Attack(collider.GetComponent<Enemy>());
-            }
+        OnSpriteContact();
+    }
+    private bool CheckSpriteContact() {
+        float absDist = Math.Abs(transform.position.x - steps[0].sprite.transform.position.x);
+        return absDist <= steps[0].minSelReachDist;
+    }
+    private void OnSpriteContact() {
+        AnimSpeed(0);
+        CharState = Consts.CharState.Default;
+        steps[0].OnSelContact(steps[0].sprite);
+        steps.RemoveAt(0);
+        if (steps.Count > 0) {
+            GatherSelected();
+        }
+        else {
+            // Perform task
+            timerBar.IsActive = true;
+            CharState = Consts.CharState.InAction;
+            AnimSpeed(1);
         }
     }
 
-    private void OnCollisionEnter2D(Collision2D collider) {
-        if (CheckImmExit())
-            return;
+    // Using "walkTo" bool for now, for so long as no other pathing is implemented. True to walk, false to perform action instantly
+    protected void ActionQueueAdd(Consts.HighlightGroupType selectable, bool walkTo, float minSelReachDist, Action<SpriteBase> OnSelectionContact) {
+        // Record parameters - selectable types need to be selected, replaced with sprites.
+        ActionStep step = new ActionStep {
+            selectable = selectable,
+            walkTo = walkTo,
+            minSelReachDist = minSelReachDist,
+            OnSelContact = OnSelectionContact
+        };
+        steps.Add(step);
+    }
 
-        if (collider.gameObject.layer == (int)Consts.UnityLayers.FloatDev) {
-            // TODO: Something better than this - temporary setup.
-            transform.position = collider.transform.position;
-            transform.parent = collider.transform;
-
-            LandedAndSaved();
-        }
+    // activity counter & interval calculation, task step function, task complete function
+    protected void ActionQueueRun(float taskInterval, Action TaskStep, Action TaskComplete) {
+        // Start recursive function to get all selectable items
+        lvlMngr.HighlightToSelect(steps[0].selectable, RecordSelectedSprite);
+        // Task data is set, but won't be used until all selections are made
+        taskCounter = this.taskInterval = taskInterval;
+        this.TaskStep = (TaskStep == null) ? Action_Step : TaskStep;
+        this.TaskComplete = TaskComplete;
     }
 }

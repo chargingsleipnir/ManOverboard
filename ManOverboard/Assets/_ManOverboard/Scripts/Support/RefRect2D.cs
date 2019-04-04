@@ -23,6 +23,12 @@ public class RefRect2D : RefShape {
             point.y > YMin &&
             point.y < YMax;
     }
+    //public override bool Contacts(RefRect2D rect) {
+    //    throw new System.NotImplementedException();
+    //}
+    //public override bool Contacts(RefCircle2D circle) {
+    //    throw new System.NotImplementedException();
+    //}
 
     public override float XMin {
         get { return transform.position.x + offsetX - ((width * transform.lossyScale.x) * 0.5f); }
@@ -45,5 +51,7 @@ public class RefRect2D : RefShape {
         Gizmos.DrawLine(new Vector3(XMax, YMin, pos.z), new Vector3(XMax, YMax, pos.z));
         Gizmos.DrawLine(new Vector3(XMax, YMax, pos.z), new Vector3(XMin, YMax, pos.z));
         Gizmos.DrawLine(new Vector3(XMin, YMax, pos.z), new Vector3(XMin, YMin, pos.z));
-    }    
+    }
+
+    
 }
