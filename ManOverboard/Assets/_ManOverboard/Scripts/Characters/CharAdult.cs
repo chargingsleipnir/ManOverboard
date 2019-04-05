@@ -71,9 +71,8 @@ public class CharAdult : CharChild {
                     AnimTrigger("DonLifeJacketChild");
                 });
                 ActionQueueRun(Consts.DON_RATE, StepTimerBarFill, () => {
-                    // TODO: Just set in center of self for now, will need proper location around center of torso later
-                    ItemHeld.transform.position = activeChar.transform.position;
-                    ItemHeld.transform.parent = activeChar.transform;
+                    (activeChar as CharChild).PlaceJacketTransform(ItemHeld.transform);
+
 
                     ItemWeight -= ItemHeld.Weight;
                     activeChar.WearItem(ItemHeld);
@@ -88,7 +87,8 @@ public class CharAdult : CharChild {
                 });
             }
             else {
-                ActionQueueAccSplitIdx(1, jacketSprite);
+                // Index will differ based on which actions were available to be added above.
+                ActionQueueAccSplitIdx(canDonLifeJacketChild ? 1 : 0, jacketSprite);
                 ActionQueueRun(Consts.DON_RATE, StepTimerBarFill, OnDonLifeJacketComplete);
             }
         });

@@ -28,7 +28,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1063450098771622156}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &3708670178267821082
 PrefabInstance:
@@ -128,6 +128,11 @@ PrefabInstance:
       propertyPath: trans_ItemUseHand
       value: 
       objectReference: {fileID: 1723934124733459477}
+    - target: {fileID: 8630344565461043783, guid: f75e6980281df994da053be7aca93c90,
+        type: 3}
+      propertyPath: jacketParent
+      value: 
+      objectReference: {fileID: 1063450098771622156}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f75e6980281df994da053be7aca93c90, type: 3}
 --- !u!4 &1063450098771622156 stripped

@@ -6,6 +6,9 @@ public class CharChild : CharBase {
 
     protected bool canDonLifeJacketSelf = false;
 
+    [SerializeField]
+    protected Transform jacketParent;
+
     // Always being overridden without base reference. Use Reset() for base referencing
     protected override void Start() {
         strength = 25;
@@ -32,6 +35,12 @@ public class CharChild : CharBase {
 
     // Donning life jacket ===============================================================
 
+    public void PlaceJacketTransform(Transform jacketTransform) {
+        jacketTransform.position = jacketParent.position;
+        jacketTransform.parent = jacketParent;
+        // Seems to be changing the local rotation to NOT be zero, which I really do not understand. Rotation after animation seems fine/straight for now anyway
+        //jacketTransform.rotation = Quaternion.identity;
+    }
     protected virtual void DonLifeJacket() {
         ActionQueueInit(Consts.Skills.DonLifeJacket);
         ActionQueueAdd(Consts.HighlightGroupType.LifeJacketChild, true, Consts.MIN_SEL_REACH_DIST, OnContactLifeJacketSelf);
@@ -43,13 +52,13 @@ public class CharChild : CharBase {
         AnimTrigger("DonLifeJacketSelf");
     }
     protected void OnDonLifeJacketComplete() {
-        // TODO: Just set in center of self for now, will need proper location around center of torso later
-        ItemHeld.transform.position = transform.position;
-        ItemHeld.transform.parent = transform;
-        ItemHeld.transform.rotation = Quaternion.identity;
+        PlaceJacketTransform(ItemHeld.transform);
 
         // Life jacket now permanently afixxed to the character
         itemsWorn.Add(ItemHeld);
+        ItemHeld.CharHeldBy = this;
+        ItemHeld = null;
         IsWearingLifeJacket = true;
+        EndAction();
     }
 }

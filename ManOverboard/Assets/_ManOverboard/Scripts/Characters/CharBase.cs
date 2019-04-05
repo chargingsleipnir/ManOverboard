@@ -184,6 +184,7 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
 
         if (collider.gameObject.layer == (int)Consts.UnityLayers.Water) {
             WaterContact();
+            AnimSetBool("InWater", true);
         }
         else if (collider.gameObject.layer == (int)Consts.UnityLayers.Envir) {
             ClingableSurface cs = collider.GetComponent<ClingableSurface>();
@@ -191,6 +192,7 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
                 // TODO: Some of this will not be true in all cases, such as "SetStateSaved();" - this applies to cave stalactites, but in other situations might not.
                 SortCompLayerChange(Consts.DrawLayers.BehindBoat, null);
                 LandedAndSaved();
+                AnimSetBool("Hanging", true);
             }
         }
         else if (collider.gameObject.layer == (int)Consts.UnityLayers.Enemy) {
@@ -200,6 +202,8 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
             if (cs.Cling(this)) {
                 Landed();
                 Attack(collider.GetComponent<Enemy>());
+                AnimSetBool("Hanging", true);
+                AnimTrigger("Attack");
             }
         }
     }
@@ -212,6 +216,9 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
             // TODO: Something better than this - temporary setup.
             transform.position = collider.transform.position;
             transform.parent = collider.transform;
+
+            // TODO: This is just for now, as the only floatation device is the ring buoy, which still leaves the character visibly in the water, making this animation work.
+            AnimSetBool("InWater", true);
 
             LandedAndSaved();
         }
@@ -246,6 +253,10 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
             prevAnim = animation;
             animator.SetTrigger(animation);
         }
+    }
+    protected void AnimSetBool(string anim, bool value) {
+        if (animator != null)
+            animator.SetBool(anim, value);
     }
     protected void SetFramePct(float pct) {
         if(animator != null) {
@@ -310,14 +321,11 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
         enemy = e;
         if(e is SeaSerpent) {
             taskCounter = taskInterval = Consts.ATTACK_RATE;
+            TaskStep = StepTimerBarFill;
             TaskComplete = DamageEnemy;
-            //lvlMngr.ResetEnvir(); TODO: This shouldn't be necessary here??
             timerBar.IsActive = true;
             CharState = Consts.CharState.InAction;
             AnimSpeed(1);
-
-            // TODO: Need attacking animation (Use panicked face)
-            // Match animation timing to attack timing -> Consts.ATTACK_RATE
         }
     }
 
@@ -428,13 +436,17 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
     }
     public void SetStateSaved() {
         CharState = Consts.CharState.Saved;
-        ReturnToBoat();
+
+        // Slight;y different functionality if in water
+        if(gameObject.layer != (int)Consts.UnityLayers.TossedObj) {
+            ReturnToBoat();
+        }
+
+        AnimTrigger("Saved");
+
         DropItemHeld();        
         EndAction();
-
-        // TODO: Need happy animation here that is not the same jumping up and down, doesn't quite work in the water
         AnimSpeed(1);
-        AnimTrigger("Saved");
     }
 
     private void WaterContact() {
