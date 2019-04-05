@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
@@ -48,8 +49,7 @@ public class LevelManager : MonoBehaviour {
 
     private EnemySet enemies;
 
-    public delegate void SelectionCallback(SpriteBase spriteSelected);
-    SelectionCallback SelectionCB;
+    private Action<SpriteBase> selectionCB;
 
     // Presuming only one item can be selected at a time for now.
     private ItemBase selectedItem;
@@ -223,8 +223,9 @@ public class LevelManager : MonoBehaviour {
         heldSpriteTossable = spriteObj.GetComponent<SpriteTossable>();
         grabPosLocal = heldSpriteTossable.transform.localPosition; // maintain copy of character's position where grabbed, relative to the boat
 
-        if (heldSpriteTossable is CharBase)
+        if (heldSpriteTossable is CharBase) {
             heldChar = spriteObj.GetComponent<CharBase>();
+        }
         else
             heldChar = null;
 
@@ -244,10 +245,13 @@ public class LevelManager : MonoBehaviour {
     public void HeldSpriteRelease() {
         prepTossCalc = false;
         UnfadeLevel();
-        ResetHeld();        
+        ResetHeld();
     }
-    public void HeldSpriteEnterTossArea() {
+    public void HeldSpriteInsideTossArea() {
         prepTossCalc = true;
+
+        if (heldChar != null)
+            heldChar.Grab();
     }
     public void HeldSpriteToss() {
         spriteMouseRespScpt.SetActive(false);
@@ -263,6 +267,8 @@ public class LevelManager : MonoBehaviour {
         }
         else {
             CharBase c = heldSpriteTossable as CharBase;
+
+            // TODO: Character animation still set to Struggling? That's fine for now, but perhaps make something else for when airborne.
 
             if (c.ItemHeld != null)
                 c.ItemHeld.Toss(Utility.AddNoiseDeg(mouseDelta, Consts.TOSS_NOISE_MIN, Consts.TOSS_NOISE_MAX) * tossSpeed);
@@ -358,10 +364,10 @@ public class LevelManager : MonoBehaviour {
         levelActive = false;
     }
 
-    public void HighlightToSelect(Consts.HighlightGroupType groupType, SelectionCallback CB) {
+    public void HighlightToSelect(Consts.HighlightGroupType groupType, Action<SpriteBase> CB) {
         currGroupsLit.Add(groupType);
 
-        SelectionCB = CB;
+        selectionCB = CB;
 
         if (groupType == Consts.HighlightGroupType.Scooping) {
             foreach (ItemCanScoop itemCS in itemsCanScoop)
@@ -433,15 +439,9 @@ public class LevelManager : MonoBehaviour {
 
         currGroupsLit.Remove(groupType);
     }
-
-    public void ConfirmSelections(CharBase charToAct) {
-        if (selectedItem != null) {
-            selectedItem.RemoveFromChar();
-            RemoveItem(selectedItem);
-            charToAct.HoldItem(selectedItem);
-        }
-
-        ResetEnvir();
+    public void ConfirmItemSelection(CharBase charToAct, ItemBase item) {
+        item.RemoveFromChar();
+        RemoveItem(item);
     }
     public void OnSelection(SpriteBase sprite) {
         for (int i = currGroupsLit.Count - 1; i >= 0; i--)
@@ -452,7 +452,7 @@ public class LevelManager : MonoBehaviour {
         if (sprite is ItemBase)
             selectedItem = sprite as ItemBase;
 
-        SelectionCB(sprite);
+        selectionCB(sprite);
     }
     public void OnDeselection(SpriteBase sprite) {
         if (sprite is ItemBase)
@@ -541,12 +541,12 @@ public class LevelManager : MonoBehaviour {
         UnfadeLevel();
         for(int i = currGroupsLit.Count - 1; i >= 0; i--)
             UnHighlight(currGroupsLit[i]);
-
-        selectedItem = null;
     }
     public void ResetHeld() {
-        if (heldChar != null)
+        if (heldChar != null) {
             heldChar.ReturnToGameState();
+            heldChar.Release();
+        }
 
         if (heldSpriteTossable != null) {
             heldSpriteTossable.ReturnToBoat();

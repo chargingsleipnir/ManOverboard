@@ -5,7 +5,7 @@ using UnityEngine;
 public class SeaSerpent : Enemy {
 
     private void Start() {
-        health = 1000;
+        health = 2000;
     }
 
     public override void TakeDamage(int damage) {

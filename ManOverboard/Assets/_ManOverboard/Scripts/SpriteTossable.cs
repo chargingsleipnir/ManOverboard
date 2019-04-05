@@ -4,7 +4,13 @@ using ZeroProgress.Common;
 
 public class SpriteTossable : SpriteBase, IMouseDownDetector, IMouseUpDetector {
 
+    public bool Held { get; protected set; }
     public bool Airborne { get; protected set; }
+    protected bool paused;
+    public virtual bool Paused {
+        get { return paused; }
+        set { paused = value; }
+    }
 
     protected LevelManager lvlMngr;
     public LevelManager LvlMngr { set { lvlMngr = value; } }
@@ -15,7 +21,7 @@ public class SpriteTossable : SpriteBase, IMouseDownDetector, IMouseUpDetector {
     protected Rigidbody2D rb;
     protected BoxCollider2D bc;
 
-    public bool Paused { get; set; }
+    protected bool mouseDown_Unmoved;
 
     [SerializeField]
     protected int weight;
@@ -46,17 +52,22 @@ public class SpriteTossable : SpriteBase, IMouseDownDetector, IMouseUpDetector {
         rb.isKinematic = true;
         bc.enabled = false;
         Airborne = false;
+        mouseDown_Unmoved = false;
     }
 
     public virtual void MouseDownCB() {
-        if (CheckImmExit() || Airborne)
+        if (CheckImmExit() || Airborne || selectable)
             return;
+
+        mouseDown_Unmoved = true;
 
         lvlMngr.OnSpriteMouseDown(gameObject);
     }
     public virtual void OnClick() {}
 
     public void MouseUpCB() {
+        mouseDown_Unmoved = false;
+
         if (CheckImmExit() || Airborne)
             return;
 

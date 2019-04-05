@@ -19,8 +19,14 @@ public class RefCircle2D : RefShape {
 
     public override bool ContainsPoint(Vector2 point) {
         float magSqr = Vector2.SqrMagnitude(point - new Vector2(transform.position.x + offsetX, transform.position.y + offsetY));
-        return magSqr < Mathf.Pow(radius * Utility.GreaterOf(transform.lossyScale.x, transform.lossyScale.y), 2);
+        return magSqr < (radius * Utility.GreaterOf(transform.lossyScale.x, transform.lossyScale.y)) * (radius * Utility.GreaterOf(transform.lossyScale.x, transform.lossyScale.y));
     }
+    //public override bool Contacts(RefRect2D rect) {
+
+    //}
+    //public override bool Contacts(RefCircle2D circle) {
+    //    return (radius + circle.radius) * (radius + circle.radius) > (circle.Position - Position).sqrMagnitude;
+    //}
 
     public override float XMin {
         get { return transform.position.x + offsetX - (radius * transform.lossyScale.x); }
