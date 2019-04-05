@@ -20,7 +20,7 @@ public class CharChild : CharBase {
 
         if (canDonLifeJacketSelf) {
             canAct = true;
-            commandPanel.PrepBtn(Consts.Skills.DonLifeJacket, PrepDonLifeJacket);
+            commandPanel.PrepBtn(Consts.Skills.DonLifeJacket, DonLifeJacket);
         }
 
         commandPanel.SetBtns();
@@ -32,20 +32,17 @@ public class CharChild : CharBase {
 
     // Donning life jacket ===============================================================
 
-    protected virtual void PrepDonLifeJacket() {
+    protected virtual void DonLifeJacket() {
         ActionQueueInit(Consts.Skills.DonLifeJacket);
-        lvlMngr.HighlightToSelect(Consts.HighlightGroupType.LifeJacketChild, OnSelectionLifeJacket);
+        ActionQueueAdd(Consts.HighlightGroupType.LifeJacketChild, true, Consts.MIN_SEL_REACH_DIST, OnContactLifeJacketSelf);
+        ActionQueueRun(Consts.DON_RATE, StepTimerBarFill, OnDonLifeJacketComplete);
     }
-    protected virtual void OnSelectionLifeJacket(SpriteBase sprite) {
-        taskCounter = taskInterval = Consts.DON_RATE;
-        TaskStep = StepTimerBarFill;
-        TaskComplete = CompleteDonLifeJacket;
-
+    // Not anonymous, so as to be overridden in CharAdult.cs
+    protected void OnContactLifeJacketSelf(SpriteBase sprite) {
+        HoldItem(sprite as ItemBase);
         AnimTrigger("DonLifeJacketSelf");
-
-        TakeAction();
     }
-    protected void CompleteDonLifeJacket() {
+    protected void OnDonLifeJacketComplete() {
         // TODO: Just set in center of self for now, will need proper location around center of torso later
         ItemHeld.transform.position = transform.position;
         ItemHeld.transform.parent = transform;
@@ -54,8 +51,5 @@ public class CharChild : CharBase {
         // Life jacket now permanently afixxed to the character
         itemsWorn.Add(ItemHeld);
         IsWearingLifeJacket = true;
-
-        //(selectObjQueue[0] as ItemBase).RetPosLocal = (selectObjQueue[0] as ItemBase).transform.localPosition;
-        EndAction();
     }
 }

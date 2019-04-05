@@ -19,7 +19,9 @@ public class SpriteTossable : SpriteBase, IMouseDownDetector, IMouseUpDetector {
     protected ScriptableVector2 mousePos;
 
     protected Rigidbody2D rb;
-    protected BoxCollider2D bc; 
+    protected BoxCollider2D bc;
+
+    protected bool mouseDown_Unmoved;
 
     [SerializeField]
     protected int weight;
@@ -50,17 +52,22 @@ public class SpriteTossable : SpriteBase, IMouseDownDetector, IMouseUpDetector {
         rb.isKinematic = true;
         bc.enabled = false;
         Airborne = false;
+        mouseDown_Unmoved = false;
     }
 
     public virtual void MouseDownCB() {
         if (CheckImmExit() || Airborne || selectable)
             return;
 
+        mouseDown_Unmoved = true;
+
         lvlMngr.OnSpriteMouseDown(gameObject);
     }
     public virtual void OnClick() {}
 
     public void MouseUpCB() {
+        mouseDown_Unmoved = false;
+
         if (CheckImmExit() || Airborne)
             return;
 

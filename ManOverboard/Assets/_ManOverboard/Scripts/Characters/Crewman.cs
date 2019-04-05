@@ -43,15 +43,15 @@ public class Crewman : CharAdult {
 
         if (canDonLifeJacketSelf) {
             canAct = true;
-            commandPanel.PrepBtn(Consts.Skills.DonLifeJacket, PrepDonLifeJacket);
+            commandPanel.PrepBtn(Consts.Skills.DonLifeJacket, DonLifeJacket);
         }
         if (canDonLifeJacketChild) {
             canAct = true;
-            commandPanel.PrepBtn(Consts.Skills.DonLifeJacket, PrepDonLifeJacket);
+            commandPanel.PrepBtn(Consts.Skills.DonLifeJacket, DonLifeJacket);
         }
         if (canScoop) {
             canAct = true;
-            commandPanel.PrepBtn(Consts.Skills.ScoopWater, PrepScoop);
+            commandPanel.PrepBtn(Consts.Skills.ScoopWater, Scoop);
         }
         if(canRepair) {
             canAct = true;
@@ -126,30 +126,17 @@ public class Crewman : CharAdult {
         base.OnSelectionScoop(sprite);
     }
 
-
     public void RepairPinhole() {
         ActionQueueInit(Consts.Skills.RepairPinhole);
-
         ActionQueueAdd(Consts.HighlightGroupType.RepairKits, true, Consts.MIN_SEL_REACH_DIST, (SpriteBase sprite) => {
-            ItemBase item = sprite as ItemBase;
-            lvlMngr.ConfirmItemSelection(this, item);
-            HoldItem(item);
+            HoldItem(sprite as ItemBase);
         });
-
         ActionQueueAdd(Consts.HighlightGroupType.PinHoles, true, 0, (SpriteBase sprite) => {
             holeToRepair = sprite as Hole;
             holeToRepair.InRepair = true;
 
-            // TODO: Hole repair animation right here.
-
-            // TODO: Can't seem to repair next hole after this runs through (repair kit highlights, but remaining hole does not.
-
-            // TODO: Interupt walking by grabbing character as various stages, and:
-            // cancel action,
-            // make him squirm,
-            // toss him
+            AnimTrigger("RepairHole");
         });
-
         ActionQueueRun(Consts.REPAIR_RATE, null, () => {
             (ItemHeld as RepairKit).uses -= 1;
             // TODO: Does the weight simply disappear? Add it to the boat by reducing it's buoyancy?
@@ -163,7 +150,6 @@ public class Crewman : CharAdult {
             DropItemHeld();
         });
     }
-
 
     public void LowerAnchor() {
 

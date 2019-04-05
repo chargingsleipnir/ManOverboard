@@ -1,4 +1,5 @@
-﻿using UnityEditor;
+﻿using System;
+using UnityEditor;
 using UnityEngine;
 
 public class RefRect2D : RefShape {
@@ -31,16 +32,16 @@ public class RefRect2D : RefShape {
     //}
 
     public override float XMin {
-        get { return transform.position.x + offsetX - ((width * transform.lossyScale.x) * 0.5f); }
+        get { return transform.position.x + offsetX - ((width * Math.Abs(transform.lossyScale.x)) * 0.5f); }
     }
     public override float XMax {
-        get { return transform.position.x + offsetX + ((width * transform.lossyScale.x) * 0.5f); }
+        get { return transform.position.x + offsetX + ((width * Math.Abs(transform.lossyScale.x)) * 0.5f); }
     }
     public override float YMin {
-        get { return transform.position.y + offsetY - ((height * transform.lossyScale.y) * 0.5f); }
+        get { return transform.position.y + offsetY - ((height * Math.Abs(transform.lossyScale.y)) * 0.5f); }
     }
     public override float YMax {
-        get { return transform.position.y + offsetY + ((height * transform.lossyScale.y) * 0.5f); }
+        get { return transform.position.y + offsetY + ((height * Math.Abs(transform.lossyScale.y)) * 0.5f); }
     }
 
     private void OnDrawGizmos() {

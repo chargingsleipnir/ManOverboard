@@ -136,6 +136,9 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
 
         if (!actHold) {
             if (CharState == Consts.CharState.Walking) {
+                if (mouseDown_Unmoved)
+                    return;
+
                 // Walking update code specific to selection process
                 float moveStepDist = (speed * Consts.MOVE_SPEED_REDUC) * Time.deltaTime;
                 float posDelta = Math.Abs(transform.position.x - steps[0].sprite.transform.position.x);
@@ -221,7 +224,7 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
         if (CharState == Consts.CharState.Default) {
             OpenCommandPanel();
         }
-        else if (CharState == Consts.CharState.InAction) {
+        else if (CharState == Consts.CharState.InAction || CharState == Consts.CharState.Walking) {
             actHold = true;
             IsCancelBtnActive = true;
         }
@@ -256,6 +259,7 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
     public void Grab() {
         if (!Held) {
             Held = true;
+            mouseDown_Unmoved = false;
             actHold = true;
             // Using this specifically so as NOT to record this animation, to easily go back to the previous one.
             if (animator != null)
@@ -277,9 +281,11 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
     public void HoldItem(ItemBase item) {
         ItemHeld = item;
         ItemWeight += item.Weight;
+
+        lvlMngr.ConfirmItemSelection(this, item);
+
         item.InUse = true;
         item.CharHeldBy = this;
-
         item.EnableMouseTracking(false);
         item.MoveToCharHand(trans_ItemUseHand);
     }
@@ -305,7 +311,13 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
         if(e is SeaSerpent) {
             taskCounter = taskInterval = Consts.ATTACK_RATE;
             TaskComplete = DamageEnemy;
-            TakeAction();
+            //lvlMngr.ResetEnvir(); TODO: This shouldn't be necessary here??
+            timerBar.IsActive = true;
+            CharState = Consts.CharState.InAction;
+            AnimSpeed(1);
+
+            // TODO: Need attacking animation (Use panicked face)
+            // Match animation timing to attack timing -> Consts.ATTACK_RATE
         }
     }
 
@@ -348,17 +360,8 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
         CancelAction();
         ChangeMouseUpToDownLinks(true);
     }
-
-    protected void TakeAction() {
-        // Remove removable items (tools, small objects) from scene lists
-        lvlMngr.ConfirmSelections(this);
-        lvlMngr.ResetEnvir();
-        timerBar.IsActive = true;
-        CharState = Consts.CharState.InAction;
-        AnimSpeed(1);
-    }
     public virtual void CancelAction() {
-        if (CharState != Consts.CharState.InAction)
+        if (!(CharState == Consts.CharState.InAction || CharState == Consts.CharState.Walking))
             return;
 
         MouseUpToDownLinksTrue();
@@ -471,30 +474,93 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
     }
 
     List<ActionStep> steps = new List<ActionStep>();
+    List<ActionStep> splitStepsList = new List<ActionStep>();
     int stepIdx = 0;
 
-    protected void ActionQueueInit(Consts.Skills skill) {
+    bool actPathSplit;
+
+    protected void ActionQueueInit(Consts.Skills skill, bool splitPath = false) {
         steps.Clear();
+        splitStepsList.Clear();
         stepIdx = 0;
+
+        actPathSplit = splitPath;
+
         IsCommandPanelOpen = false;
         ReturnToBoat();
         this.activeSkill = skill;
     }
+    // Using "walkTo" bool for now, for so long as no other pathing is implemented. True to walk, false to perform action instantly
+    protected void ActionQueueAdd(Consts.HighlightGroupType selectable, bool walkTo, float minSelReachDist, Action<SpriteBase> OnSelectionContact) {
+        // Record parameters - selectable types need to be selected, replaced with sprites.
 
+        ActionStep step = new ActionStep {
+            selectable = selectable,
+            walkTo = walkTo,
+            minSelReachDist = minSelReachDist,
+            OnSelContact = OnSelectionContact
+        };
+
+        if (actPathSplit)
+            splitStepsList.Add(step);
+        else
+            steps.Add(step);
+    }
+
+    // activity counter & interval calculation, task step function, task complete function
+    protected void ActionQueueRun(float taskInterval, Action TaskStep, Action TaskComplete) {
+        // Task data is set, but won't be used until all selections are made
+        taskCounter = this.taskInterval = taskInterval;
+        this.TaskStep = (TaskStep == null) ? Action_Step : TaskStep;
+        this.TaskComplete = TaskComplete;
+
+        if (actPathSplit)
+            CommenceGather();
+        else
+            // Start recursive function to get all selectable items
+            lvlMngr.HighlightToSelect(steps[stepIdx].selectable, RecordSelectedSprite);
+    }
+    protected void ActionQueueRun(Action<SpriteBase> SelectionCB) {
+        if (!actPathSplit)
+            return;
+
+        foreach(ActionStep step in splitStepsList)
+            lvlMngr.HighlightToSelect(step.selectable, SelectionCB);
+    }
+
+    protected void ActionQueueAccSplitIdx(int index, SpriteBase sprite) {
+        if (!actPathSplit)
+            return;
+
+        steps.Add(splitStepsList[index]);
+        steps[stepIdx].sprite = sprite;
+        stepIdx++;
+
+        splitStepsList.Clear();
+    }
+    protected void ActionQueueModTaskCounter(float taskInterval) {
+        taskCounter = this.taskInterval = taskInterval;
+    }
+    protected void ActPathSplitOff() {
+        actPathSplit = false;
+    }
+
+    private void CommenceGather() {
+        stepIdx = 0;
+        lvlMngr.ResetEnvir();
+        GatherSelected();
+    }
     private void RecordSelectedSprite(SpriteBase sprite) {
         steps[stepIdx].sprite = sprite;
 
         if (stepIdx == steps.Count - 1) {
-            stepIdx = 0;
-            lvlMngr.ResetEnvir();
-            GatherSelected();
+            CommenceGather();
         }
         else {
             stepIdx++;
             lvlMngr.HighlightToSelect(steps[stepIdx].selectable, RecordSelectedSprite);
         }            
     }
-
     private void GatherSelected() {
         if(steps[0].walkTo) {
             // If walking to selected sprite, check to see we're not already touching it. If not, start walking to it.
@@ -522,6 +588,8 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
     }
     private void OnSpriteContact() {
         AnimSpeed(0);
+        // Just less confusing after having flipped to walk left.
+        Utility.Scale(transform, 1, 1, 1);
         CharState = Consts.CharState.Default;
         steps[0].OnSelContact(steps[0].sprite);
         steps.RemoveAt(0);
@@ -534,27 +602,5 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
             CharState = Consts.CharState.InAction;
             AnimSpeed(1);
         }
-    }
-
-    // Using "walkTo" bool for now, for so long as no other pathing is implemented. True to walk, false to perform action instantly
-    protected void ActionQueueAdd(Consts.HighlightGroupType selectable, bool walkTo, float minSelReachDist, Action<SpriteBase> OnSelectionContact) {
-        // Record parameters - selectable types need to be selected, replaced with sprites.
-        ActionStep step = new ActionStep {
-            selectable = selectable,
-            walkTo = walkTo,
-            minSelReachDist = minSelReachDist,
-            OnSelContact = OnSelectionContact
-        };
-        steps.Add(step);
-    }
-
-    // activity counter & interval calculation, task step function, task complete function
-    protected void ActionQueueRun(float taskInterval, Action TaskStep, Action TaskComplete) {
-        // Start recursive function to get all selectable items
-        lvlMngr.HighlightToSelect(steps[0].selectable, RecordSelectedSprite);
-        // Task data is set, but won't be used until all selections are made
-        taskCounter = this.taskInterval = taskInterval;
-        this.TaskStep = (TaskStep == null) ? Action_Step : TaskStep;
-        this.TaskComplete = TaskComplete;
     }
 }

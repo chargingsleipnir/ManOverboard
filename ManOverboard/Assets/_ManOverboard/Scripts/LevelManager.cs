@@ -439,15 +439,6 @@ public class LevelManager : MonoBehaviour {
 
         currGroupsLit.Remove(groupType);
     }
-
-    public void ConfirmSelections(CharBase charToAct) {
-        if (selectedItem != null) {
-            selectedItem.RemoveFromChar();
-            RemoveItem(selectedItem);
-            charToAct.HoldItem(selectedItem);
-        }
-        selectedItem = null;
-    }
     public void ConfirmItemSelection(CharBase charToAct, ItemBase item) {
         item.RemoveFromChar();
         RemoveItem(item);
