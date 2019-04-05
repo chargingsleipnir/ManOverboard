@@ -1,13 +1,15 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
 using ZeroProgress.Common.Collections;
 
 public class Crewman : CharAdult {
 
     [SerializeField]
     protected ItemBase sailorCap;
+
+    [SerializeField]
+    protected Transform capParent;
 
     Vector3 capPosLocal;
     bool capDonned;
@@ -28,8 +30,7 @@ public class Crewman : CharAdult {
 
         Reset();
 
-        sailorCap.CharHeldBy = this;
-        WearItem(sailorCap);        
+        WearItem(sailorCap);
     }
 
     public override void SetActionBtns() {
@@ -42,19 +43,19 @@ public class Crewman : CharAdult {
 
         if (canDonLifeJacketSelf) {
             canAct = true;
-            commandPanel.PrepBtn(Consts.Skills.DonLifeJacket, PrepDonLifeJacket);
+            commandPanel.PrepBtn(Consts.Skills.DonLifeJacket, DonLifeJacket);
         }
         if (canDonLifeJacketChild) {
             canAct = true;
-            commandPanel.PrepBtn(Consts.Skills.DonLifeJacket, PrepDonLifeJacket);
+            commandPanel.PrepBtn(Consts.Skills.DonLifeJacket, DonLifeJacket);
         }
         if (canScoop) {
             canAct = true;
-            commandPanel.PrepBtn(Consts.Skills.ScoopWater, PrepScoop);
+            commandPanel.PrepBtn(Consts.Skills.ScoopWater, Scoop);
         }
         if(canRepair) {
             canAct = true;
-            commandPanel.PrepBtn(Consts.Skills.RepairPinhole, PrepRepair);
+            commandPanel.PrepBtn(Consts.Skills.RepairPinhole, RepairPinhole);
         }
 
         commandPanel.SetBtns();
@@ -99,8 +100,9 @@ public class Crewman : CharAdult {
         if (ItemHeld.name.Contains("SailorCap")) {
             if (!capDonned) {
                 sailorCap = ItemHeld;
-                sailorCap.SortCompResetToBase(transform);
+                sailorCap.SortCompResetToBase(capParent);
                 sailorCap.transform.localPosition = capPosLocal;
+                sailorCap.transform.rotation = Quaternion.identity;
                 sailorCap.CharHeldBy = this;
                 itemsWorn.Add(sailorCap);
                 capDonned = true;
@@ -124,33 +126,29 @@ public class Crewman : CharAdult {
         base.OnSelectionScoop(sprite);
     }
 
-    public void PrepRepair() {
-        PrepAction(Consts.Skills.RepairPinhole);
-        lvlMngr.HighlightToSelect(Consts.HighlightGroupType.RepairKits, OnSelectionRepairKit);
-    }
-    private void OnSelectionRepairKit(SpriteBase sprite) {
-        lvlMngr.HighlightToSelect(Consts.HighlightGroupType.PinHoles, OnSelectionPinhole);
-    }
-    private void OnSelectionPinhole(SpriteBase sprite) {
-        holeToRepair = sprite as Hole;
+    public void RepairPinhole() {
+        ActionQueueInit(Consts.Skills.RepairPinhole);
+        ActionQueueAdd(Consts.HighlightGroupType.RepairKits, true, Consts.MIN_SEL_REACH_DIST, (SpriteBase sprite) => {
+            HoldItem(sprite as ItemBase);
+        });
+        ActionQueueAdd(Consts.HighlightGroupType.PinHoles, true, 0, (SpriteBase sprite) => {
+            holeToRepair = sprite as Hole;
+            holeToRepair.InRepair = true;
 
-        holeToRepair.InRepair = true;
-        activityCounter = activityInterval = Consts.REPAIR_RATE;
-        ActionComplete = CompleteRepair;
-        TakeAction();
-    }
-    private void CompleteRepair() {
-        (ItemHeld as RepairKit).uses -= 1;
-        // TODO: Does the weight simply disappear? Add it to the boat by reducing it's buoyancy?
-        // But repairing a hole would increase the buoyancy anyway, so reduce this weight and call it even?
-        ItemHeld.Weight -= 2;
+            AnimTrigger("RepairHole");
+        });
+        ActionQueueRun(Consts.REPAIR_RATE, null, () => {
+            (ItemHeld as RepairKit).uses -= 1;
+            // TODO: Does the weight simply disappear? Add it to the boat by reducing it's buoyancy?
+            // But repairing a hole would increase the buoyancy anyway, so reduce this weight and call it even?
+            ItemHeld.Weight -= 2;
 
-        lvlMngr.RepairBoat(holeToRepair);
-        holeToRepair = null;
+            lvlMngr.RepairBoat(holeToRepair);
+            holeToRepair = null;
 
-        EndAction();
-        DropItemHeld();
-        
+            EndAction();
+            DropItemHeld();
+        });
     }
 
     public void LowerAnchor() {

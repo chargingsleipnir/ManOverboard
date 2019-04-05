@@ -6,8 +6,9 @@ public class CharAdult : CharChild {
 
     protected bool canDonLifeJacketChild = false;
     protected bool canScoop = false;
-    int waterWeight = 0; 
+    int waterWeight = 0;
 
+    // Always being overridden without base reference. Use Reset() for base referencing
     protected override void Start() {
         Reset();
     }
@@ -21,15 +22,15 @@ public class CharAdult : CharChild {
 
         if (canDonLifeJacketSelf) {
             canAct = true;
-            commandPanel.PrepBtn(Consts.Skills.DonLifeJacket, PrepDonLifeJacket);
+            commandPanel.PrepBtn(Consts.Skills.DonLifeJacket, DonLifeJacket);
         }
         if (canDonLifeJacketChild) {
             canAct = true;
-            commandPanel.PrepBtn(Consts.Skills.DonLifeJacket, PrepDonLifeJacket);
+            commandPanel.PrepBtn(Consts.Skills.DonLifeJacket, DonLifeJacket);
         }
         if (canScoop) {
             canAct = true;
-            commandPanel.PrepBtn(Consts.Skills.ScoopWater, PrepScoop);
+            commandPanel.PrepBtn(Consts.Skills.ScoopWater, Scoop);
         }
 
         commandPanel.SetBtns();
@@ -46,74 +47,72 @@ public class CharAdult : CharChild {
 
     // Donning life jacket ===============================================================
 
-    protected override void PrepDonLifeJacket() {
-        PrepAction(Consts.Skills.DonLifeJacket);
-        if(canDonLifeJacketChild)
-            lvlMngr.HighlightToSelect(Consts.HighlightGroupType.LifeJacketChild, OnSelectionLifeJacket);
+    protected override void DonLifeJacket() {
+        ActionQueueInit(Consts.Skills.DonLifeJacket, true);
+
+        if (canDonLifeJacketChild)
+            ActionQueueAdd(Consts.HighlightGroupType.LifeJacketChild, true, Consts.MIN_SEL_REACH_DIST, (SpriteBase sprite) => { HoldItem(sprite as ItemBase); });
         if (canDonLifeJacketSelf)
-            lvlMngr.HighlightToSelect(Consts.HighlightGroupType.LifeJacketAdult, OnSelectionLifeJacket);
-    }
-    protected override void OnSelectionLifeJacket(SpriteBase sprite) {
-        LifeJacket jacket = sprite as LifeJacket;
+            ActionQueueAdd(Consts.HighlightGroupType.LifeJacketAdult, true, Consts.MIN_SEL_REACH_DIST, OnContactLifeJacketSelf);
 
-        // Adult jacket, can don self immediately
-        if (jacket.size == Consts.FitSizes.adult) {
-            base.OnSelectionLifeJacket(sprite);
-        }
-        // Child jacket, need to wait for child to be selected
-        else {
-            lvlMngr.HighlightToSelect(Consts.HighlightGroupType.Children, OnSelectionChild);
-        }
-    }
-    private void OnSelectionChild(SpriteBase sprite) {
-        // Add child for completion Callback
-        activeChar = sprite as CharChild;
-        activeChar.SetStateDazed(true);
+        ActionQueueRun((SpriteBase jacketSprite) => {
+            LifeJacket jacket = jacketSprite as LifeJacket;
 
-        activityCounter = activityInterval = Consts.DON_RATE;
-        ActionComplete = CompleteDonLifeJacketChild;
-        TakeAction();
-    }
-    private void CompleteDonLifeJacketChild() {
-        // TODO: Just set in center of self for now, will need proper location around center of torso later
-        ItemHeld.transform.position = activeChar.transform.position;
-        ItemHeld.transform.parent = activeChar.transform;
+            if (jacket.size == Consts.FitSizes.child) {
+                ActionQueueAccSplitIdx(0, jacketSprite);
 
-        ItemWeight -= ItemHeld.Weight;
-        activeChar.WearItem(ItemHeld);
-        activeChar.IsWearingLifeJacket = true;
-        activeChar.CharState = Consts.CharState.Default;
-        activeChar.SetStateDazed(false);
+                // Can shut path splitting off at this point and map out the rest linearly
+                ActPathSplitOff(); 
+                ActionQueueAdd(Consts.HighlightGroupType.Children, true, Consts.MIN_SEL_REACH_DIST, (SpriteBase childSprite) => {
+                    // Add child for completion Callback
+                    activeChar = childSprite as CharChild;
+                    activeChar.SetStateDazed(true);
 
-        ItemHeld = null;
+                    AnimTrigger("DonLifeJacketChild");
+                });
+                ActionQueueRun(Consts.DON_RATE, StepTimerBarFill, () => {
+                    (activeChar as CharChild).PlaceJacketTransform(ItemHeld.transform);
 
-        //(selectObjQueue[0] as ItemBase).RetPosLocal = (selectObjQueue[0] as ItemBase).transform.localPosition;
 
-        EndAction();
+                    ItemWeight -= ItemHeld.Weight;
+                    activeChar.WearItem(ItemHeld);
+                    activeChar.IsWearingLifeJacket = true;
+                    activeChar.CharState = Consts.CharState.Default;
+                    activeChar.SetStateDazed(false);
+
+                    ItemHeld = null;
+
+                    EndAction();
+                    //(selectObjQueue[0] as ItemBase).RetPosLocal = (selectObjQueue[0] as ItemBase).transform.localPosition;
+                });
+            }
+            else {
+                // Index will differ based on which actions were available to be added above.
+                ActionQueueAccSplitIdx(canDonLifeJacketChild ? 1 : 0, jacketSprite);
+                ActionQueueRun(Consts.DON_RATE, StepTimerBarFill, OnDonLifeJacketComplete);
+            }
+        });
     }
 
     // Scooping Water ===============================================================
 
-    public void PrepScoop() {
-        PrepAction(Consts.Skills.ScoopWater);
-        lvlMngr.HighlightToSelect(Consts.HighlightGroupType.Scooping, OnSelectionScoop);
+    public void Scoop() {
+        ActionQueueInit(Consts.Skills.ScoopWater);
+        ActionQueueAdd(Consts.HighlightGroupType.Scooping, true, Consts.MIN_SEL_REACH_DIST, OnSelectionScoop);
+        // First param is overridden just above -> ActionQueueModTaskCounter
+        ActionQueueRun(Consts.SCOOP_RATE, StepTimerBarFill, () => {
+            lvlMngr.RemoveWater(waterWeight);
+        });
     }
+    // Not anonymous, so as to be overridden in Crewman.cs
     protected virtual void OnSelectionScoop(SpriteBase sprite) {
-        sprite.EnableMouseTracking(false);
-
-        // Logic for scooping wth item
-        sprite.transform.position = trans_ItemUseHand.position;
-        sprite.transform.parent = trans_ItemUseHand.parent;
+        HoldItem(sprite as ItemBase);
 
         ItemCanScoop scoop = sprite as ItemCanScoop;
         waterWeight = scoop.capacity;
         float heldWeight = scoop.Weight + waterWeight;
+        ActionQueueModTaskCounter(Consts.SCOOP_RATE - (strength - heldWeight));
 
-        activityCounter = activityInterval = Consts.SCOOP_RATE - (strength - heldWeight);
-        ActionComplete = CompleteSingleScoop;
-        TakeAction();
-    }
-    private void CompleteSingleScoop() {
-        lvlMngr.RemoveWater(waterWeight);
+        AnimTrigger("Scoop");
     }
 }

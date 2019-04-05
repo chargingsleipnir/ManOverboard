@@ -1,4 +1,5 @@
-﻿using UnityEditor;
+﻿using System;
+using UnityEditor;
 using UnityEngine;
 
 public class RefRect2D : RefShape {
@@ -23,18 +24,24 @@ public class RefRect2D : RefShape {
             point.y > YMin &&
             point.y < YMax;
     }
+    //public override bool Contacts(RefRect2D rect) {
+    //    throw new System.NotImplementedException();
+    //}
+    //public override bool Contacts(RefCircle2D circle) {
+    //    throw new System.NotImplementedException();
+    //}
 
     public override float XMin {
-        get { return transform.position.x + offsetX - ((width * transform.lossyScale.x) * 0.5f); }
+        get { return transform.position.x + offsetX - ((width * Math.Abs(transform.lossyScale.x)) * 0.5f); }
     }
     public override float XMax {
-        get { return transform.position.x + offsetX + ((width * transform.lossyScale.x) * 0.5f); }
+        get { return transform.position.x + offsetX + ((width * Math.Abs(transform.lossyScale.x)) * 0.5f); }
     }
     public override float YMin {
-        get { return transform.position.y + offsetY - ((height * transform.lossyScale.y) * 0.5f); }
+        get { return transform.position.y + offsetY - ((height * Math.Abs(transform.lossyScale.y)) * 0.5f); }
     }
     public override float YMax {
-        get { return transform.position.y + offsetY + ((height * transform.lossyScale.y) * 0.5f); }
+        get { return transform.position.y + offsetY + ((height * Math.Abs(transform.lossyScale.y)) * 0.5f); }
     }
 
     private void OnDrawGizmos() {
@@ -45,5 +52,7 @@ public class RefRect2D : RefShape {
         Gizmos.DrawLine(new Vector3(XMax, YMin, pos.z), new Vector3(XMax, YMax, pos.z));
         Gizmos.DrawLine(new Vector3(XMax, YMax, pos.z), new Vector3(XMin, YMax, pos.z));
         Gizmos.DrawLine(new Vector3(XMin, YMax, pos.z), new Vector3(XMin, YMin, pos.z));
-    }    
+    }
+
+    
 }
