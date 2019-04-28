@@ -10,6 +10,17 @@ namespace ZeroProgress.Common
     public static class MonobehaviourExtensions
     {
         /// <summary>
+        /// Executes an action on the next frame
+        /// </summary>
+        /// <param name="thisBehaviour">The behaviour to execute on</param>
+        /// <param name="execution">The action to take on the next frame</param>
+        /// <returns>The coroutine created to execute on next frame</returns>
+        public static Coroutine OnNextFrame(this MonoBehaviour thisBehaviour, Action execution)
+        {
+            return thisBehaviour.StartCoroutine(DelayedAction(0f, execution));
+        }
+
+        /// <summary>
         /// Used to perform an action after a set amount of time
         /// </summary>
         /// <param name="ThisBehaviour">The behaviour to use as the host of the coroutine</param>

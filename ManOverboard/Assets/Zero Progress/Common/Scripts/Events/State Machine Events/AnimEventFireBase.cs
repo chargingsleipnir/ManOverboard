@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Animations;
 
 namespace ZeroProgress.Common
 {
@@ -18,13 +19,20 @@ namespace ZeroProgress.Common
         [Tooltip("True to include children that have been deactivated, false to use only active ones")]
         public bool IncludeInactiveChildren = false;
 
+        protected virtual void FireEvents(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
+        {
+            FireEvents(animator, stateInfo, layerIndex, AnimatorControllerPlayable.Null);
+        }
+
         /// <summary>
         /// Intended for children to call to notify the scene of animation-specific events
         /// </summary>
         /// <param name="Anim">The animator to fire the events in relation to</param>
-        protected virtual void FireEvents(Animator Anim)
+        protected virtual void FireEvents(Animator animator, AnimatorStateInfo stateInfo, int layerIndex, AnimatorControllerPlayable controller)
         {
-            IEnumerable<IAnimationEventListener> animEvents = GetEventReceivers(Anim);
+            IEnumerable<IAnimationEventListener> animEvents = GetEventReceivers(animator);
+
+            StateMachineEventArgs args = new StateMachineEventArgs(animator, stateInfo, layerIndex, controller);
 
             int numNotified = 0;
 
@@ -32,15 +40,14 @@ namespace ZeroProgress.Common
             {
                 foreach (IAnimationEventListener animEvent in animEvents)
                 {
-                    animEvent.ReceiveEvent(eventToFire);
+                    animEvent.ReceiveEvent(eventToFire, args);
                     numNotified++;
                 }
             }
 
             if (numNotified == 0)
             {
-                Debug.LogError("No AnimationEventReceivers found on: " +
-                    Anim.name + " for event: " + EventsToFire);
+                Debug.LogError("No AnimationEventReceivers found on: " + animator.name, this);
             }
         }
 

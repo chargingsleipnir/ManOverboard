@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using ZeroProgress.Common;
 
 namespace ZeroProgress.Interactions
 {
@@ -9,7 +10,10 @@ namespace ZeroProgress.Interactions
     {
         [Tooltip("True to ignore all toggle method calls if this object is inactive")]
         public bool IgnoreIfInactive = true;
-        
+
+        [SerializeField]
+        protected StringReference interactionId;
+
         [SerializeField]
         [Tooltip("The label associated with the interaction")]
         protected string InteractionLabel = "";
@@ -101,7 +105,7 @@ namespace ZeroProgress.Interactions
             return true;
         }
 
-        public virtual void Interact(GameObject Interactor)
+        public virtual void TryInteract(GameObject Interactor)
         {
             if (CanInteract(Interactor))
                 Toggle();
@@ -110,6 +114,11 @@ namespace ZeroProgress.Interactions
         public virtual void Interact()
         {
             Toggle();
+        }
+
+        public string GetInteractableId()
+        {
+            return interactionId;
         }
     }
 }

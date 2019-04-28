@@ -10,12 +10,12 @@ namespace ZeroProgress.Common
         /// <summary>
         /// The default style for menu items
         /// </summary>
-        protected static GUIStyle defaultMenuStyle;
+        protected GUIStyle defaultMenuStyle;
 
         /// <summary>
         /// The style for the backgraound used to identify selected items
         /// </summary>
-        protected static GUIStyle selectedItemBackground;
+        protected GUIStyle selectedItemBackground;
 
         /// <summary>
         /// Padding applied to the menu items

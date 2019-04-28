@@ -10,6 +10,9 @@ namespace ZeroProgress.Interactions
     public class GenericInteractable : IInteractable
     {
         [SerializeField]
+        protected StringReference interactionId;
+
+        [SerializeField]
         [Tooltip("The label to be displayed")]
         protected string interactionLabel = "";
 
@@ -26,7 +29,7 @@ namespace ZeroProgress.Interactions
             return interactionLabel;
         }
 
-        public virtual void Interact(GameObject Interactor)
+        public virtual void TryInteract(GameObject Interactor)
         {
             if (CanInteract(Interactor))
                 Interact();
@@ -35,6 +38,11 @@ namespace ZeroProgress.Interactions
         public virtual void Interact()
         {
             InteractionResponse.SafeInvoke();
+        }
+
+        public string GetInteractableId()
+        {
+            return interactionId;
         }
     }
 }

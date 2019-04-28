@@ -7,6 +7,7 @@ using UnityEngine;
 
 namespace ZeroProgress.Common.Editors
 {
+#if UNITY_EDITOR
     /// <summary>
     /// Extensions meant for the AssetDatabase class... however, because AssetDatabase is a static
     /// class, these don't work exactly as normal extension methods and must be used explicitly
@@ -671,4 +672,6 @@ namespace ZeroProgress.Common.Editors
             }
         }
     }
+
+#endif
 }
