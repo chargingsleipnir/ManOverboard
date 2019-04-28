@@ -8,6 +8,12 @@ namespace ZeroProgress.Interactions
     public interface IInteractable
     {
         /// <summary>
+        /// An identifier for this interactable
+        /// </summary>
+        /// <returns>The Id used to identify the type of this interactable</returns>
+        string GetInteractableId();
+
+        /// <summary>
         /// Retrieves the label for this interaction item
         /// </summary>
         /// <returns></returns>
@@ -21,9 +27,9 @@ namespace ZeroProgress.Interactions
         bool CanInteract(GameObject Interactor);
 
         /// <summary>
-        /// Perform the interaction, checking if Interaction is possible first
+        /// Try to perform the interaction, checking if Interaction is possible first
         /// </summary>
-        void Interact(GameObject Interactor);
+        void TryInteract(GameObject Interactor);
 
         /// <summary>
         /// Perform the interaction without checking if the interaction is possible first

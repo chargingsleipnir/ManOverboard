@@ -80,7 +80,7 @@ MonoBehaviour:
     lockConditions: []
   entrySceneId: 5
   useOnPlay: 0
-  goToOnPlay: 
+  goToOnPlay: 1-1
 --- !u!114 &114011571203278230
 MonoBehaviour:
   m_ObjectHideFlags: 0

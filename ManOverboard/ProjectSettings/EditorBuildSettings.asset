@@ -6,27 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/_ManOverboard/Scenes/Dev/OdinSceneFlowTest/PreGame.unity
-    guid: 4d33d8861430fae449e245cb71c91f25
-  - enabled: 1
-    path: Assets/_ManOverboard/Scenes/Dev/OdinSceneFlowTest/Level Overview.unity
-    guid: a58212e3b573aa649b722c9b124adb86
-  - enabled: 1
-    path: Assets/_ManOverboard/Scenes/Dev/OdinSceneFlowTest/Title Screen.unity
-    guid: ff64f4529879a28479360ce46fecf05e
-  - enabled: 1
-    path: Assets/_ManOverboard/Scenes/Dev/OdinSceneFlowTest/Level 1.unity
-    guid: 15e8c62a9359a4d478326fbf069831a3
-  - enabled: 1
-    path: Assets/_ManOverboard/Scenes/Dev/OdinSceneFlowTest/Level 2.unity
-    guid: ccdb9bc8d90c7424890d96ba911c7211
-  - enabled: 1
-    path: Assets/_ManOverboard/Scenes/Dev/OdinSceneFlowTest/Level 3.unity
-    guid: 9946f33d2ebc0fa449c51b6212fd7357
-  - enabled: 0
-    path: 
-    guid: 00000000000000000000000000000000
-  - enabled: 1
-    path: Assets/_ManOverboard/Scenes/Dev/OdinSceneFlowTest/Level 4.unity
-    guid: c56d5672412ba0c478c5bd2e339828f2
+    path: Assets/_ManOverboard/Scenes/Dev/OdinSceneFlowTest/Level 8.unity
+    guid: a21385833f81fe741a76b69733e6c44e
   m_configObjects: {}

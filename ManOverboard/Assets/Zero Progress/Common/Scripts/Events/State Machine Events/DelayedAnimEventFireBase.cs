@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Animations;
 
 namespace ZeroProgress.Common
 {
@@ -13,22 +14,27 @@ namespace ZeroProgress.Common
         [Tooltip("True to compute the delay with real time, false to use scaled time")]
         public bool UseRealTimeSeconds = false;
 
+        protected virtual void DelayedFireEvent(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
+        {
+            DelayedFireEvent(animator, stateInfo, layerIndex, AnimatorControllerPlayable.Null);
+        }
+
         /// <summary>
         /// Intended for children to call to notify the scene of animation-specific events
         /// a short time after this is called
         /// </summary>
         /// <param name="Anim">The animator to fire the events in relation to</param>
-        protected virtual void DelayedFireEvent(Animator Anim)
+        protected virtual void DelayedFireEvent(Animator animator, AnimatorStateInfo stateInfo, int layerIndex, AnimatorControllerPlayable controller)
         {
-            MonoBehaviour monoBehaviour = Anim.GetComponent<MonoBehaviour>();
+            MonoBehaviour monoBehaviour = animator.GetComponent<MonoBehaviour>();
 
             if (monoBehaviour == null)
             {
-                Debug.LogError("Could not find a monobehaviour on " + Anim.name +
-                    ". Cannot perform DelayedAction for " + EventsToFire);
+                Debug.LogError("Could not find a monobehaviour on " + animator.name, this);
+                return;
             }
 
-            monoBehaviour.DelayedExecution(DelayTimeSeconds, () => FireEvents(Anim), UseRealTimeSeconds);
+            monoBehaviour.DelayedExecution(DelayTimeSeconds, () => FireEvents(animator, stateInfo, layerIndex, controller), UseRealTimeSeconds);
         }
     }
 }

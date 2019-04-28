@@ -19,7 +19,7 @@ namespace ZeroProgress.Common
         /// <summary>
         /// The style used for the menu
         /// </summary>
-        private static GUIStyle panelStyle;
+        private GUIStyle panelStyle;
 
         /// <summary>
         /// Event fired when the menu is shown

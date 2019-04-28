@@ -9,7 +9,7 @@ namespace ZeroProgress.Common
     {
         public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
         {
-            FireEvents(animator);
+            FireEvents(animator, stateInfo, layerIndex);
         }
     }
 }

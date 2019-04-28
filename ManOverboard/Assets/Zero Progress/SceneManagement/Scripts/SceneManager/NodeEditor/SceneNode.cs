@@ -110,8 +110,11 @@ namespace ZeroProgress.SceneManagementUtility
             
             if (sceneName == null || SceneInfo.SceneName != sceneName.text)
             {
-                string nicifiedSceneName = ObjectNames.NicifyVariableName(SceneInfo.SceneName);
+                string nicifiedSceneName = SceneInfo.SceneName;
 
+#if UNITY_EDITOR
+                nicifiedSceneName = ObjectNames.NicifyVariableName(SceneInfo.SceneName);
+#endif
                 sceneName = new GUIContent(nicifiedSceneName);
 
                 NodeRect.size = nodeStyle.CalcSize(sceneName);

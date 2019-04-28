@@ -9,7 +9,7 @@ namespace ZeroProgress.Common
     {
         public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
         {
-            DelayedFireEvent(animator);
+            DelayedFireEvent(animator, stateInfo, layerIndex);
         }
     }
 }
