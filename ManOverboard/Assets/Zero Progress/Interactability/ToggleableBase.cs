@@ -1,103 +1,124 @@
 ﻿using UnityEngine;
-using UnityEngine.Events;
 using ZeroProgress.Common;
 
 namespace ZeroProgress.Interactions
 {
-    public class ToggleableBase : MonoBehaviour, IToggleable
+    /// <summary>
+    /// A base monobehaviour class to help with the toggling functionality of the IToggleable class
+    /// </summary>
+    public abstract class ToggleableBase : MonoBehaviour, IToggleable
     {
-        public UnityEvent TurnedOn;
-
-        public UnityEvent TurnedOff;
-
         [Tooltip("True to ignore all toggle method calls if this object is inactive")]
         public bool IgnoreIfInactive = true;
 
         [SerializeField]
-        private bool startingValue = true;
+        protected StringReference interactionId;
 
         [SerializeField]
+        [Tooltip("The label associated with the interaction")]
+        protected string InteractionLabel = "";
+
+        [SerializeField]
+        [Tooltip("True to apply the current toggle value whenever Enabled")]
         private bool applyOnEnable = true;
 
-        [SerializeField]
-        protected BoolValueSetOption onEnableValueOverride = BoolValueSetOption.UNCHANGED;
+        /// <summary>
+        /// The current toggle value
+        /// </summary>
+        [Tooltip("The current toggle value")]
+        protected bool toggleState = true;
 
-        [SerializeField]
-        private bool applyOnStart = true;
-        
-        protected bool currentValue = true;
+        protected abstract void OnActivate();
 
-        private void OnEnable()
+        protected abstract void OnDeactivate();
+
+        protected virtual void OnEnable()
         {
-            currentValue =
-                BoolValueSetOptionExtensions.GetBoolValue(onEnableValueOverride, currentValue);
-
-            if (applyOnEnable)
-                HandleValueChanged(currentValue);
-        }
-
-        // Use this for initialization
-        void Start()
-        {
-            if (applyOnStart)
+            if(applyOnEnable)
             {
-                currentValue = startingValue;
-                ApplyToggleChange(currentValue);
-                HandleValueChanged(currentValue);
+                if (toggleState)
+                    OnActivate();
+                else
+                    OnDeactivate();
             }
         }
 
-        public virtual bool IsOn()
-        {
-            return currentValue;
-        }
-
+        /// <summary>
+        /// Toggles the state to its inverted value
+        /// </summary>
         public virtual void Toggle()
         {
             if (IgnoreIfInactive && !enabled)
                 return;
 
-            currentValue = !currentValue;
-            HandleValueChanged(currentValue);
+            toggleState = !toggleState;
+
+            if (toggleState)
+                Activate();
+            else
+                Deactivate();
         }
-
-        public virtual void TurnOff()
-        {
-            if (IgnoreIfInactive && !enabled)
-                return;
-
-            if (currentValue == false)
-                return;
-
-            currentValue = false;
-            HandleValueChanged(currentValue);
-        }
-
-        public virtual void TurnOn()
-        {
-            if (IgnoreIfInactive && !enabled)
-                return;
-
-            if (currentValue)
-                return;
-
-            currentValue = true;
-            HandleValueChanged(currentValue);
-        }
-
-        protected void HandleValueChanged(bool CurrentValue)
-        {
-            ApplyToggleChange(currentValue);
-            RaiseEvents(currentValue);
-        }
-
+        
+        /// <summary>
+        /// Inherited by children to provide the actual functionality caused by the current toggle state
+        /// </summary>
+        /// <param name="NewValue">The new toggle state being used</param>
         protected virtual void ApplyToggleChange(bool NewValue)
         { }
-
-        protected void RaiseEvents(bool CurrentValue)
+        
+        public virtual void Activate()
         {
-            UnityEvent eventToRaise = CurrentValue ? TurnedOn : TurnedOff;
-            eventToRaise.SafeInvoke();
+            if (toggleState)
+                return;
+
+            if (IgnoreIfInactive && !enabled)
+                return;
+
+            toggleState = true;
+            OnActivate();
+        }
+
+        public virtual void Deactivate()
+        {
+            if (!toggleState)
+                return;
+
+            if (IgnoreIfInactive && !enabled)
+                return;
+
+            toggleState = false;
+            OnDeactivate();
+        }
+
+        public virtual bool IsActivated()
+        {
+            return toggleState;
+        }
+
+        public virtual string GetInteractionLabel()
+        {
+            return InteractionLabel;
+        }
+
+        public virtual bool CanInteract(GameObject Interactor)
+        {
+            return true;
+        }
+
+        public virtual void TryInteract(GameObject Interactor)
+        {
+            if (CanInteract(Interactor))
+                Toggle();
+        }
+
+        public virtual void Interact()
+        {
+            Toggle();
+        }
+
+        public string GetInteractableId()
+        {
+            return interactionId;
         }
     }
 }

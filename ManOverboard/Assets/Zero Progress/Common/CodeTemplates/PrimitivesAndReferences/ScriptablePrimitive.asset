@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b00a52cbcd425f4f8d8c2d00d16645e, type: 3}
+  m_Name: ScriptablePrimitive
+  m_EditorClassIdentifier: 
+  Description: Scriptable Primitive code template
+  DefaultValue: "using UnityEngine;\r\n\r\nnamespace ###namespace:string###\n{\r\n
+    \   /// <summary>\r\n    /// Scriptable primitive of ###paramType:type### type\r\n
+    \   /// </summary>\r\n    [CreateAssetMenu(fileName = \"New ###className:string###\",
+    menuName = ###menuName:string###\")]\r\n    public class Scriptable###className:string###
+    : ScriptablePrimitive<###paramType:type###>\r\n    {\r\n\r\n    }\r\n}\r"
+  currentValue: "using UnityEngine;\r\n\r\nnamespace ###namespace:string###\n{\r\n
+    \   /// <summary>\r\n    /// Scriptable primitive of ###paramType:type### type\r\n
+    \   /// </summary>\r\n    [CreateAssetMenu(fileName = \"New ###className:string###\",
+    menuName = ###menuName:string###\")]\r\n    public class Scriptable###className:string###
+    : ScriptablePrimitive<###paramType:type###>\r\n    {\r\n\r\n    }\r\n}\r"
+  parameters:
+  - Identifier: namespace
+    ParameterType: string
+    ReplacementString: '###namespace:string###'
+  - Identifier: paramType
+    ParameterType: type
+    ReplacementString: '###paramType:type###'
+  - Identifier: className
+    ParameterType: string
+    ReplacementString: '###className:string###'
+  - Identifier: menuName
+    ParameterType: string
+    ReplacementString: '###menuName:string###'

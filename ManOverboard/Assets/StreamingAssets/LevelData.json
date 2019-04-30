@@ -1,0 +1,28 @@
+{
+	"level": [
+		{
+			"maxCharLoss": [4, 3, 2, 1]
+		},
+		{
+			"maxCharLoss": [4, 3, 2, 1]
+		},
+		{
+			"maxCharLoss": [3, 2, 1, 0]
+		},
+		{
+			"maxCharLoss": [3, 2, 1, 0]
+		},
+		{
+			"maxCharLoss": [3, 2, 1, 0]
+		},
+		{
+			"maxCharLoss": [3, 2, 1, 0]
+		},
+		{
+			"maxCharLoss": [3, 2, 1, 0]
+		},
+		{
+			"maxCharLoss": [8, 6, 4, 2]
+		}
+	]
+}

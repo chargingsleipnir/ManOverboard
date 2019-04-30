@@ -3,9 +3,13 @@ using System.Linq;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using System.Reflection;
 
 namespace ZeroProgress.Common.Editors
 {
+    /// <summary>
+    /// Extensions for the SerializedProperty class
+    /// </summary>
     public static class SerializedPropertyExtensions 
     {
         /// <summary>
@@ -145,6 +149,28 @@ namespace ZeroProgress.Common.Editors
         }
 
         /// <summary>
+        /// Removes from the array
+        /// </summary>
+        /// <param name="thisProperty">The property</param>
+        /// <param name="index">The index to remove at</param>
+        /// <returns>True if removed, false if not</returns>
+        public static bool RemoveFromArray(this SerializedProperty thisProperty, int index)
+        {
+            SerializedProperty prop = thisProperty.GetArrayElementAtIndex(index);
+
+            if (prop == null)
+                return false;
+            
+            if (prop.objectReferenceValue != null)
+                prop.DeleteArrayElementAtIndex(index);
+
+            // when deleting, if the value isn't null it's set to null.
+            // if it is null, it's removed
+            prop.DeleteArrayElementAtIndex(index);
+            return true;
+        }
+
+        /// <summary>
         /// Removes the item from the array
         /// </summary>
         /// <param name="ThisProperty">The property that is expected to be an array</param>
@@ -186,7 +212,7 @@ namespace ZeroProgress.Common.Editors
             SerializedProperty arrayIterator = ThisProperty.GetArrayIterator(out arrayLength);
 
             if (arrayIterator == null)
-                return null;
+                return new T[0];
             
             List<System.Object> values = new List<System.Object>();
 
@@ -208,6 +234,13 @@ namespace ZeroProgress.Common.Editors
             return values.Cast<T>();
         }
 
+        /// <summary>
+        /// Retrieves the array values of this property in a manner that doesn't return null
+        /// (will create an empty collection)
+        /// </summary>
+        /// <typeparam name="T">The element type</typeparam>
+        /// <param name="ThisProperty">The serialized property to get the array values from</param>
+        /// <returns>The collection of items (or an empty collection if null)</returns>
         public static IEnumerable<T> GetSafeArrayValues<T>(this SerializedProperty ThisProperty)
         {
             IEnumerable<T> values = ThisProperty.GetArrayValues<T>();
@@ -463,6 +496,68 @@ namespace ZeroProgress.Common.Editors
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// Retrieves the instance that this property belongs to
+        /// </summary>
+        /// <param name="thisProperty">The property to get the object instance that 
+        /// owns the data this property represents</param>
+        /// <returns>The instance of the object the property is representing</returns>
+        public static System.Object GetPropertyInstanceObject(this SerializedProperty thisProperty)
+        {
+            string[] path = thisProperty.propertyPath.Split('.');
+            object propertyObject = thisProperty.serializedObject.targetObject;
+
+            foreach (string pathNode in path)
+            {
+                FieldInfo fieldInfo = propertyObject.GetType().GetField(pathNode, 
+                    BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+
+                propertyObject = fieldInfo.GetValue(propertyObject);
+            }
+
+            return propertyObject;
+        }
+
+        /// <summary>
+        /// Retrieves the instance that this property belongs to
+        /// </summary>
+        /// <param name="thisProperty">The property to get the object instance that 
+        /// owns the data this property represents</param>
+        /// <returns>The instance of the object the property is representing</returns>
+        public static T GetPropertyInstanceObject<T>(this SerializedProperty thisProperty)
+        {
+            object instanceItem = thisProperty.GetPropertyInstanceObject();
+
+            return (T)instanceItem;
+        }
+
+        /// <summary>
+        /// Helper to iterate over each element in an array represented
+        /// by the serialized property
+        /// </summary>
+        /// <param name="thisProperty">The property to iterate</param>
+        /// <param name="eachCallback">The action to be taken for each element</param>
+        /// <exception cref="ArgumentException">Thrown if the serialized property
+        /// is not an array</exception>
+        public static void ForEach(this SerializedProperty thisProperty, 
+            Action<SerializedProperty> eachCallback)
+        {
+            if (!thisProperty.isArray)
+                throw new ArgumentException("Serialized property isn't an array, cannot iterate");
+
+            int count = thisProperty.arraySize;
+
+            if (count == 0)
+                return;
+
+            for (int i = 0; i < count; i++)
+            {
+                SerializedProperty elementProperty = thisProperty.GetArrayElementAtIndex(i);
+
+                eachCallback(elementProperty);
+            }
         }
     }
 }
