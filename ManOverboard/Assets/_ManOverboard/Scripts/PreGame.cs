@@ -10,6 +10,11 @@ public class PreGame : MonoBehaviour {
     private void Awake()
     {
         DontDestroyOnLoad(this);
+
+#if UNITY_ANDROID
+        Screen.fullScreen = false;
+#endif
+
     }
     void Start() {
         gameCtrl.Init();

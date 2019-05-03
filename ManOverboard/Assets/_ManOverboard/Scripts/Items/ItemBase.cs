@@ -84,8 +84,8 @@ public class ItemBase : SpriteTossable {
         // Set to old parent first
         SortCompResetToBase();
 
-        // Some items scaled through animation, which then stops them from being clickable. Need to reset to avoid this.
-        Utility.Scale(transform, 1, 1, 1);
+        // Some items rotated through animation. Need to reset.
+        transform.rotation = Quaternion.identity;
 
         EnableMouseTracking(true);
         lvlMngr.OnDeselection(this);

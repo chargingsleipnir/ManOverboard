@@ -169,11 +169,14 @@ public class CharBase : SpriteTossable, IMouseDownDetector, IMouseUpDetector {
                 }
             }
         }
-        else if (Airborne) {
+
+        if (Airborne) {
             if (transform.position.y <= lvlMngr.WaterSurfaceYPos - Consts.OFFSCREEN_CATCH_BUFF) {
                 WaterContact();
                 Utility.RepositionY(transform, lvlMngr.WaterSurfaceYPos - Consts.OFFSCREEN_CATCH_BUFF);
                 StopVel();
+
+                // TODO: Splash sound
             }
         }
     }

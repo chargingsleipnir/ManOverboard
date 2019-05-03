@@ -29,7 +29,8 @@ public class LevelManager : MonoBehaviour {
     private bool levelPaused;
     private Coroutine shipSinkCoroutine;
 
-    public Boat boat;
+    [SerializeField]
+    private Boat boat;
 
     private SpriteTossableSet spriteTossableSet;
 
@@ -93,11 +94,11 @@ public class LevelManager : MonoBehaviour {
         WaterSurfaceYPos = (waterObj.transform.position.y + (waterObj.GetComponent<Game2DWater>().WaterSize.y * 0.5f));
 
         gameCtrl.Init();
+
+        shipSinkCoroutine = null;
     }
 
-    private void Start () {
-        shipSinkCoroutine = null;
-
+    private void Start () {      
         boat.LvlMngr = this;
         boat.Start();
 

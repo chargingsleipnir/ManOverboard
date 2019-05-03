@@ -39,7 +39,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4984014173462138, guid: 98617f48a3581564e861a7a094d97cd9, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.32500002
+      value: 0.662
       objectReference: {fileID: 0}
     - target: {fileID: 4984014173462138, guid: 98617f48a3581564e861a7a094d97cd9, type: 3}
       propertyPath: m_LocalPosition.z
@@ -168,15 +168,20 @@ PrefabInstance:
       propertyPath: m_SortingLayer
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 8912451113234657262, guid: 4051ffac0f6718341b8c1f7a4db8d59c,
+    - target: {fileID: 1971957128386853022, guid: 4051ffac0f6718341b8c1f7a4db8d59c,
         type: 3}
-      propertyPath: m_LocalPosition.y
+      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 6584244779281233097, guid: 4051ffac0f6718341b8c1f7a4db8d59c,
+    - target: {fileID: 1178526013618918964, guid: 4051ffac0f6718341b8c1f7a4db8d59c,
         type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.9
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1774474951906938146, guid: 4051ffac0f6718341b8c1f7a4db8d59c,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8631087546342685379, guid: 4051ffac0f6718341b8c1f7a4db8d59c,
         type: 3}
@@ -335,16 +340,3 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 7468858910204569025}
   m_PrefabAsset: {fileID: 0}
---- !u!41386430 &2186277476908879412
-AssetImporterLog:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: Import Logs
-  m_Logs:
-  - error: Some Prefab instances could not be merged.
-    mode: 132
-    line: 475
-    file: C:\buildslave\unity\build\Editor/Src/AssetPipeline/PrefabImporter.cpp
-    object: {fileID: 0}

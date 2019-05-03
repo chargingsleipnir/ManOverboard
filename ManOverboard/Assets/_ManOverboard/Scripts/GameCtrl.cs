@@ -42,6 +42,10 @@ public class GameCtrl : MonoBehaviour {
         SceneManager.LoadScene(levelNum + Consts.LEVEL_SCENE_IDX_DIFF);
     }
 
+    public void Quit() {
+        Application.Quit();
+    }
+
     // ============================== DATA LOADING ==============================
 
     public bool LoadLevelData() {

@@ -123,13 +123,38 @@ PrefabInstance:
       propertyPath: m_Name
       value: Dinghy
       objectReference: {fileID: 0}
+    - target: {fileID: 114791493001334558, guid: 9d9309315914ae2478057670e95e66d4,
+        type: 3}
+      propertyPath: holeDataSet.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114791493001334558, guid: 9d9309315914ae2478057670e95e66d4,
+        type: 3}
+      propertyPath: waterStartWeight
+      value: 400
+      objectReference: {fileID: 0}
+    - target: {fileID: 114791493001334558, guid: 9d9309315914ae2478057670e95e66d4,
+        type: 3}
+      propertyPath: holeDataSet.Array.data[0].xByPercent
+      value: 0.754
+      objectReference: {fileID: 0}
+    - target: {fileID: 114791493001334558, guid: 9d9309315914ae2478057670e95e66d4,
+        type: 3}
+      propertyPath: holeDataSet.Array.data[0].leakType
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 114791493001334558, guid: 9d9309315914ae2478057670e95e66d4,
+        type: 3}
+      propertyPath: holeDataSet.Array.data[0].yByBuoyancy
+      value: 700
+      objectReference: {fileID: 0}
     - target: {fileID: 4390486840726994, guid: 9d9309315914ae2478057670e95e66d4, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4390486840726994, guid: 9d9309315914ae2478057670e95e66d4, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.4
+      value: -0.8
       objectReference: {fileID: 0}
     - target: {fileID: 4390486840726994, guid: 9d9309315914ae2478057670e95e66d4, type: 3}
       propertyPath: m_LocalPosition.z
@@ -166,31 +191,6 @@ PrefabInstance:
     - target: {fileID: 4390486840726994, guid: 9d9309315914ae2478057670e95e66d4, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 114791493001334558, guid: 9d9309315914ae2478057670e95e66d4,
-        type: 3}
-      propertyPath: holeDataSet.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 114791493001334558, guid: 9d9309315914ae2478057670e95e66d4,
-        type: 3}
-      propertyPath: waterStartWeight
-      value: 400
-      objectReference: {fileID: 0}
-    - target: {fileID: 114791493001334558, guid: 9d9309315914ae2478057670e95e66d4,
-        type: 3}
-      propertyPath: holeDataSet.Array.data[0].xByPercent
-      value: 0.754
-      objectReference: {fileID: 0}
-    - target: {fileID: 114791493001334558, guid: 9d9309315914ae2478057670e95e66d4,
-        type: 3}
-      propertyPath: holeDataSet.Array.data[0].leakType
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 114791493001334558, guid: 9d9309315914ae2478057670e95e66d4,
-        type: 3}
-      propertyPath: holeDataSet.Array.data[0].yByBuoyancy
-      value: 700
       objectReference: {fileID: 0}
     - target: {fileID: 6074020538720744965, guid: 9d9309315914ae2478057670e95e66d4,
         type: 3}
@@ -298,18 +298,6 @@ PrefabInstance:
       value: Water
       objectReference: {fileID: 0}
     - target: {fileID: 4034844570836260, guid: 10126059089110c4dbf74678801809dc, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4034844570836260, guid: 10126059089110c4dbf74678801809dc, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -2
-      objectReference: {fileID: 0}
-    - target: {fileID: 4034844570836260, guid: 10126059089110c4dbf74678801809dc, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4034844570836260, guid: 10126059089110c4dbf74678801809dc, type: 3}
       propertyPath: m_LocalRotation.x
       value: -0
       objectReference: {fileID: 0}
@@ -359,6 +347,79 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 607320831}
   m_PrefabAsset: {fileID: 0}
+--- !u!21 &649818585
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Game2DWater Material
+  m_Shader: {fileID: 4800000, guid: 13121cb2798342840841b50208da77e6, type: 3}
+  m_ShaderKeywords: Water2D_Reflection Water2D_Refraction
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: 2000
+  stringTagMap:
+    RenderType: Opaque
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _NoiseTexture:
+        m_Texture: {fileID: 2078433746}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ReflectionTexture:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _RefractionTexture:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SurfaceTexture:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _WaterTexture:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - _DstBlend: 0
+    - _Mode: 2000
+    - _ReflectionNoiseSpeed: 0.075
+    - _ReflectionNoiseStrength: 0.02
+    - _ReflectionVisibility: 0.3
+    - _RefractionAmountOfBending: 0
+    - _RefractionNoiseSpeed: 0.075
+    - _RefractionNoiseStrength: 0.015
+    - _SrcBlend: 1
+    - _SurfaceLevel: 0.9
+    - _SurfaceNoiseSpeed: 0.025
+    - _SurfaceNoiseStrength: 0.025
+    - _SurfaceTextureOpacity: 0.5
+    - _Water2D_IsColorGradientEnabled: 0
+    - _Water2D_IsReflectionEnabled: 1
+    - _Water2D_IsRefractionEnabled: 1
+    - _Water2D_IsSurfaceEnabled: 0
+    - _Water2D_IsSurfaceNoiseEnabled: 0
+    - _Water2D_IsWaterNoiseEnabled: 0
+    - _WaterNoiseSpeed: 0.025
+    - _WaterNoiseStrength: 0.025
+    - _WaterTextureOpacity: 0.5
+    - _ZWrite: 1
+    m_Colors:
+    - _ReflectionNoiseScaleOffset: {r: 5, g: 14, b: 0, a: 0}
+    - _RefractionNoiseScaleOffset: {r: 8, g: 5, b: 0, a: 0}
+    - _SurfaceColor: {r: 0.14, g: 0.54, b: 0.85, a: 0.25}
+    - _SurfaceNoiseScaleOffset: {r: 1, g: 1, b: 0, a: 0}
+    - _WaterColor: {r: 0.11, g: 0.64, b: 0.92, a: 0.25}
+    - _WaterColorGradientEnd: {r: 1, g: 1, b: 1, a: 0.25}
+    - _WaterColorGradientStart: {r: 1, g: 1, b: 1, a: 0.25}
+    - _WaterNoiseScaleOffset: {r: 1, g: 1, b: 0, a: 0}
 --- !u!1001 &697334071
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -443,79 +504,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 24abae91a1c0ee84ca2f4a591de5c642, type: 3}
---- !u!21 &1117092875
-Material:
-  serializedVersion: 6
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: Game2DWater Material
-  m_Shader: {fileID: 4800000, guid: 13121cb2798342840841b50208da77e6, type: 3}
-  m_ShaderKeywords: Water2D_Reflection Water2D_Refraction
-  m_LightmapFlags: 4
-  m_EnableInstancingVariants: 0
-  m_DoubleSidedGI: 0
-  m_CustomRenderQueue: 2000
-  stringTagMap:
-    RenderType: Opaque
-  disabledShaderPasses: []
-  m_SavedProperties:
-    serializedVersion: 3
-    m_TexEnvs:
-    - _NoiseTexture:
-        m_Texture: {fileID: 2078433746}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _ReflectionTexture:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _RefractionTexture:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _SurfaceTexture:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _WaterTexture:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    m_Floats:
-    - _DstBlend: 0
-    - _Mode: 2000
-    - _ReflectionNoiseSpeed: 0.075
-    - _ReflectionNoiseStrength: 0.02
-    - _ReflectionVisibility: 0.3
-    - _RefractionAmountOfBending: 0
-    - _RefractionNoiseSpeed: 0.075
-    - _RefractionNoiseStrength: 0.015
-    - _SrcBlend: 1
-    - _SurfaceLevel: 0.9
-    - _SurfaceNoiseSpeed: 0.025
-    - _SurfaceNoiseStrength: 0.025
-    - _SurfaceTextureOpacity: 0.5
-    - _Water2D_IsColorGradientEnabled: 0
-    - _Water2D_IsReflectionEnabled: 1
-    - _Water2D_IsRefractionEnabled: 1
-    - _Water2D_IsSurfaceEnabled: 0
-    - _Water2D_IsSurfaceNoiseEnabled: 0
-    - _Water2D_IsWaterNoiseEnabled: 0
-    - _WaterNoiseSpeed: 0.025
-    - _WaterNoiseStrength: 0.025
-    - _WaterTextureOpacity: 0.5
-    - _ZWrite: 1
-    m_Colors:
-    - _ReflectionNoiseScaleOffset: {r: 5, g: 14, b: 0, a: 0}
-    - _RefractionNoiseScaleOffset: {r: 8, g: 5, b: 0, a: 0}
-    - _SurfaceColor: {r: 0.14, g: 0.54, b: 0.85, a: 0.25}
-    - _SurfaceNoiseScaleOffset: {r: 1, g: 1, b: 0, a: 0}
-    - _WaterColor: {r: 0.11, g: 0.64, b: 0.92, a: 0.25}
-    - _WaterColorGradientEnd: {r: 1, g: 1, b: 1, a: 0.25}
-    - _WaterColorGradientStart: {r: 1, g: 1, b: 1, a: 0.25}
-    - _WaterNoiseScaleOffset: {r: 1, g: 1, b: 0, a: 0}
 --- !u!1001 &1206015441
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -536,7 +524,7 @@ PrefabInstance:
     - target: {fileID: 8971503508800013136, guid: bf2d9a98d23456547a42bc715e1cbebc,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.41999996
+      value: 0.99
       objectReference: {fileID: 0}
     - target: {fileID: 8971503508800013136, guid: bf2d9a98d23456547a42bc715e1cbebc,
         type: 3}
@@ -879,12 +867,12 @@ PrefabInstance:
     - target: {fileID: 6612468494089602893, guid: 4051ffac0f6718341b8c1f7a4db8d59c,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.74
+      value: 1.63
       objectReference: {fileID: 0}
     - target: {fileID: 6612468494089602893, guid: 4051ffac0f6718341b8c1f7a4db8d59c,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.42999995
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6612468494089602893, guid: 4051ffac0f6718341b8c1f7a4db8d59c,
         type: 3}
@@ -1020,12 +1008,12 @@ PrefabInstance:
     - target: {fileID: 8971503508800013136, guid: bf2d9a98d23456547a42bc715e1cbebc,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.83
+      value: -1.75
       objectReference: {fileID: 0}
     - target: {fileID: 8971503508800013136, guid: bf2d9a98d23456547a42bc715e1cbebc,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.38
+      value: 0.95000005
       objectReference: {fileID: 0}
     - target: {fileID: 8971503508800013136, guid: bf2d9a98d23456547a42bc715e1cbebc,
         type: 3}
