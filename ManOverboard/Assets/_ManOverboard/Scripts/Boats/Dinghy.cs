@@ -2,11 +2,11 @@
 
     const int BUOYANCY_MAX = 1000;
 
-    public override void Start() {
+    public override void OnStart() {
         if (startRan)
             return;
 
-        OnStart(BUOYANCY_MAX);
+        Reset(BUOYANCY_MAX);
         startRan = true;
     }
 }

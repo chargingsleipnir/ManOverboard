@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 using System.IO;
 
@@ -8,16 +9,32 @@ public class GameCtrl : MonoBehaviour {
 
     private JSONRoot root;
     private bool dataLoaded;
+    private bool startRan;
 
     // ============================== GENERAL ==============================
 
-    public void Init() {
+    private void Awake() {
+        startRan = false;
+
+        DontDestroyOnLoad(this);
+
+#if UNITY_ANDROID
+        Screen.fullScreen = false;
+#endif
+
+    }
+
+    public void Start() {
+        if (startRan)
+            return;
+
         root = null;
         dataLoaded = false;
 
         LoadLevelData();
         Consts.Init();
         DrawLayerMngr.Init();
+        startRan = true;
     }
 
     // ============================== SCENE MANAGEMENT ==============================
@@ -48,19 +65,36 @@ public class GameCtrl : MonoBehaviour {
 
     // ============================== DATA LOADING ==============================
 
+    private void GetJSONRoot(string JSONString) {
+        root = JsonUtility.FromJson<JSONRoot>(JSONString);
+        dataLoaded = true;
+    }
+
+    private IEnumerator LoadLocalData(string filePath) {
+        UnityWebRequest www = UnityWebRequest.Get(filePath);
+        yield return www.SendWebRequest();
+        GetJSONRoot(www.downloadHandler.text);
+    }
+
     public bool LoadLevelData() {
         if (dataLoaded)
             return true;
 
-        string filePath = Path.Combine(Application.streamingAssetsPath, "LevelData.json");
+        string filename = "LevelData.json";
+        string filePath = Path.Combine(Application.streamingAssetsPath, filename);
+
+#if UNITY_ANDROID
+        //filePath = "jar:file://" + Application.dataPath + "!/assets/" + filename;
+        StartCoroutine("LoadLocalData", filePath);    
+#else
+        //filePath = Application.dataPath + "/StreamingAssets/" + filename;
         if (File.Exists(filePath)) {
-            string jsonString = File.ReadAllText(filePath);
-            root = JsonUtility.FromJson<JSONRoot>(jsonString);
-            dataLoaded = true;
+            GetJSONRoot(File.ReadAllText(filePath));
         }
         else {
             Debug.Log("Failed to retrieve level data");
         }
+#endif
 
         return dataLoaded;        
     }

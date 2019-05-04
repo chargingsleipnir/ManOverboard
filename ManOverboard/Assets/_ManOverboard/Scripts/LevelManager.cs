@@ -93,14 +93,15 @@ public class LevelManager : MonoBehaviour {
 
         WaterSurfaceYPos = (waterObj.transform.position.y + (waterObj.GetComponent<Game2DWater>().WaterSize.y * 0.5f));
 
-        gameCtrl.Init();
+        gameCtrl = FindObjectOfType<GameCtrl>();
+        gameCtrl.Start();
 
         shipSinkCoroutine = null;
     }
 
     private void Start () {      
         boat.LvlMngr = this;
-        boat.Start();
+        boat.OnStart();
 
         charSetStartCount = 0;
         charsSaved = 0;
