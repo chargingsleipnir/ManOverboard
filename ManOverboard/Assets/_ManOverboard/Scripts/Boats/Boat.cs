@@ -100,9 +100,9 @@ public class Boat : MonoBehaviour {
         Pinholes = new List<Hole>();
     }
 
-    public virtual void Start() {} // only here so start can be called from level manager because boat start needs to run before character start
+    public virtual void OnStart() {} // only here so start can be called from level manager because boat start needs to run before character start
 
-    protected void OnStart(int buoyancyTotal) {
+    public void Reset(int buoyancyTotal) {
 
         //SortCompLayerChange(Consts.DrawLayers.BoatLevel1);
 

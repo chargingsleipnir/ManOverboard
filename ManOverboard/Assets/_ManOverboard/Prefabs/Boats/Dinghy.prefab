@@ -49,7 +49,6 @@ MonoBehaviour:
   myRigidbody: {fileID: 0}
   myColliders: []
   LeakPrefab: {fileID: 0}
-  water: {fileID: 0}
   hole: {fileID: 1972881796021520, guid: 4f6f48558b089544d888515a0cee53c5, type: 3}
   holeDataSet: []
   waterStartWeight: 0
@@ -68,8 +67,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   offsetX: -0.06
   offsetY: -0.125
-  width: 3.65
-  height: 0.4
+  width: 7.3
+  height: 0.8
 --- !u!1 &6074020538720744965
 GameObject:
   m_ObjectHideFlags: 0
@@ -96,7 +95,7 @@ Transform:
   m_GameObject: {fileID: 6074020538720744965}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: -0.11, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 2, y: 2, z: 1}
   m_Children: []
   m_Father: {fileID: 4390486840726994}
   m_RootOrder: 1
@@ -136,7 +135,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 174049011
-  m_SortingLayer: 5
+  m_SortingLayer: 6
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 36443c1efff5aec4da40dd1097663ece, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -175,7 +174,7 @@ Transform:
   m_GameObject: {fileID: 7803656086728364512}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 2, y: 2, z: 1}
   m_Children: []
   m_Father: {fileID: 4390486840726994}
   m_RootOrder: 0
@@ -215,7 +214,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1346549737
-  m_SortingLayer: 3
+  m_SortingLayer: 4
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: d1b4ea5b7b2db0f4d99dd9a695b207ce, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}

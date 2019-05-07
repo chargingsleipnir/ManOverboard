@@ -64,7 +64,7 @@ namespace ZeroProgress.Common
             ListChangeAction listAddAction = list.Add;
 
             if (addUnique)
-                listAddAction = list.AddUnique;
+                listAddAction = (x) => list.AddUnique(x);
 
             ApplyStack(listAddAction, (x) => list.Remove(x));
         }

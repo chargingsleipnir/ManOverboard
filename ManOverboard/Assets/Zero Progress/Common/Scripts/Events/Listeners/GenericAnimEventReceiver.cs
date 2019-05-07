@@ -42,11 +42,10 @@ namespace ZeroProgress.Common
         /// Responds to the received animation event
         /// </summary>
         /// <param name="EventLabel">The label used to describe the received event</param>
-        public void ReceiveEvent(string EventLabel)
+        /// <param name="args">Arguments related to the animation event</param>
+        public void ReceiveEvent(string EventLabel, StateMachineEventArgs args)
         {
-            UnityEvent eventToFire;
-
-            if (eventDictionary.TryGetValue(EventLabel, out eventToFire))
+            if (eventDictionary.TryGetValue(EventLabel, out UnityEvent eventToFire))
                 eventToFire.Invoke();
         }
     }

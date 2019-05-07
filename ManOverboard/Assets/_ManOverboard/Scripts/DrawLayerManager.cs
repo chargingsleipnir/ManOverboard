@@ -51,6 +51,8 @@ public static class DrawLayerMngr {
         //}
     }
 
+    // TODO: Function that simply says "Layer this over or under that". so when two things meet, it's that simple.
+
     public static void ClearSpriteRef() {
         topSortGroup.groupList.Clear();
     }
