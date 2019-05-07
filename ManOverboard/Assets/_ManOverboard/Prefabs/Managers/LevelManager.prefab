@@ -56,7 +56,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be7a30c37ac246e49ac9ed558c8ba2a8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameCtrl: {fileID: 114446832514159312, guid: 36bfc96ef999cc14f8d0bb0637927c73, type: 3}
+  gameMngr: {fileID: 1937575631194888, guid: 36bfc96ef999cc14f8d0bb0637927c73, type: 3}
   waterObj: {fileID: 0}
   rearMenuFieldPrefab: {fileID: 1365011474752516, guid: 88dd4ad1446449a469d5b5e78384ded6,
     type: 3}

@@ -7,34 +7,34 @@ using System.IO;
 
 public class GameCtrl : MonoBehaviour {
 
-    private JSONRoot root;
-    private bool dataLoaded;
-    private bool startRan;
+    public static GameCtrl instance = null;
+
+    private static JSONRoot root;
 
     // ============================== GENERAL ==============================
 
     private void Awake() {
-        startRan = false;
 
-        DontDestroyOnLoad(this);
+        if (instance != null && instance != this)
+            Destroy(gameObject);
+        else
+            instance = this;
+
+        DontDestroyOnLoad(gameObject);
 
 #if UNITY_ANDROID
         Screen.fullScreen = false;
 #endif
 
+        Init();
     }
 
-    public void Start() {
-        if (startRan)
-            return;
-
+    public void Init() {
         root = null;
-        dataLoaded = false;
 
         LoadLevelData();
         Consts.Init();
         DrawLayerMngr.Init();
-        startRan = true;
     }
 
     // ============================== SCENE MANAGEMENT ==============================
@@ -66,45 +66,38 @@ public class GameCtrl : MonoBehaviour {
     // ============================== DATA LOADING ==============================
 
     private void GetJSONRoot(string JSONString) {
+        Debug.Log("Running function GetJSONRoot");
         root = JsonUtility.FromJson<JSONRoot>(JSONString);
-        dataLoaded = true;
+        Debug.Log(root);
     }
 
     private IEnumerator LoadLocalData(string filePath) {
+        Debug.Log("Running coroutine LoadLocalData");
         UnityWebRequest www = UnityWebRequest.Get(filePath);
         yield return www.SendWebRequest();
         GetJSONRoot(www.downloadHandler.text);
     }
 
-    public bool LoadLevelData() {
-        if (dataLoaded)
-            return true;
-
+    public void LoadLevelData() {
         string filename = "LevelData.json";
         string filePath = Path.Combine(Application.streamingAssetsPath, filename);
 
 #if UNITY_ANDROID
-        //filePath = "jar:file://" + Application.dataPath + "!/assets/" + filename;
         StartCoroutine("LoadLocalData", filePath);    
 #else
-        //filePath = Application.dataPath + "/StreamingAssets/" + filename;
         if (File.Exists(filePath)) {
             GetJSONRoot(File.ReadAllText(filePath));
         }
         else {
             Debug.Log("Failed to retrieve level data");
         }
-#endif
-
-        return dataLoaded;        
+#endif      
     }
 
     public int GetLevelMaxCharLoss(int starVal) {
-        LoadLevelData();
         return root.level[GetCurrLevel() - Consts.LEVEL_DATA_IDX_DIFF].maxCharLoss[starVal];
     }
     public int GetLevelMaxCharLoss(int level, int starVal) {
-        LoadLevelData();
         return root.level[level - Consts.LEVEL_DATA_IDX_DIFF].maxCharLoss[starVal];
     }
 }

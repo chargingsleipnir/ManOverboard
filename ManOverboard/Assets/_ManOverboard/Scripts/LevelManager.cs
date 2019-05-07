@@ -10,6 +10,7 @@ using Game2DWaterKit;
 public class LevelManager : MonoBehaviour {
 
     [SerializeField]
+    private GameObject gameMngr;
     private GameCtrl gameCtrl;
 
     Consts.LevelState levelState;
@@ -80,8 +81,15 @@ public class LevelManager : MonoBehaviour {
     private Vector3 grabPosLocal;    
 
     private void Awake() {
-        // ! gameCtrl.Init is just here while building levels, so we don't need to go through PreGame during testing.
-        // Once game is ready to ship, delete it.
+        if (GameCtrl.instance == null) {
+            Debug.Log("Instantiating game manager");
+            Instantiate(gameMngr);
+            gameCtrl = gameMngr.GetComponent<GameCtrl>();
+        }
+        else {
+            gameCtrl = GameCtrl.instance;
+        }        
+
         items = Resources.Load<ItemBaseSet>("ScriptableObjects/SpriteSets/ItemBaseSet");
         enemies = Resources.Load<EnemySet>("ScriptableObjects/SpriteSets/EnemySet");
         spriteTossableSet = Resources.Load<SpriteTossableSet>("ScriptableObjects/SpriteSets/SpriteTossableSet");
@@ -92,9 +100,6 @@ public class LevelManager : MonoBehaviour {
         levelMsg = Resources.Load<StringParamEvent>("ScriptableObjects/Events/WithParam/Str_AnyMsg");
 
         WaterSurfaceYPos = (waterObj.transform.position.y + (waterObj.GetComponent<Game2DWater>().WaterSize.y * 0.5f));
-
-        gameCtrl = FindObjectOfType<GameCtrl>();
-        gameCtrl.Start();
 
         shipSinkCoroutine = null;
     }
